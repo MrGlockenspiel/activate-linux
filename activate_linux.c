@@ -71,9 +71,10 @@ int main() {
     cairo_t* cairo_ctx = cairo_create(surface);
     draw(cairo_ctx);
     
-    // flush the display forever
+    // wait for X events forever
+    XEvent event;
     while(1) {
-        XFlush(d);
+        XNextEvent(d, &event);
     }  
 
     cairo_destroy(cairo_ctx);
