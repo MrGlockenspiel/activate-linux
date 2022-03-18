@@ -17,11 +17,11 @@ void draw(cairo_t *cr) {
     
     cairo_set_font_size(cr, 24);
     cairo_move_to(cr, 20, 30);
-    cairo_show_text(cr, "Activate Linux"); 
+    cairo_show_text(cr, "Activate ur mom"); 
     
     cairo_set_font_size(cr, 16);
     cairo_move_to(cr, 20, 55);
-    cairo_show_text(cr, "Go to Settings to activate Linux.");
+    cairo_show_text(cr, "Go to Settings to activate deez nuts.");
 }
 
 int main() {
