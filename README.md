@@ -8,3 +8,5 @@ The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
 sh build.sh
 ./activate_linux
 ```
+
+![screenshot](screenshot.PNG)
