@@ -12,22 +12,45 @@
 int overlay_width = 340;
 int overlay_height = 120;
 
-void draw(cairo_t *cr) {
+void draw(cairo_t *cr, char *title, char *subtitle) {
     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.35);
     
     cairo_set_font_size(cr, 24);
     cairo_move_to(cr, 20, 30);
-    cairo_show_text(cr, "Activate Linux"); 
+    cairo_show_text(cr, title); 
     
     cairo_set_font_size(cr, 16);
     cairo_move_to(cr, 20, 55);
-    cairo_show_text(cr, "Go to Settings to activate Linux.");
+    cairo_show_text(cr, subtitle);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     Display *d = XOpenDisplay(NULL);
     Window root = DefaultRootWindow(d);
     int default_screen = XDefaultScreen(d);
+
+    char *title, *subtitle;
+
+    switch (argc) {
+	case (1):
+	    title = "Activate Linux";
+	    subtitle = "Go to Settings to activate Linux.";
+	    break;
+
+	case (2):
+	    title = argv[1];
+	    subtitle = "";
+	    break;
+
+	case (3):
+	    title = argv[1];
+	    subtitle = argv[2];
+	    break;
+
+	default:
+	    printf("More than needed arguments have been passed. This program only supports at most 2 arguments.\n");
+	    return 1;
+    } 
 
     XSetWindowAttributes attrs;
     attrs.override_redirect = 1;
@@ -69,7 +92,7 @@ int main() {
     // cairo context
     cairo_surface_t* surface = cairo_xlib_surface_create(d, overlay, vinfo.visual, overlay_width, overlay_height);
     cairo_t* cairo_ctx = cairo_create(surface);
-    draw(cairo_ctx);
+    draw(cairo_ctx, title, subtitle);
     
     // wait for X events forever
     XEvent event;
