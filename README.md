@@ -16,7 +16,15 @@ This project depends on:
 ## Building
 ```
 sh build.sh
+```
+
+## Running
+The executable is built into ./builds
+```
+cd ./builds
 ./activate_linux
 ```
+
+Add to startup script to have it start automatically at login.
 
 ![screenshot](screenshot.PNG)
