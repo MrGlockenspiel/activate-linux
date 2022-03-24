@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
 
     switch (argc) {
 	case (1):
-	    title = "Activate Linux";
-	    subtitle = "Go to Settings to activate Linux.";
+	    title = "Activate macOS";
+	    subtitle = "Go to Settings to activate macOS.";
 	    break;
 
 	case (2):
