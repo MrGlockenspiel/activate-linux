@@ -9,18 +9,15 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
-int overlay_width = 340;
-int overlay_height = 120;
-
-void draw(cairo_t *cr, char *title, char *subtitle) {
+void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.35);
     
-    cairo_set_font_size(cr, 24);
-    cairo_move_to(cr, 20, 30);
+    cairo_set_font_size(cr, 24*scale);
+    cairo_move_to(cr, 20, 30*scale);
     cairo_show_text(cr, title); 
     
-    cairo_set_font_size(cr, 16);
-    cairo_move_to(cr, 20, 55);
+    cairo_set_font_size(cr, 16*scale);
+    cairo_move_to(cr, 20, 55*scale);
     cairo_show_text(cr, subtitle);
 }
 
@@ -30,6 +27,10 @@ int main(int argc, char *argv[]) {
     int default_screen = XDefaultScreen(d);
 
     char *title, *subtitle;
+
+    int overlay_width = 340;
+    int overlay_height = 120;
+    float scale = 1.0f;
 
     switch (argc) {
 	case (1):
@@ -52,6 +53,13 @@ int main(int argc, char *argv[]) {
 	    subtitle = argv[2];
 	    break;
 
+    case (4):
+        title = argv[1];
+	    subtitle = argv[2];
+        scale = atoi(argv[3]);
+
+        break;
+
 	default:
 	    printf("More than needed arguments have been passed. This program only supports at most 2 arguments.\n");
 	    return 1;
@@ -72,18 +80,18 @@ int main(int argc, char *argv[]) {
     attrs.border_pixel = 0;
 
     Window overlay = XCreateWindow(
-        d,                                                             // display
-        root,                                                          // parent
-        DisplayWidth(d, DefaultScreen(d)) - overlay_width,             // x position
-        DisplayHeight(d, DefaultScreen(d)) - overlay_height,           // y position
-        overlay_width,                                                 // width
-        overlay_height,                                                // height
-        0,                                                             // border width
-        vinfo.depth,                                                   // depth
-        InputOutput,                                                   // class
-        vinfo.visual,                                                  // visual
-        CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel, // value mask
-        &attrs                                                         // attributes
+        d,                                                                     // display
+        root,                                                                  // parent
+        DisplayWidth(d, DefaultScreen(d)) - overlay_width * scale,             // x position
+        DisplayHeight(d, DefaultScreen(d)) - overlay_height * scale,           // y position
+        overlay_width * scale,                                                 // width
+        overlay_height * scale,                                                // height
+        0,                                                                     // border width
+        vinfo.depth,                                                           // depth
+        InputOutput,                                                           // class
+        vinfo.visual,                                                          // visual
+        CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
+        &attrs                                                                 // attributes
     );
 
     XMapWindow(d, overlay);
@@ -95,9 +103,9 @@ int main(int argc, char *argv[]) {
     XFixesDestroyRegion(d, region);
 
     // cairo context
-    cairo_surface_t* surface = cairo_xlib_surface_create(d, overlay, vinfo.visual, overlay_width, overlay_height);
+    cairo_surface_t* surface = cairo_xlib_surface_create(d, overlay, vinfo.visual, overlay_width * scale, overlay_height * scale);
     cairo_t* cairo_ctx = cairo_create(surface);
-    draw(cairo_ctx, title, subtitle);
+    draw(cairo_ctx, title, subtitle, scale);
     
     // wait for X events forever
     XEvent event;
