@@ -52,3 +52,4 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+activate_linux
