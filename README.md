@@ -17,7 +17,7 @@ This project depends on:
 ## Building
 ```
 make
-./activate_linux
+./bin/activate_linux
 ```
 
 ## Dependencies (MacOS) (Experimental)
@@ -27,8 +27,12 @@ make
 ## Building
 ```
 make
-./activate_macos
+./bin/activate_macos
 ```
 
+#### Note that the executable is located in bin/
+
+
+## Example Image:
 
 ![screenshot](screenshot.png)
