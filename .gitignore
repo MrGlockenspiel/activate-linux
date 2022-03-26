@@ -1,4 +1,4 @@
-builds/
+bin/
 
 # Prerequisites
 *.d
