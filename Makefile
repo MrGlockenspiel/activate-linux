@@ -22,7 +22,9 @@ endif
 all: $(TARGETS)
 
 activate_linux: 
-	$(CC) src/activate_linux.c -o $(BINARY) $(CFLAGS)
+	rm -f -r bin
+	mkdir bin
+	$(CC) src/activate_linux.c -o bin/$(BINARY) $(CFLAGS)
 
 # clean
 clean:
