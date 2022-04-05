@@ -28,8 +28,8 @@ activate_linux:
 
 # clean
 clean:
-	$(RM) $(BINARY)
+	$(RM) bin/$(BINARY)
 	
 # build and run
 test: test $(TARGETS)
-	./$(BINARY)
+	./bin/$(BINARY)

@@ -69,7 +69,14 @@ int main(int argc, char *argv[]) {
     attrs.override_redirect = 1;
 
     XVisualInfo vinfo;
-    if (!XMatchVisualInfo(d, DefaultScreen(d), 32, TrueColor, &vinfo)) {
+
+    // MacOS doesnt support 32 bit color through XQuartz, massive hack
+    #ifdef __APPLE__
+    int colorDepth = 24;
+    #else
+    int colorDepth = 32;
+    #endif
+    if (!XMatchVisualInfo(d, DefaultScreen(d), colorDepth, TrueColor, &vinfo)) {
         printf("No visual found supporting 32 bit color, terminating\n");
         exit(EXIT_FAILURE);
     }
