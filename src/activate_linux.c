@@ -109,6 +109,12 @@ int main(int argc, char *argv[]) {
     XFixesSetWindowShapeRegion(d, overlay, ShapeInput, 0, 0, region);
     XFixesDestroyRegion(d, region);
 
+    // sets a WM_CLASS to allow the user to blacklist some effect from compositor
+    XClassHint *xch = XAllocClassHint();
+    xch->res_name="activate-linux";
+    xch->res_class="activate-linux";
+    XSetClassHint(d, overlay, xch);
+
     // cairo context
     cairo_surface_t* surface = cairo_xlib_surface_create(d, overlay, vinfo.visual, overlay_width * scale, overlay_height * scale);
     cairo_t* cairo_ctx = cairo_create(surface);
