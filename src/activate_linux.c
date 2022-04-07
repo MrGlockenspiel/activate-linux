@@ -69,7 +69,14 @@ int main(int argc, char *argv[]) {
     attrs.override_redirect = 1;
 
     XVisualInfo vinfo;
-    if (!XMatchVisualInfo(d, DefaultScreen(d), 32, TrueColor, &vinfo)) {
+
+    // MacOS doesnt support 32 bit color through XQuartz, massive hack
+    #ifdef __APPLE__
+    int colorDepth = 24;
+    #else
+    int colorDepth = 32;
+    #endif
+    if (!XMatchVisualInfo(d, DefaultScreen(d), colorDepth, TrueColor, &vinfo)) {
         printf("No visual found supporting 32 bit color, terminating\n");
         exit(EXIT_FAILURE);
     }
@@ -101,6 +108,12 @@ int main(int argc, char *argv[]) {
     XserverRegion region = XFixesCreateRegion(d, &rect, 1);
     XFixesSetWindowShapeRegion(d, overlay, ShapeInput, 0, 0, region);
     XFixesDestroyRegion(d, region);
+
+    // sets a WM_CLASS to allow the user to blacklist some effect from compositor
+    XClassHint *xch = XAllocClassHint();
+    xch->res_name="activate-linux";
+    xch->res_class="activate-linux";
+    XSetClassHint(d, overlay, xch);
 
     // cairo context
     cairo_surface_t* surface = cairo_xlib_surface_create(d, overlay, vinfo.visual, overlay_width * scale, overlay_height * scale);
