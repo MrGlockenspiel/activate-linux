@@ -44,8 +44,22 @@ int main(int argc, char *argv[]) {
 	    break;
 
 	case (2):
-	    title = argv[1];
-	    subtitle = "";
+        if(atof(argv[1]) != 0)
+        {
+            scale = atof(argv[1]);
+            #ifdef __APPLE__
+            title = "Activate MacOS";
+            subtitle = "Go to Settings to activate MacOS";
+            #else
+	        title = "Activate Linux";
+	        subtitle = "Go to Settings to activate Linux.";
+            #endif
+        }
+        else
+        {
+            title = argv[1];
+	        subtitle = "";
+        }
 	    break;
 
 	case (3):
@@ -56,12 +70,12 @@ int main(int argc, char *argv[]) {
     case (4):
         title = argv[1];
 	    subtitle = argv[2];
-        scale = atoi(argv[3]);
+        scale = atof(argv[3]);
 
         break;
 
 	default:
-	    printf("More than needed arguments have been passed. This program only supports at most 2 arguments.\n");
+	    printf("More than needed arguments have been passed. This program only supports at most 3 arguments.\n");
 	    return 1;
     } 
 
