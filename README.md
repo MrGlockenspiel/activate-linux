@@ -20,6 +20,12 @@ make
 ./bin/activate_linux
 ```
 
+## Arch Linux
+This project is in the AUR under "activate-linux-git".
+[Link To AUR page](https://aur.archlinux.org/packages/activate-linux-git).
+
+Use your AUR helper to install.
+
 ## Dependencies (MacOS) (Experimental)
 - XQuartz
 - Cairo
