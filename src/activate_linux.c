@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
     switch (argc) {
 	case (1):
         #ifdef __APPLE__
-        title = "Activate MacOS";
-        subtitle = "Go to Settings to activate MacOS";
+        title = "Activate macOS";
+        subtitle = "Go to Settings to activate macOS.";
         #else
 	    title = "Activate Linux";
 	    subtitle = "Go to Settings to activate Linux.";
