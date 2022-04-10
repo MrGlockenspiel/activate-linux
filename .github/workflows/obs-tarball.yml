@@ -33,4 +33,3 @@ jobs:
           mkdir activate-linux
           cp -r src/ Makefile *.md activate-linux/
           tar -cf activate-linux-git.tar.gz activate-linux/
-          tar -cf activate-linux.tar.gz
