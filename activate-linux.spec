@@ -3,7 +3,6 @@ Summary: The "Activate Windows" watermark ported to Linux
 Version: %{version}
 License: The Based License v1.3.6, https://github.com/MrGlockenspiel/activate-linux/blob/main/LICENSE.md
 Name: activate-linux
-Provides: activate-linux
 Release: 1
 Source: activate-linux-%{version}.tar.gz
 URL: https://github.com/MrGlockenspiel/activate-linux
