@@ -8,6 +8,8 @@ Release: 1
 Source: activate-linux-%{version}.tar.gz
 URL: https://github.com/MrGlockenspiel/activate-linux
 Buildroot: /tmp/activate-linux-git
+BuildRequires: clang cairo-devel libXi-devel libx11-devel
+BuildRequires: xorgproto-devel xcb-proto-devel libXt-devel
 
 %description
 The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
