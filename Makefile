@@ -14,7 +14,7 @@ endif
 # OSX specific flags
 ifeq ($(name),Darwin)
     BINARY  = activate_macos
-	CFLAGS  = -lX11 -lXfixes -lXinerama -lcairo -I/usr/local/Cellar/cairo/1.16.0_5/include/cairo -I/opt/X11/include
+	CFLAGS  = -lX11 -lXfixes -lXinerama -lcairo -I/opt/local/include/cairo -I/opt/X11/include
 endif
 
 .PHONY: all clean test
