@@ -26,6 +26,10 @@ This project is in the AUR under "activate-linux-git".
 
 Use your AUR helper to install.
 
+## OpenSUSE (Open Build Service)
+This project is in the OBS under "activate-linux".
+[Link to OBS page](https://software.opensuse.org//download.html?project=home%3AWoMspace&package=activate-linux)
+
 ## Dependencies (MacOS) (Experimental)
 - XQuartz
 - Cairo
