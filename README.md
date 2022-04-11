@@ -13,6 +13,7 @@ This project depends on:
 - `x11proto-dev`
 - `libxt-dev`
 - `libxfiles-dev`
+- `libxinerama`
 
 ## Building
 ```
@@ -33,6 +34,7 @@ This project is in the OBS under "activate-linux".
 ## Dependencies (MacOS) (Experimental)
 - XQuartz
 - Cairo
+- Xinerama
 
 ## Building
 ```
