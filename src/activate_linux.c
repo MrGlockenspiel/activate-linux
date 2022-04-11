@@ -5,6 +5,7 @@
 #include <X11/X.h>
 #include <X11/extensions/shape.h>
 #include <X11/extensions/Xfixes.h>
+#include <X11/extensions/Xinerama.h>
 
 #include <cairo.h>
 #include <cairo-xlib.h>
@@ -26,6 +27,15 @@ int main(int argc, char *argv[]) {
     Window root = DefaultRootWindow(d);
     int default_screen = XDefaultScreen(d);
 
+    int num_entries = 0;
+    XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
+
+    if (si == NULL) {
+        perror("Required X extension Xinerama is not active");
+        XCloseDisplay(d);
+        return 1;
+    }
+
     char *title, *subtitle;
 
     int overlay_width = 340;
@@ -35,28 +45,26 @@ int main(int argc, char *argv[]) {
     switch (argc) {
 	case (1):
         #ifdef __APPLE__
-        title = "Activate macOS";
-        subtitle = "Go to Settings to activate macOS.";
+            title = "Activate macOS";
+            subtitle = "Go to Settings to activate macOS.";
         #else
-	    title = "Activate Linux";
-	    subtitle = "Go to Settings to activate Linux.";
+            title = "Activate Linux";
+            subtitle = "Go to Settings to activate Linux.";
         #endif
 	    break;
 
 	case (2):
-        if(atof(argv[1]) != 0)
-        {
+        if(atof(argv[1]) != 0) {
             scale = atof(argv[1]);
             #ifdef __APPLE__
-            title = "Activate MacOS";
-            subtitle = "Go to Settings to activate MacOS";
+                title = "Activate MacOS";
+                subtitle = "Go to Settings to activate MacOS";
             #else
-	        title = "Activate Linux";
-	        subtitle = "Go to Settings to activate Linux.";
+                title = "Activate Linux";
+                subtitle = "Go to Settings to activate Linux.";
             #endif
         }
-        else
-        {
+        else {
             title = argv[1];
 	        subtitle = "";
         }
@@ -86,11 +94,12 @@ int main(int argc, char *argv[]) {
 
     // MacOS doesnt support 32 bit color through XQuartz, massive hack
     #ifdef __APPLE__
-    int colorDepth = 24;
+        int colorDepth = 24;
     #else
-    int colorDepth = 32;
+        int colorDepth = 32;
     #endif
-    if (!XMatchVisualInfo(d, DefaultScreen(d), colorDepth, TrueColor, &vinfo)) {
+    
+    if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
         printf("No visual found supporting 32 bit color, terminating\n");
         exit(EXIT_FAILURE);
     }
@@ -100,50 +109,58 @@ int main(int argc, char *argv[]) {
     attrs.background_pixel = 0;
     attrs.border_pixel = 0;
 
-    Window overlay = XCreateWindow(
-        d,                                                                     // display
-        root,                                                                  // parent
-        DisplayWidth(d, DefaultScreen(d)) - overlay_width * scale,             // x position
-        DisplayHeight(d, DefaultScreen(d)) - overlay_height * scale,           // y position
-        overlay_width * scale,                                                 // width
-        overlay_height * scale,                                                // height
-        0,                                                                     // border width
-        vinfo.depth,                                                           // depth
-        InputOutput,                                                           // class
-        vinfo.visual,                                                          // visual
-        CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
-        &attrs                                                                 // attributes
-    );
+    Window overlay[num_entries];
+    cairo_surface_t *surface[num_entries];
+    cairo_t *cairo_ctx[num_entries];
 
-    XMapWindow(d, overlay);
-    
-    // allows the mouse to click through the overlay
-    XRectangle rect;
-    XserverRegion region = XFixesCreateRegion(d, &rect, 1);
-    XFixesSetWindowShapeRegion(d, overlay, ShapeInput, 0, 0, region);
-    XFixesDestroyRegion(d, region);
+    for (int i = 0; i < num_entries; i++) {
+        overlay[i] = XCreateWindow(
+            d,                                                                     // display
+            root,                                                                  // parent
+            si[i].x_org + si[i].width - overlay_width * scale,             // x position
+            si[i].y_org + si[i].height - overlay_height * scale,           // y position
+            overlay_width * scale,                                                 // width
+            overlay_height * scale,                                                // height
+            0,                                                                     // border width
+            vinfo.depth,                                                           // depth
+            InputOutput,                                                           // class
+            vinfo.visual,                                                          // visual
+            CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
+            &attrs                                                                 // attributes
+        );
+        XMapWindow(d, overlay[i]);
 
-    // sets a WM_CLASS to allow the user to blacklist some effect from compositor
-    XClassHint *xch = XAllocClassHint();
-    xch->res_name="activate-linux";
-    xch->res_class="activate-linux";
-    XSetClassHint(d, overlay, xch);
+        // allows the mouse to click through the overlay
+        XRectangle rect;
+        XserverRegion region = XFixesCreateRegion(d, &rect, 1);
+        XFixesSetWindowShapeRegion(d, overlay[i], ShapeInput, 0, 0, region);
+        XFixesDestroyRegion(d, region);
 
-    // cairo context
-    cairo_surface_t* surface = cairo_xlib_surface_create(d, overlay, vinfo.visual, overlay_width * scale, overlay_height * scale);
-    cairo_t* cairo_ctx = cairo_create(surface);
-    draw(cairo_ctx, title, subtitle, scale);
-    
+        // sets a WM_CLASS to allow the user to blacklist some effect from compositor
+        XClassHint *xch = XAllocClassHint();
+        xch->res_name="activate-linux";
+        xch->res_class="activate-linux";
+        XSetClassHint(d, overlay[i], xch);
+
+        // cairo context
+        surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width * scale, overlay_height * scale);
+        cairo_ctx[i] = cairo_create(surface[i]);
+        draw(cairo_ctx[i], title, subtitle, scale);
+    }
+
     // wait for X events forever
     XEvent event;
     while(1) {
         XNextEvent(d, &event);
     }  
 
-    cairo_destroy(cairo_ctx);
-    cairo_surface_destroy(surface);
+    for (int i = 0; i < num_entries; i++) {
+        XUnmapWindow(d, overlay[i]);
+        cairo_destroy(cairo_ctx[i]);
+        cairo_surface_destroy(surface[i]);
+    }
 
-    XUnmapWindow(d, overlay);
+    XFree(si);
     XCloseDisplay(d);
     return 0;
 }
