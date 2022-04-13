@@ -10,12 +10,15 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
+//draw text
 void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
+    //set color
     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.35);
     
+    //set font size, and scale up or down
     cairo_set_font_size(cr, 24*scale);
     cairo_move_to(cr, 20, 30*scale);
-    cairo_show_text(cr, title); 
+    cairo_show_text(cr, title);
     
     cairo_set_font_size(cr, 16*scale);
     cairo_move_to(cr, 20, 55*scale);
@@ -40,10 +43,10 @@ int main(int argc, char *argv[]) {
 
     int overlay_width = 340;
     int overlay_height = 120;
-    float scale = 1.0f;
+    float scale = 1.0f; //default scale
 
-    switch (argc) {
-	case (1):
+    switch (argc) { //switch on number of arguments
+	case (1): //if there are no arguments (1 is for program name)
         #ifdef __APPLE__
             title = "Activate macOS";
             subtitle = "Go to Settings to activate macOS.";
@@ -53,8 +56,8 @@ int main(int argc, char *argv[]) {
         #endif
 	    break;
 
-	case (2):
-        if(atof(argv[1]) != 0) {
+	case (2): //One argument
+        if(atof(argv[1]) != 0) { //if it is a float, use as scale. Otherwise, use as main message
             scale = atof(argv[1]);
             #ifdef __APPLE__
                 title = "Activate MacOS";
@@ -70,19 +73,19 @@ int main(int argc, char *argv[]) {
         }
 	    break;
 
-	case (3):
+	case (3): //Two arguments, set custom main and secondary message
 	    title = argv[1];
 	    subtitle = argv[2];
 	    break;
 
-    case (4):
+    case (4): //Three arguments, set custom main and secondary message, and set scale.
         title = argv[1];
 	    subtitle = argv[2];
         scale = atof(argv[3]);
 
         break;
 
-	default:
+	default: //If the number of arguments is incorrect
 	    printf("More than needed arguments have been passed. This program only supports at most 3 arguments.\n");
 	    return 1;
     } 
@@ -154,6 +157,7 @@ int main(int argc, char *argv[]) {
         XNextEvent(d, &event);
     }  
 
+    //free used resources
     for (int i = 0; i < num_entries; i++) {
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
