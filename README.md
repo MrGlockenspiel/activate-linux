@@ -24,6 +24,9 @@ This project depends on:
 make
 ./bin/activate_linux
 ```
+
+> Note that the executable is located in `bin/`
+
 ## Installing
 
 ### Arch Linux
