@@ -5,7 +5,6 @@ The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
 
 > Read [ARGS.md](ARGS.md) for information about command line arguments.
 
-
 # Linux
 
 ## Dependencies
@@ -17,7 +16,7 @@ This project depends on:
 - `x11proto-dev`
 - `libxt-dev`
 - `libxfiles-dev`
-- `libxinerama`
+- `libxinerama-dev`
 
 ## Building
 ```

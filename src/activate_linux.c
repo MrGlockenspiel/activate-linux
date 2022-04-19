@@ -10,14 +10,14 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
-//draw text
+// draw text
 void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
     //set color
     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.35);
     
-    //set font size, and scale up or down
-    cairo_set_font_size(cr, 24*scale);
-    cairo_move_to(cr, 20, 30*scale);
+    // set font size, and scale up or down
+    cairo_set_font_size(cr, 24 * scale);
+    cairo_move_to(cr, 20, 30 * scale);
     cairo_show_text(cr, title);
     
     cairo_set_font_size(cr, 16*scale);
@@ -31,9 +31,11 @@ int main(int argc, char *argv[]) {
     int default_screen = XDefaultScreen(d);
 
     int num_entries = 0;
-    XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);     //get all screens in use
 
-    //if Xinermama failed
+    // get all screens in use
+    XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
+
+    // if xinerama fails
     if (si == NULL) {
         perror("Required X extension Xinerama is not active");
         XCloseDisplay(d);
@@ -44,52 +46,60 @@ int main(int argc, char *argv[]) {
 
     int overlay_width = 340;
     int overlay_height = 120;
-    float scale = 1.0f; //default scale
+    
+    // default scale
+    float scale = 1.0f;
 
-    switch (argc) {     //switch on number of arguments
-	case (1):           //if there are no arguments (1 is for program name)
-        #ifdef __APPLE__
-            title = "Activate macOS";
-            subtitle = "Go to Settings to activate macOS.";
-        #else
-            title = "Activate Linux";
-            subtitle = "Go to Settings to activate Linux.";
-        #endif
-	    break;
-
-	case (2): //One argument
-        if(atof(argv[1]) != 0) {    //if it is a float, use as scale. Otherwise, use as main message
-            scale = atof(argv[1]);
+    // switch on arguments
+    switch (argc) {
+        // if there are no arguments (1 is for program name)
+        case (1):
             #ifdef __APPLE__
-                title = "Activate MacOS";
-                subtitle = "Go to Settings to activate MacOS";
+                title = "Activate macOS";
+                subtitle = "Go to Settings to activate macOS.";
             #else
                 title = "Activate Linux";
                 subtitle = "Go to Settings to activate Linux.";
             #endif
-        }
-        else {
+            break;
+
+        // 1 argument
+        case (2):
+            // if argument is a number, use as scale
+            if(atof(argv[1]) != 0) {
+                scale = atof(argv[1]);
+                #ifdef __APPLE__
+                    title = "Activate MacOS";
+                    subtitle = "Go to Settings to activate MacOS";
+                #else
+                    title = "Activate Linux";
+                    subtitle = "Go to Settings to activate Linux.";
+                #endif
+            }
+            else {
+                title = argv[1];
+                subtitle = "";
+            }
+            break;
+
+        // 2 arguments
+        case (3):
             title = argv[1];
-	        subtitle = "";
-        }
-	    break;
+            subtitle = argv[2];
+            break;
 
-	case (3):    //Two arguments, set custom main and secondary message
-	    title = argv[1];
-	    subtitle = argv[2];
-	    break;
+        // 3 arguments
+        case (4):
+            title = argv[1];
+            subtitle = argv[2];
+            scale = atof(argv[3]);
+            break;
 
-    case (4):    //Three arguments, set custom main and secondary message, and set scale.
-        title = argv[1];
-	    subtitle = argv[2];
-        scale = atof(argv[3]);
-
-        break;
-
-	default:    //If the number of arguments is incorrect
-	    printf("More than needed arguments have been passed. This program only supports at most 3 arguments.\n");
-	    return 1;
-    } 
+        // if there are more than 3 arguments, print usage
+        default:
+            printf("More than needed arguments have been passed. This program only supports at most 3 arguments.\n");
+            return 1;
+    }
 
     XSetWindowAttributes attrs;
     attrs.override_redirect = 1;
@@ -117,15 +127,18 @@ int main(int argc, char *argv[]) {
     cairo_surface_t *surface[num_entries];
     cairo_t *cairo_ctx[num_entries];
 
-    //create overlay on each screen
+    overlay_height *= scale;
+    overlay_width *= scale;
+    
+    // create overlay on each screen
     for (int i = 0; i < num_entries; i++) {
         overlay[i] = XCreateWindow(
             d,                                                                     // display
             root,                                                                  // parent
-            si[i].x_org + si[i].width - overlay_width * scale,                     // x position
-            si[i].y_org + si[i].height - overlay_height * scale,                   // y position
-            overlay_width * scale,                                                 // width
-            overlay_height * scale,                                                // height
+            si[i].x_org + si[i].width - overlay_width,                             // x position
+            si[i].y_org + si[i].height - overlay_height,                           // y position
+            overlay_width,                                                         // width
+            overlay_height,                                                        // height
             0,                                                                     // border width
             vinfo.depth,                                                           // depth
             InputOutput,                                                           // class
@@ -148,7 +161,7 @@ int main(int argc, char *argv[]) {
         XSetClassHint(d, overlay[i], xch);
 
         // cairo context
-        surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width * scale, overlay_height * scale);
+        surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
         draw(cairo_ctx[i], title, subtitle, scale);
     }
@@ -159,7 +172,7 @@ int main(int argc, char *argv[]) {
         XNextEvent(d, &event);
     }  
 
-    //free used resources
+    // free used resources
     for (int i = 0; i < num_entries; i++) {
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
