@@ -20,8 +20,8 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
     cairo_move_to(cr, 20, 30 * scale);
     cairo_show_text(cr, title);
     
-    cairo_set_font_size(cr, 16*scale);
-    cairo_move_to(cr, 20, 55*scale);
+    cairo_set_font_size(cr, 16 * scale);
+    cairo_move_to(cr, 20, 55 * scale);
     cairo_show_text(cr, subtitle);
 }
 
@@ -156,8 +156,8 @@ int main(int argc, char *argv[]) {
 
         // sets a WM_CLASS to allow the user to blacklist some effect from compositor
         XClassHint *xch = XAllocClassHint();
-        xch->res_name="activate-linux";
-        xch->res_class="activate-linux";
+        xch->res_name = "activate-linux";
+        xch->res_class = "activate-linux";
         XSetClassHint(d, overlay[i], xch);
 
         // cairo context

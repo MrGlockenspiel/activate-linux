@@ -21,7 +21,7 @@ This project depends on:
 ## Building
 ```
 make
-./bin/activate_linux
+./bin/activate-linux
 ```
 
 > Note that the executable is located in `bin/`
@@ -47,7 +47,7 @@ Use MacPorts to install the following, then build normally.
 ## Building
 ```
 make
-./bin/activate_macos
+./bin/activate-macos
 ```
 
 > Note that the executable is located in `bin/`
