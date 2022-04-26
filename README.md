@@ -31,11 +31,21 @@ make
 ### Arch Linux
 This project is in the AUR under [activate-linux-git](https://aur.archlinux.org/packages/activate-linux-git).
 
-Install it using your favorite AUR helper.
+Install/uninstall it using your favorite AUR helper.
 
 ### OpenSUSE (Open Build Service)
 This project is in the OBS under [activate-linux](https://software.opensuse.org//download.html?project=home%3AWoMspace&package=activate-linux).
 
+### All Distros
+```
+make install
+activate_linux
+```
+
+## Uninstall (All Distros Method)
+```
+make uninstall
+```
 
 # MacOS (Experimental)
 ## Dependencies
