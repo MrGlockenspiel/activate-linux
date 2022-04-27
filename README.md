@@ -62,6 +62,12 @@ make
 
 > Note that the executable is located in `bin/`
 
+### Installing
+You can use `make install` to install to /usr/bin, and `make uninstall` to remove it
+
+## Wayland
+This works out of the box through XWayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
+
 # Example:
 
 ![screenshot](screenshot.png)
