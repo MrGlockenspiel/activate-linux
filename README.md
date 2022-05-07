@@ -15,7 +15,7 @@ This project depends on:
 - `x11proto-core-dev`
 - `x11proto-dev`
 - `libxt-dev`
-- `libxfiles-dev`
+- `libxfixes-dev`
 - `libxinerama-dev`
 
 ## Building
