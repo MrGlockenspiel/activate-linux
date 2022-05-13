@@ -7,6 +7,7 @@ The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
 
 # Linux
 
+
 ## Dependencies
 This project depends on:
 - `libcairo2-dev`
@@ -37,7 +38,7 @@ Install it using your favorite AUR helper.
 This project is in the OBS under [activate-linux](https://software.opensuse.org//download.html?project=home%3AWoMspace&package=activate-linux).
 
 
-# MacOS (Experimental)
+# MacOS (Horrific)
 ## Dependencies
 Use MacPorts to install the following, then build normally.
 - `xorg-server`
