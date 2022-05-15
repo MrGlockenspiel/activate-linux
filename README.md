@@ -7,6 +7,7 @@ The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
 
 # Linux
 
+
 ## Dependencies
 This project depends on:
 - `libcairo2-dev`
@@ -47,7 +48,7 @@ activate_linux
 make uninstall
 ```
 
-# MacOS (Experimental)
+# MacOS (Horrific)
 ## Dependencies
 Use MacPorts to install the following, then build normally.
 - `xorg-server`
