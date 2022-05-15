@@ -37,16 +37,8 @@ Install/uninstall it using your favorite AUR helper.
 ### OpenSUSE (Open Build Service)
 This project is in the OBS under [activate-linux](https://software.opensuse.org//download.html?project=home%3AWoMspace&package=activate-linux).
 
-### All Distros
-```
-make install
-activate_linux
-```
-
-## Uninstall (All Distros Method)
-```
-make uninstall
-```
+### Other
+You can use `make install` to install to /usr/bin, and `make uninstall` to remove it
 
 # MacOS (Horrific)
 ## Dependencies
@@ -62,9 +54,6 @@ make
 ```
 
 > Note that the executable is located in `bin/`
-
-### Installing
-You can use `make install` to install to /usr/bin, and `make uninstall` to remove it
 
 ## Wayland
 This works out of the box through XWayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
