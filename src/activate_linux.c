@@ -24,7 +24,7 @@ struct RGBAColor
 // draw text
 void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColor color) {
     //set color
-    cairo_set_source_rgba(cr, color.r, color.g, color.b, color.g);
+    cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
     
     // set font size, and scale up or down
     cairo_set_font_size(cr, 24 * scale);
@@ -38,25 +38,25 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColo
 
 void RGBAColor_from_string(struct RGBAColor* color, char* text)
 {
-   char* alpha = strtok(text, "-");
-   if (alpha != NULL)
+   char* red = strtok(text, "-");
+   if (red != NULL)
    {
-       color->a = atof(alpha);
-   }
-   char* blue = strtok(NULL, "-");
-   if (blue != NULL)
-   {
-       color->b = atof(blue);
+       color->r = atof(red);
    }
    char* green = strtok(NULL, "-");
    if (green != NULL)
    {
        color->g = atof(green);
    }
-   char* red = strtok(NULL, "-");
-   if (red != NULL)
+   char* blue = strtok(NULL, "-");
+   if (green != NULL)
    {
-       color->r = atof(red);
+       color->b = atof(blue);
+   }
+   char* alpha = strtok(NULL, "-");
+   if (alpha != NULL)
+   {
+       color->a = atof(alpha);
    }
 }
 
