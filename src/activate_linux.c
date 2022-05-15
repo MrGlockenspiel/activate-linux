@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
@@ -10,10 +11,20 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
+//struct to hold rgb color
+struct RGBAColor
+{
+    //rgba color values from 0 to 1
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
 // draw text
-void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
+void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColor color) {
     //set color
-    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.35);
+    cairo_set_source_rgba(cr, color.r, color.g, color.b, color.g);
     
     // set font size, and scale up or down
     cairo_set_font_size(cr, 24 * scale);
@@ -23,6 +34,30 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
     cairo_set_font_size(cr, 16 * scale);
     cairo_move_to(cr, 20, 55 * scale);
     cairo_show_text(cr, subtitle);
+}
+
+void RGBAColor_from_string(struct RGBAColor* color, char* text)
+{
+   char* alpha = strtok(text, "-");
+   if (alpha != NULL)
+   {
+       color->a = atof(alpha);
+   }
+   char* blue = strtok(NULL, "-");
+   if (blue != NULL)
+   {
+       color->b = atof(blue);
+   }
+   char* green = strtok(NULL, "-");
+   if (green != NULL)
+   {
+       color->g = atof(green);
+   }
+   char* red = strtok(NULL, "-");
+   if (red != NULL)
+   {
+       color->r = atof(red);
+   }
 }
 
 int main(int argc, char *argv[]) {
@@ -42,11 +77,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    //title and subtitle text
     char *title, *subtitle;
 
     int overlay_width = 340;
     int overlay_height = 120;
     
+    //color of text
+    struct RGBAColor text_color = {.r= 1.0, .g= 1.0, .b= 1.0, .a= 0.35};
+
     // default scale
     float scale = 1.0f;
 
@@ -90,6 +129,12 @@ int main(int argc, char *argv[]) {
 
         // 3 arguments
         case (4):
+            title = argv[1];
+            subtitle = argv[2];
+            scale = atof(argv[3]);
+            break;
+
+        case (5):
             title = argv[1];
             subtitle = argv[2];
             scale = atof(argv[3]);
@@ -163,7 +208,7 @@ int main(int argc, char *argv[]) {
         // cairo context
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
-        draw(cairo_ctx[i], title, subtitle, scale);
+        draw(cairo_ctx[i], title, subtitle, scale, text_color);
     }
 
     // wait for X events forever
