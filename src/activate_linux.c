@@ -36,8 +36,10 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColo
     cairo_show_text(cr, subtitle);
 }
 
+//fill RGBAColor struct values from a string formatted in "r-g-b-a" from 0.0 to 1.0
 void RGBAColor_from_string(struct RGBAColor* color, char* text)
 {
+    //split text into 4 parts along "-". If the input is not valid, use default setting
    char* red = strtok(text, "-");
    if (red != NULL)
    {
@@ -83,7 +85,7 @@ int main(int argc, char *argv[]) {
     int overlay_width = 340;
     int overlay_height = 120;
     
-    //color of text
+    //color of text - set default as light grey
     struct RGBAColor text_color = {.r= 1.0, .g= 1.0, .b= 1.0, .a= 0.35};
 
     // default scale
@@ -134,6 +136,7 @@ int main(int argc, char *argv[]) {
             scale = atof(argv[3]);
             break;
 
+        //4 arguments
         case (5):
             title = argv[1];
             subtitle = argv[2];
