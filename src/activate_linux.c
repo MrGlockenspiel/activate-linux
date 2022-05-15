@@ -138,11 +138,12 @@ int main(int argc, char *argv[]) {
             title = argv[1];
             subtitle = argv[2];
             scale = atof(argv[3]);
+            RGBAColor_from_string(&text_color, argv[4]);
             break;
 
         // if there are more than 3 arguments, print usage
         default:
-            printf("More than needed arguments have been passed. This program only supports at most 3 arguments.\n");
+            printf("More than needed arguments have been passed. This program only supports at most 4 arguments.\n");
             return 1;
     }
 
