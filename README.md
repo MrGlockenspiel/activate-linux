@@ -52,6 +52,7 @@ Or on HomeBrew
 - `libx11`
 - `cairo`
 - `libxinerama`
+
 Then build normally.
 
 ## Building
