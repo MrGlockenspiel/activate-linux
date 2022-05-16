@@ -1,0 +1,18 @@
+PROG=		activate-bsd
+MAN=
+
+.PATH: ${.CURDIR}/src
+
+SRCS=		activate_linux.c
+
+CFLAGS+=	-I/usr/local/include
+CFLAGS+=	-I/usr/local/include/cairo
+
+LDFLAGS+=	-L/usr/local/lib
+
+LDADD+=		-lX11
+LDADD+=		-lXfixes
+LDADD+=		-lXinerama
+LDADD+=		-lcairo
+
+.include <bsd.prog.mk>
