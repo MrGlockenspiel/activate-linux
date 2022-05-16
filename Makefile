@@ -1,45 +1,42 @@
-CC       = clang
-SOURCES  = $(wildcard *.c)
-TARGETS  = activate-linux
+CC ?= clang
+CFLAGS ?= -Og -Wall -Wpedantic -Wextra
+PREFIX ?= /usr/local/
+BINDIR ?= bin
+DESTDIR ?=
 
 RM = rm
-name := $(shell uname -s)
 
-# Linux specific flags
-ifeq ($(name),Linux)
-    BINARY  = activate-linux
-	CFLAGS  = -lX11 -lXfixes -lXinerama -lcairo -I/usr/include/cairo
+SOURCES := $(wildcard src/*.c)
+NAME := $(shell uname -s)
+CFLAGS := \
+	$(CFLAGS) \
+	$(shell pkg-config --cflags --libs x11 xfixes xinerama) \
+	$(shell pkg-config --cflags --libs cairo)
+
+ifeq ($(NAME),Linux)
+	BINARY := activate-linux
 endif
 
-# OSX specific flags
-ifeq ($(name),Darwin)
-    BINARY  = activate-macos
-	CFLAGS  = -lX11 -lXfixes -lXinerama -lcairo -I/opt/local/include/cairo -I/opt/X11/include
+ifeq ($(NAME),Darwin)
+	BINARY := activate-macos
 endif
 
-.PHONY: all clean test
 
-all: $(TARGETS)
+all: $(BINARY)
 
-activate-linux: 
-	rm -f -r bin
-	mkdir bin
-	$(CC) src/activate_linux.c -o bin/$(BINARY) $(CFLAGS)
+$(BINARY): $(SOURCES)
+	$(CC) $(^) -o $(@) $(CFLAGS)
 
-# install to /usr/local/bin
-# the chmod is needed because the Makefile is run as root and clean wont work as a user without it
-install: $(TARGETS)
-	chmod 777 bin/
-	cp bin/$(BINARY) /usr/local/bin/
+install: $(BINARY)
+	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)$(BINDIR)/$(BINARY)
 
-# uninstall binary
 uninstall:
-	rm /usr/local/bin/$(BINARY)
+	$(RM) -f $(DESTDIR)$(PREFIX)$(BINDIR)/$(BINARY)
 
-# clean
 clean:
-	$(RM) -rf bin/
+	$(RM) -f $(BINARY)
 	
-# build and run
-test: test $(TARGETS)
-	./bin/$(BINARY)
+test: $(BINARY)
+	./$(BINARY)
+
+.PHONY: all clean install test

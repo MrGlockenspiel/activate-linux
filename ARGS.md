@@ -12,13 +12,13 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ### Custom Main Message
 
 ```
-./bin/activate_linux (message)
+./activate_linux (message)
 ```
 
 ### Custom Scaling
 
 ```
-./bin/activate_linux (scale)  
+./activate_linux (scale)
 ```
 
 note that scale is a percent represented as a floating point number, 1 being 100%, 2 being 200%, and 0.5 being 50%
@@ -26,17 +26,17 @@ note that scale is a percent represented as a floating point number, 1 being 100
 ### Custom Main and secondary message
 
 ```
-./bin/activate_linux (main) (secondary)
+./activate_linux (main) (secondary)
 ```
 
 ### All 3 options
 
 ```
-./bin/activate_linux (main) (secondary) (scale)
+./activate_linux (main) (secondary) (scale)
 ```
 
 ### All 3 options and custom color
 
 ```
-./bin/activate_linux (main) (secondary) (scale) (color)
+./activate_linux (main) (secondary) (scale) (color)
 ```
