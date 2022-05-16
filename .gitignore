@@ -1,4 +1,4 @@
-bin/
+activate-linux
 
 # Prerequisites
 *.d
@@ -53,5 +53,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-activate_linux
 .vscode/
