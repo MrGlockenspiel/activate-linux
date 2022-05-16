@@ -81,6 +81,13 @@ int main(int argc, char *argv[]) {
 
     //title and subtitle text
     char *title, *subtitle;
+#ifdef __APPLE__
+	title = "Activate macOS";
+	subtitle = "Go to Settings to activate macOS.";
+#else
+	title = "Activate Linux";
+	subtitle = "Go to Settings to activate Linux.";
+#endif
 
     int overlay_width = 340;
     int overlay_height = 120;
@@ -95,13 +102,7 @@ int main(int argc, char *argv[]) {
     switch (argc) {
         // if there are no arguments (1 is for program name)
         case (1):
-            #ifdef __APPLE__
-                title = "Activate macOS";
-                subtitle = "Go to Settings to activate macOS.";
-            #else
-                title = "Activate Linux";
-                subtitle = "Go to Settings to activate Linux.";
-            #endif
+			// nothing to do
             break;
 
         // 1 argument
@@ -109,13 +110,6 @@ int main(int argc, char *argv[]) {
             // if argument is a number, use as scale
             if(atof(argv[1]) != 0) {
                 scale = atof(argv[1]);
-                #ifdef __APPLE__
-                    title = "Activate MacOS";
-                    subtitle = "Go to Settings to activate MacOS";
-                #else
-                    title = "Activate Linux";
-                    subtitle = "Go to Settings to activate Linux.";
-                #endif
             }
             else {
                 title = argv[1];
@@ -144,7 +138,7 @@ int main(int argc, char *argv[]) {
             RGBAColor_from_string(&text_color, argv[4]);
             break;
 
-        // if there are more than 3 arguments, print usage
+        // if there are more than 4 arguments, print usage
         default:
             printf("More than needed arguments have been passed. This program only supports at most 4 arguments.\n");
             return 1;
