@@ -105,6 +105,9 @@ int main(int argc, char *argv[]) {
             #ifdef __APPLE__
                 title = "Activate macOS";
                 subtitle = "Go to Settings to activate macOS.";
+            #elif __FreeBSD__
+		title = "Activate BSD";
+		subtitle = "Go to Settings to activate BSD.";
             #else
                 title = "Activate Linux";
                 subtitle = "Go to Settings to activate Linux.";
@@ -119,6 +122,9 @@ int main(int argc, char *argv[]) {
                 #ifdef __APPLE__
                     title = "Activate MacOS";
                     subtitle = "Go to Settings to activate MacOS";
+                #elif __FreeBSD__
+		    title = "Activate BSD";
+		    subtitle = "Go to Settings to activate BSD.";
                 #else
                     title = "Activate Linux";
                     subtitle = "Go to Settings to activate Linux.";
