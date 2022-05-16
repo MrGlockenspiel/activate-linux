@@ -42,10 +42,15 @@ You can use `make install` to install to /usr/bin, and `make uninstall` to remov
 
 # MacOS (Horrific)
 ## Dependencies
-Use MacPorts to install the following, then build normally.
+Use MacPorts to install the following
 - `xorg-server`
 - `cairo`
 - `xorg-libXinerama`
+Or on HomeBrew
+- `libx11``
+- `cairo`
+- `libxinerama`
+Then build normally.
 
 ## Building
 ```
