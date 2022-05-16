@@ -46,12 +46,10 @@ Use MacPorts to install the following
 - `xorg-server`
 - `cairo`
 - `xorg-libXinerama`
-
 Or on HomeBrew
-- `libx11``
+- `libx11`
 - `cairo`
 - `libxinerama`
-
 Then build normally.
 
 ## Building
