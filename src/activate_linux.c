@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
@@ -10,10 +11,20 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
+//struct to hold rgb color
+struct RGBAColor
+{
+    //rgba color values from 0 to 1
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
 // draw text
-void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
+void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColor color) {
     //set color
-    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.35);
+    cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
     
     // set font size, and scale up or down
     cairo_set_font_size(cr, 24 * scale);
@@ -23,6 +34,32 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale) {
     cairo_set_font_size(cr, 16 * scale);
     cairo_move_to(cr, 20, 55 * scale);
     cairo_show_text(cr, subtitle);
+}
+
+//fill RGBAColor struct values from a string formatted in "r-g-b-a" from 0.0 to 1.0
+void RGBAColor_from_string(struct RGBAColor* color, char* text)
+{
+    //split text into 4 parts along "-". If the input is not valid, use default setting
+   char* red = strtok(text, "-");
+   if (red != NULL)
+   {
+       color->r = atof(red);
+   }
+   char* green = strtok(NULL, "-");
+   if (green != NULL)
+   {
+       color->g = atof(green);
+   }
+   char* blue = strtok(NULL, "-");
+   if (green != NULL)
+   {
+       color->b = atof(blue);
+   }
+   char* alpha = strtok(NULL, "-");
+   if (alpha != NULL)
+   {
+       color->a = atof(alpha);
+   }
 }
 
 int main(int argc, char *argv[]) {
@@ -42,11 +79,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    //title and subtitle text
     char *title, *subtitle;
 
     int overlay_width = 340;
     int overlay_height = 120;
     
+    //color of text - set default as light grey
+    struct RGBAColor text_color = {.r= 1.0, .g= 1.0, .b= 1.0, .a= 0.35};
+
     // default scale
     float scale = 1.0f;
 
@@ -95,9 +136,17 @@ int main(int argc, char *argv[]) {
             scale = atof(argv[3]);
             break;
 
+        //4 arguments
+        case (5):
+            title = argv[1];
+            subtitle = argv[2];
+            scale = atof(argv[3]);
+            RGBAColor_from_string(&text_color, argv[4]);
+            break;
+
         // if there are more than 3 arguments, print usage
         default:
-            printf("More than needed arguments have been passed. This program only supports at most 3 arguments.\n");
+            printf("More than needed arguments have been passed. This program only supports at most 4 arguments.\n");
             return 1;
     }
 
@@ -163,7 +212,7 @@ int main(int argc, char *argv[]) {
         // cairo context
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
-        draw(cairo_ctx[i], title, subtitle, scale);
+        draw(cairo_ctx[i], title, subtitle, scale, text_color);
     }
 
     // wait for X events forever
