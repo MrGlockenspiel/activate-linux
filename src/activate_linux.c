@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
@@ -14,7 +15,7 @@
 #include "color.h"
 
 // draw text
-void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color) {
+void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color, char* customfont, int boldmode, int slantmode) {
     // set color
     cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
 
@@ -25,6 +26,21 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
 
     // set font size, and scale up or down
     cairo_set_font_size(cr, 24 * scale);
+    
+    // font weight and slant settings 
+    cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+    if (boldmode == 1) {
+	font_weight = CAIRO_FONT_WEIGHT_BOLD;
+    }
+	
+    cairo_font_slant_t font_slant = CAIRO_FONT_SLANT_NORMAL;
+    if (slantmode == 1) {
+	font_slant = CAIRO_FONT_SLANT_ITALIC;
+    }
+
+	
+    cairo_select_font_face(cr, customfont, font_slant, font_weight);
+
     cairo_move_to(cr, 20, 30 * scale);
     cairo_show_text(cr, title);
     
@@ -41,7 +57,7 @@ int main(int argc, char *argv[]) {
     int default_screen = XDefaultScreen(d);
 
     int num_entries = 0;
-
+	
     // get all screens in use
     XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
 
@@ -52,9 +68,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // title and subtitle text
+    // title, subtitle text;
     char *title, *subtitle;
-
+    char *customfont = "";
     #ifdef __APPLE__
         title = "Activate macOS";
         subtitle = "Go to Settings to activate macOS.";
@@ -68,61 +84,47 @@ int main(int argc, char *argv[]) {
 
     int overlay_width = 340;
     int overlay_height = 120;
-    
+	
+    int boldmode = 0, slantmode = 0;
+	
     // color of text - set default as light grey
     struct rgba_color_t text_color = rgba_color_default();
 
     // default scale
     float scale = 1.0f;
 
-    // switch on arguments
-    switch (argc) {
-        // if there are no arguments (1 is for program name)
-        case (1):
-            // nothing to do
-            break;
-
-        // 1 argument
-        case (2):
-            // if argument is a number, use as scale
-            if(atof(argv[1]) != 0) {
-                scale = atof(argv[1]);
-            }
-            else {
-                title = argv[1];
-                subtitle = "";
-            }
-            break;
-
-        // 2 arguments
-        case (3):
-            title = argv[1];
-            subtitle = argv[2];
-            break;
-
-        // 3 arguments
-        case (4):
-            title = argv[1];
-            subtitle = argv[2];
-            scale = atof(argv[3]);
-            break;
-
-        // 4 arguments
-        case (5):
-            title = argv[1];
-            subtitle = argv[2];
-            scale = atof(argv[3]);
-            text_color = rgba_color_string(argv[4]);
-            if (text_color.a < 0.0) {
-                fprintf(stderr, "Error occurred during parsing custom color.\n");
-                return 1;
-            }
-            break;
-
-        // if there are more than 3 arguments, print usage
-        default:
-            printf("More than needed arguments have been passed. This program only supports at most 4 arguments.\n");
-            return 1;
+    int opt;
+    while ((opt = getopt(argc, argv, "?bit:m:s:f:c:")) != -1) {
+           switch (opt) {
+           case 'b':
+               boldmode = 1;
+               break;
+           case 'i':
+               slantmode = 1;
+               break;
+		   case 't':
+               title = optarg;
+               break;
+		   case 'm':
+               subtitle = optarg;
+               break;
+		   case 'f':
+               customfont = optarg;
+               break;
+		   case 's':
+               scale = atof(optarg);
+               break;
+		   case 'c':
+                text_color = rgba_color_string(optarg);
+				if (text_color.a < 0.0) {
+					fprintf(stderr, "Error occurred during parsing custom color.\n");
+					return 1;
+				}
+               break;  	
+           case '?':
+               fprintf(stderr, "Usage: %s [-b] [-c color] [-f font (string)] [-i] [-m message (string)] [-s scale (float)] [-t title (string)]\n", argv[0]);
+               exit(EXIT_SUCCESS);
+           }
     }
 
     XSetWindowAttributes attrs;
@@ -138,7 +140,7 @@ int main(int argc, char *argv[]) {
     #endif
     
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
-        printf("No visual found supporting %i bit color, terminating\n", colorDepth);
+        printf("No visuals found supporting %i bit color, terminating\n", colorDepth);
         exit(EXIT_FAILURE);
     }
 
@@ -187,7 +189,8 @@ int main(int argc, char *argv[]) {
         // cairo context
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
-        draw(cairo_ctx[i], title, subtitle, scale, text_color);
+        
+        draw(cairo_ctx[i], title, subtitle, scale, text_color, customfont, boldmode, slantmode);
     }
 
     // wait for X events forever
