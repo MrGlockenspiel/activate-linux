@@ -8,7 +8,7 @@ Source: activate-linux-%{version}.tar.gz
 URL: https://github.com/MrGlockenspiel/activate-linux
 Buildroot: /tmp/activate-linux-git
 BuildRequires: clang cairo-devel libXi-devel libX11-devel
-BuildRequires: xorgproto-devel xcb-proto-devel libXt-devel
+BuildRequires: xorgproto-devel xcb-proto-devel libXt-devel libXinerama-devel
 
 %description
 The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
@@ -21,14 +21,15 @@ Maintained by MrGlockenspiel.
 %setup -q
 
 %build
-make
+export CFLAGS="%optflags"
+%make_build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-install -m 0755 activate_linux %{buildroot}%{_bindir}/activate-linux
-
-%clean
-rm -rf %RPM_BUILD_ROOT
+export PREFIX=""
+export BINDIR="%{_bindir}"
+%make_install
 
 %files
 %{_bindir}/activate-linux
+%license LICENSE.md
+%doc ARGS.md README.md
