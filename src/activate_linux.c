@@ -11,18 +11,10 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
-//struct to hold rgb color
-struct RGBAColor
-{
-    //rgba color values from 0 to 1
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "color.h"
 
 // draw text
-void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColor color) {
+void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color) {
     //set color
     cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
 
@@ -41,32 +33,6 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColo
     cairo_show_text(cr, subtitle);
     
     cairo_font_options_destroy(font_options);
-}
-
-//fill RGBAColor struct values from a string formatted in "r-g-b-a" from 0.0 to 1.0
-void RGBAColor_from_string(struct RGBAColor* color, char* text)
-{
-    //split text into 4 parts along "-". If the input is not valid, use default setting
-   char* red = strtok(text, "-");
-   if (red != NULL)
-   {
-       color->r = atof(red);
-   }
-   char* green = strtok(NULL, "-");
-   if (green != NULL)
-   {
-       color->g = atof(green);
-   }
-   char* blue = strtok(NULL, "-");
-   if (green != NULL)
-   {
-       color->b = atof(blue);
-   }
-   char* alpha = strtok(NULL, "-");
-   if (alpha != NULL)
-   {
-       color->a = atof(alpha);
-   }
 }
 
 int main(int argc, char *argv[]) {
@@ -93,7 +59,7 @@ int main(int argc, char *argv[]) {
     int overlay_height = 120;
     
     //color of text - set default as light grey
-    struct RGBAColor text_color = {.r= 1.0, .g= 1.0, .b= 1.0, .a= 0.35};
+    struct rgba_color_t text_color = rgba_color_default();
 
     // default scale
     float scale = 1.0f;
@@ -154,7 +120,11 @@ int main(int argc, char *argv[]) {
             title = argv[1];
             subtitle = argv[2];
             scale = atof(argv[3]);
-            RGBAColor_from_string(&text_color, argv[4]);
+            text_color = rgba_color_string(argv[4]);
+            if (text_color.a < 0.0) {
+                fprintf(stderr, "Error occurred during parsing custom color.\n");
+                return 1;
+            }
             break;
 
         // if there are more than 3 arguments, print usage
