@@ -1,42 +1,72 @@
-CC ?= clang
-CFLAGS ?= -Og -Wall -Wpedantic -Wextra
-PREFIX ?= /usr/local
-BINDIR ?= bin
-DESTDIR ?=
+CC		= clang
+LD		= clang
+PREFIX		= /usr/local
 
-RM = rm
+COMMON		= -Wall -Wextra -Wpedantic
+COMMON		+= -O2 -g
 
-SOURCES := $(wildcard src/*.c)
-NAME := $(shell uname -s)
-CFLAGS := \
-	$(CFLAGS) \
-	$(shell pkg-config --cflags --libs x11 xfixes xinerama) \
-	$(shell pkg-config --cflags --libs cairo)
+# WORD OF ADVICE:
+# IF ANYTHING IS CAUSING THE LINKER TO SHIT ITSELF,
+# THROW THE BELOW LINE INTO THE ABYSS
+COMMON		+= -flto=full
+
+LIBS		= x11 xfixes xinerama cairo
+CFLAGS		= $(COMMON) $(shell pkg-config --cflags $(LIBS))
+LDFLAGS		= $(COMMON) $(shell pkg-config --libs $(LIBS)) -fuse-ld=lld
+
+BIN_PATH	= bin
+OBJ_PATH	= obj
+SRC_PATH	= src
+
+CLEAN_LIST	= $(BIN_PATH) $(OBJ_PATH)
+
+SRC		= $(shell find $(SRC_PATH) -name "*.c")
+OBJ		= $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
+
+NAME	= $(shell uname -s)
 
 ifeq ($(NAME),Linux)
-	BINARY := activate-linux
+	BINARY_NAME	= activate-linux
 endif
 
 ifeq ($(NAME),Darwin)
-	BINARY := activate-macos
+	BINARY_NAME	= activate-macos
 endif
 
+BINARY	= $(BIN_PATH)/$(BINARY_NAME)
+
+default: makedir all
 
 all: $(BINARY)
 
-$(BINARY): $(SOURCES)
-	$(CC) $(^) -o $(@) $(CFLAGS)
+# Compile
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c Makefile
+	$(CC) $(CFLAGS) -c -o $@ $<
 
+# Link
+$(BINARY): $(OBJ) Makefile
+	$(LD) $(LDFLAGS) -o $@ $(OBJ)
+
+.PHONY: makedir
+makedir:
+	mkdir -p $(BIN_PATH) $(OBJ_PATH)
+
+.PHONY: install
 install: $(BINARY)
 	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
 
+.PHONY: uninstall
 uninstall:
 	$(RM) -f $(DESTDIR)$(PREFIX)$(BINDIR)/$(BINARY)
 
+.PHONY: strip
+strip:
+	strip -R .comment* -R .note* -s $(BINARY)
+
+.PHONY: clean
 clean:
-	$(RM) -f $(BINARY)
+	rm -rf $(CLEAN_LIST)
 
-test: $(BINARY)
+.PHONY: run
+run: $(BINARY)
 	./$(BINARY)
-
-.PHONY: all clean install test
