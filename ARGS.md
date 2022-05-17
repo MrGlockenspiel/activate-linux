@@ -1,8 +1,6 @@
 # Arguments for activate-linux
 
-Activate linux takes command line arguments for custom text and scaling.
-
-There are 5 different options for command line arguments: a custom main message, scale percent, custom main and secondary message, all 3 options, or all 3 options and custom color.
+Activate linux takes command line arguments for all customizable options.
 
 Scaling is used to display the message correctly on screens of different resolutions. 100% is based on 1080p. It also affects the offset from the corner of the screen
 so is not reccomended to be changed unless you are not using a 1080p screen.
@@ -12,31 +10,41 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ### Custom Main Message
 
 ```
-./activate_linux (message)
+./activate_linux -t "Main Message"
+```
+
+### Custom Secondary Message
+
+```
+./activate_linux -m "Secondary Message"
 ```
 
 ### Custom Scaling
 
 ```
-./activate_linux (scale)
+./activate_linux -s 1.5
 ```
 
-note that scale is a percent represented as a floating point number, 1 being 100%, 2 being 200%, and 0.5 being 50%
-
-### Custom Main and secondary message
+### Custom Font
 
 ```
-./activate_linux (main) (secondary)
+./activate_linux -f "Ubuntu"
 ```
 
-### All 3 options
+### Custom Color
 
 ```
-./activate_linux (main) (secondary) (scale)
+./activate_linux -c 0.1-0.1-0.1-0.1
 ```
 
-### All 3 options and custom color
+### Enable Bold Text
 
 ```
-./activate_linux (main) (secondary) (scale) (color)
+./activate_linux -b
+```
+
+### Enable Italics
+
+```
+./activate_linux -i
 ```
