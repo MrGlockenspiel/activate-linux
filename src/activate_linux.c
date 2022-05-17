@@ -25,7 +25,12 @@ struct RGBAColor
 void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColor color) {
     //set color
     cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
-    
+
+    // no subpixel anti-aliasing because we are on transparent BG
+    cairo_font_options_t* font_options = cairo_font_options_create();
+    cairo_font_options_set_antialias(font_options, CAIRO_ANTIALIAS_GRAY);
+    cairo_set_font_options(cr, font_options);
+
     // set font size, and scale up or down
     cairo_set_font_size(cr, 24 * scale);
     cairo_move_to(cr, 20, 30 * scale);
@@ -34,6 +39,8 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColo
     cairo_set_font_size(cr, 16 * scale);
     cairo_move_to(cr, 20, 55 * scale);
     cairo_show_text(cr, subtitle);
+    
+    cairo_font_options_destroy(font_options);
 }
 
 //fill RGBAColor struct values from a string formatted in "r-g-b-a" from 0.0 to 1.0
@@ -98,6 +105,9 @@ int main(int argc, char *argv[]) {
             #ifdef __APPLE__
                 title = "Activate macOS";
                 subtitle = "Go to Settings to activate macOS.";
+            #elif __FreeBSD__
+		title = "Activate BSD";
+		subtitle = "Go to Settings to activate BSD.";
             #else
                 title = "Activate Linux";
                 subtitle = "Go to Settings to activate Linux.";
@@ -112,6 +122,9 @@ int main(int argc, char *argv[]) {
                 #ifdef __APPLE__
                     title = "Activate MacOS";
                     subtitle = "Go to Settings to activate MacOS";
+                #elif __FreeBSD__
+		    title = "Activate BSD";
+		    subtitle = "Go to Settings to activate BSD.";
                 #else
                     title = "Activate Linux";
                     subtitle = "Go to Settings to activate Linux.";

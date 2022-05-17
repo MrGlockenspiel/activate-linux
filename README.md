@@ -5,10 +5,19 @@ The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
 
 > Read [ARGS.md](ARGS.md) for information about command line arguments.
 
-# Linux
+## Building
+
+```
+make
+```
+
+> Note that the executable's name depends on the target platform
 
 
-## Dependencies
+## Linux
+
+### Dependencies
+
 This project depends on:
 - `libcairo2-dev`
 - `libxi-dev`
@@ -19,45 +28,33 @@ This project depends on:
 - `libxfixes-dev`
 - `libxinerama-dev`
 
-## Building
-```
-make
-./bin/activate-linux
-```
+### Installing
 
-> Note that the executable is located in `bin/`
-
-## Installing
-
-### Arch Linux
+#### Arch Linux
 This project is in the AUR under [activate-linux-git](https://aur.archlinux.org/packages/activate-linux-git).
 
 Install/uninstall it using your favorite AUR helper.
 
-### OpenSUSE (Open Build Service)
+#### OpenSUSE (Open Build Service)
 This project is in the OBS under [activate-linux](https://software.opensuse.org//download.html?project=home%3AWoMspace&package=activate-linux).
 
-### Other
-You can use `make install` to install to /usr/bin, and `make uninstall` to remove it
+#### Other
 
-# MacOS (Horrific)
-## Dependencies
+You can use `make install` to install and `make uninstall` to remove it.
+
+## MacOS (Horrific)
+
+### Dependencies
+
 Use MacPorts to install the following, then build normally.
+
 - `xorg-server`
 - `cairo`
 - `xorg-libXinerama`
 
-## Building
-```
-make
-./bin/activate-macos
-```
-
-> Note that the executable is located in `bin/`
-
-## Wayland
+### Wayland
 This works out of the box through XWayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
 
-# Example:
+## Example:
 
 ![screenshot](screenshot.png)

@@ -25,7 +25,7 @@ make
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -m 0755 bin/activate_linux %{buildroot}%{_bindir}/activate-linux
+install -m 0755 activate_linux %{buildroot}%{_bindir}/activate-linux
 
 %clean
 rm -rf %RPM_BUILD_ROOT
