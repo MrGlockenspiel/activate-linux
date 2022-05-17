@@ -1,6 +1,6 @@
 CC ?= clang
 CFLAGS ?= -Og -Wall -Wpedantic -Wextra
-PREFIX ?= /usr/local/
+PREFIX ?= /usr/local
 BINDIR ?= bin
 DESTDIR ?=
 
@@ -28,14 +28,14 @@ $(BINARY): $(SOURCES)
 	$(CC) $(^) -o $(@) $(CFLAGS)
 
 install: $(BINARY)
-	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)$(BINDIR)/$(BINARY)
+	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
 
 uninstall:
 	$(RM) -f $(DESTDIR)$(PREFIX)$(BINDIR)/$(BINARY)
 
 clean:
 	$(RM) -f $(BINARY)
-	
+
 test: $(BINARY)
 	./$(BINARY)
 
