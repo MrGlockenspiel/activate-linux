@@ -30,6 +30,14 @@ This project depends on:
 
 ### Installing
 
+#### Ubuntu
+@eddelbuettel runs a PPA with activate linux in it, so it can be installed with
+```
+sudo add-apt-repository ppa:edd/misc
+sudo apt update
+sudo apt install activate-linux
+```
+
 #### Arch Linux
 This project is in the AUR under [activate-linux-git](https://aur.archlinux.org/packages/activate-linux-git).
 

@@ -15,7 +15,7 @@
 
 // draw text
 void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color) {
-    //set color
+    // set color
     cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
 
     // no subpixel anti-aliasing because we are on transparent BG
@@ -52,13 +52,24 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    //title and subtitle text
+    // title and subtitle text
     char *title, *subtitle;
+
+    #ifdef __APPLE__
+        title = "Activate macOS";
+        subtitle = "Go to Settings to activate macOS.";
+    #elif __FreeBSD__
+		title = "Activate BSD";
+		subtitle = "Go to Settings to activate BSD.";
+    #else
+        title = "Activate Linux";
+        subtitle = "Go to Settings to activate Linux.";
+    #endif
 
     int overlay_width = 340;
     int overlay_height = 120;
     
-    //color of text - set default as light grey
+    // color of text - set default as light grey
     struct rgba_color_t text_color = rgba_color_default();
 
     // default scale
@@ -68,16 +79,7 @@ int main(int argc, char *argv[]) {
     switch (argc) {
         // if there are no arguments (1 is for program name)
         case (1):
-            #ifdef __APPLE__
-                title = "Activate macOS";
-                subtitle = "Go to Settings to activate macOS.";
-            #elif __FreeBSD__
-		title = "Activate BSD";
-		subtitle = "Go to Settings to activate BSD.";
-            #else
-                title = "Activate Linux";
-                subtitle = "Go to Settings to activate Linux.";
-            #endif
+            // nothing to do
             break;
 
         // 1 argument
@@ -85,16 +87,6 @@ int main(int argc, char *argv[]) {
             // if argument is a number, use as scale
             if(atof(argv[1]) != 0) {
                 scale = atof(argv[1]);
-                #ifdef __APPLE__
-                    title = "Activate MacOS";
-                    subtitle = "Go to Settings to activate MacOS";
-                #elif __FreeBSD__
-		    title = "Activate BSD";
-		    subtitle = "Go to Settings to activate BSD.";
-                #else
-                    title = "Activate Linux";
-                    subtitle = "Go to Settings to activate Linux.";
-                #endif
             }
             else {
                 title = argv[1];
@@ -115,7 +107,7 @@ int main(int argc, char *argv[]) {
             scale = atof(argv[3]);
             break;
 
-        //4 arguments
+        // 4 arguments
         case (5):
             title = argv[1];
             subtitle = argv[2];
@@ -146,7 +138,7 @@ int main(int argc, char *argv[]) {
     #endif
     
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
-        printf("No visual found supporting 32 bit color, terminating\n");
+        printf("No visual found supporting %i bit color, terminating\n", colorDepth);
         exit(EXIT_FAILURE);
     }
 
