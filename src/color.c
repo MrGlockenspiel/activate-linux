@@ -30,7 +30,7 @@ struct rgba_color_t rgba_color_string(char *src)
     // Due to the way that the parsing is done, it automatically takes care of
     // the edge case of a negative value.
 
-    struct rgba_color_t color;
+    struct rgba_color_t color = rgba_color_default();
 
     float r, g, b, a;
 
@@ -51,7 +51,7 @@ struct rgba_color_t rgba_color_string(char *src)
         }
 
         if (token == NULL) {
-            goto err;
+            return rgba_color_new(0, 0, 0, -1.0);
         }
 
         float f = atof(token);
@@ -62,12 +62,5 @@ struct rgba_color_t rgba_color_string(char *src)
         *ptrs[i] = f;
     }
 
-    color = rgba_color_new(r, g, b, a);
-
-    goto ret;
-err:
-    // Use the alpha value as an error code.
-    color = rgba_color_new(0, 0, 0, -1.0);
-ret:
     return color;
 }
