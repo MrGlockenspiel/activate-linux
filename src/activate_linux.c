@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
     #endif
     
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
-        printf("No visual found supporting 32 bit color, terminating\n");
+        printf("No visual found supporting %d bit color, terminating\n", colorDepth);
         exit(EXIT_FAILURE);
     }
 
