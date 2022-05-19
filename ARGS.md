@@ -48,3 +48,13 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ```
 ./activate_linux -i
 ```
+
+### Run as daemon
+```
+./activate-linux -d
+```
+
+### Skip compositor (only works for compliant compositors)
+```
+./activate-linux -w
+```
