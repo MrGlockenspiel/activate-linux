@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
+#include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 #include <X11/extensions/Xfixes.h>
 #include <X11/extensions/Xinerama.h>
@@ -11,19 +13,11 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
-//struct to hold rgb color
-struct RGBAColor
-{
-    //rgba color values from 0 to 1
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "color.h"
 
 // draw text
-void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColor color) {
-    //set color
+void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color, char* customfont, int boldmode, int slantmode) {
+    // set color
     cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
 
     // no subpixel anti-aliasing because we are on transparent BG
@@ -33,6 +27,20 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColo
 
     // set font size, and scale up or down
     cairo_set_font_size(cr, 24 * scale);
+    
+    // font weight and slant settings 
+    cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+    if (boldmode == 1) {
+        font_weight = CAIRO_FONT_WEIGHT_BOLD;
+    }
+
+    cairo_font_slant_t font_slant = CAIRO_FONT_SLANT_NORMAL;
+    if (slantmode == 1) {
+        font_slant = CAIRO_FONT_SLANT_ITALIC;
+    }
+	
+    cairo_select_font_face(cr, customfont, font_slant, font_weight);
+
     cairo_move_to(cr, 20, 30 * scale);
     cairo_show_text(cr, title);
     
@@ -43,39 +51,13 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct RGBAColo
     cairo_font_options_destroy(font_options);
 }
 
-//fill RGBAColor struct values from a string formatted in "r-g-b-a" from 0.0 to 1.0
-void RGBAColor_from_string(struct RGBAColor* color, char* text)
-{
-    //split text into 4 parts along "-". If the input is not valid, use default setting
-   char* red = strtok(text, "-");
-   if (red != NULL)
-   {
-       color->r = atof(red);
-   }
-   char* green = strtok(NULL, "-");
-   if (green != NULL)
-   {
-       color->g = atof(green);
-   }
-   char* blue = strtok(NULL, "-");
-   if (green != NULL)
-   {
-       color->b = atof(blue);
-   }
-   char* alpha = strtok(NULL, "-");
-   if (alpha != NULL)
-   {
-       color->a = atof(alpha);
-   }
-}
-
 int main(int argc, char *argv[]) {
     Display *d = XOpenDisplay(NULL);
     Window root = DefaultRootWindow(d);
     int default_screen = XDefaultScreen(d);
 
     int num_entries = 0;
-
+	
     // get all screens in use
     XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
 
@@ -86,81 +68,109 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    //title and subtitle text
+    // title, subtitle text;
     char *title, *subtitle;
+    char *customfont = "";
+    #ifdef __APPLE__
+        title = "Activate macOS";
+        subtitle = "Go to Settings to activate macOS.";
+    #elif __FreeBSD__
+        title = "Activate BSD";
+        subtitle = "Go to Settings to activate BSD.";
+    #else
+        title = "Activate Linux";
+        subtitle = "Go to Settings to activate Linux.";
+    #endif
 
     int overlay_width = 340;
     int overlay_height = 120;
-    
-    //color of text - set default as light grey
-    struct RGBAColor text_color = {.r= 1.0, .g= 1.0, .b= 1.0, .a= 0.35};
+	
+    int boldmode = 0, slantmode = 0;
+	
+    // color of text - set default as light grey
+    struct rgba_color_t text_color = rgba_color_default();
 
     // default scale
     float scale = 1.0f;
 
-    // switch on arguments
-    switch (argc) {
-        // if there are no arguments (1 is for program name)
-        case (1):
-            #ifdef __APPLE__
-                title = "Activate macOS";
-                subtitle = "Go to Settings to activate macOS.";
-            #elif __FreeBSD__
-		title = "Activate BSD";
-		subtitle = "Go to Settings to activate BSD.";
-            #else
-                title = "Activate Linux";
-                subtitle = "Go to Settings to activate Linux.";
-            #endif
-            break;
+    // bypass compositor hint
+    unsigned char bypass_compositor = 0;
 
-        // 1 argument
-        case (2):
-            // if argument is a number, use as scale
-            if(atof(argv[1]) != 0) {
-                scale = atof(argv[1]);
-                #ifdef __APPLE__
-                    title = "Activate MacOS";
-                    subtitle = "Go to Settings to activate MacOS";
-                #elif __FreeBSD__
-		    title = "Activate BSD";
-		    subtitle = "Go to Settings to activate BSD.";
-                #else
-                    title = "Activate Linux";
-                    subtitle = "Go to Settings to activate Linux.";
-                #endif
-            }
-            else {
-                title = argv[1];
-                subtitle = "";
-            }
-            break;
+    // don't fork to background (default)
+    int daemonize = 0;
 
-        // 2 arguments
-        case (3):
-            title = argv[1];
-            subtitle = argv[2];
-            break;
+    int opt;
+    while ((opt = getopt(argc, argv, "h?bwdit:m:s:f:c:")) != -1) {
+        switch (opt) {
+            case 'b':
+                boldmode = 1;
+                break;
+            case 'w':
+                bypass_compositor = 1;
+                break;
+            case 'd':
+                daemonize = 1;
+                break;
+            case 'i':
+                slantmode = 1;
+                break;
+            case 't':
+                title = optarg;
+                break;
+            case 'm':
+                subtitle = optarg;
+                break;
+            case 'f':
+                customfont = optarg;
+                break;
+            case 's':
+                scale = atof(optarg);
+                if(scale < 0.0f) {
+                    fprintf(stderr, "Error occurred during parsing custom scale.\n");
+                    return 1;
+                }
+                break;
+            case 'c':
+                text_color = rgba_color_string(optarg);
+                if (text_color.a < 0.0) {
+                    fprintf(stderr, "Error occurred during parsing custom color.\n");
+                    return 1;
+                }
+                break;  	
+            case '?':
+            case 'h':
+                #define HELP(X) fprintf(stderr, "  " X "\n")
+                #define STYLE(x) "\033[" # x "m"
+                #define COLOR(x, y) "\033[" # x ";" # y "m"
+                fprintf(stderr, "Usage: %s [-b] [-i] [-c color] [-f font] [-m message] [-s scale] [-t title]\n", argv[0]);
+                HELP("-b\t\tShow " STYLE(1) "bold" STYLE(0) " text");
+                HELP("-w\t\tSet EWMH bypass_compositor hint");
+                HELP("-d\t\tFork to background on startup");
+                HELP("-i\t\tShow " STYLE(3) "italic/slanted" STYLE(0) " text");
+                HELP("-c color\tSpecify color in " COLOR(1, 31) "r" STYLE(0)
+                    "-" COLOR(1, 32) "g" STYLE(0) "-" COLOR(1,34) "b" STYLE(0)
+                    "-" COLOR(1, 33) "a" STYLE(0)  " notation");
+                HELP("\t\twhere " COLOR(1, 31) "r" STYLE(0) "/" COLOR(1,32)
+                    "g" STYLE(0)  "/" COLOR(1, 34) "b" STYLE(0) "/" COLOR(1, 33)
+                    "a" STYLE(0) " is between " COLOR(1, 32) "0.0" STYLE(0)
+                    "-" COLOR(1, 34) "1.0" STYLE(0));
+                HELP("-f font\tSet the text font (string)");
+                HELP("-t title\tSet title text (string)");
+                HELP("-m message\tSet message text (string)");
+                HELP("-s scale\tScale ratio (float)");
+                #undef HELP
+                #undef STYLE
+                #undef COLOR
+                exit(EXIT_SUCCESS);
+        }
+    }
 
-        // 3 arguments
-        case (4):
-            title = argv[1];
-            subtitle = argv[2];
-            scale = atof(argv[3]);
-            break;
-
-        //4 arguments
-        case (5):
-            title = argv[1];
-            subtitle = argv[2];
-            scale = atof(argv[3]);
-            RGBAColor_from_string(&text_color, argv[4]);
-            break;
-
-        // if there are more than 3 arguments, print usage
-        default:
-            printf("More than needed arguments have been passed. This program only supports at most 4 arguments.\n");
-            return 1;
+    // Fork to background
+    if (daemonize == 1) {
+        int pid = -1;
+        pid = fork();
+        if (pid > 0) exit(EXIT_SUCCESS);
+        else if(pid == 0) setsid();
     }
 
     XSetWindowAttributes attrs;
@@ -176,7 +186,7 @@ int main(int argc, char *argv[]) {
     #endif
     
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
-        printf("No visual found supporting 32 bit color, terminating\n");
+        printf("No visuals found supporting %i bit color, terminating \n", colorDepth);
         exit(EXIT_FAILURE);
     }
 
@@ -222,18 +232,27 @@ int main(int argc, char *argv[]) {
         xch->res_class = "activate-linux";
         XSetClassHint(d, overlay[i], xch);
 
+        // Set _NET_WM_BYPASS_COMPOSITOR
+        if(bypass_compositor == 1) {
+            XChangeProperty(
+                d, overlay[i],
+                XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
+                XA_CARDINAL, 32, PropModeReplace, &bypass_compositor, 1
+            );
+        }
+
         // cairo context
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
-        draw(cairo_ctx[i], title, subtitle, scale, text_color);
+        
+        draw(cairo_ctx[i], title, subtitle, scale, text_color, customfont, boldmode, slantmode);
     }
 
     // wait for X events forever
     XEvent event;
     while(1) {
         XNextEvent(d, &event);
-    }  
-
+    }
     // free used resources
     for (int i = 0; i < num_entries; i++) {
         XUnmapWindow(d, overlay[i]);

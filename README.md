@@ -1,4 +1,6 @@
 # activate-linux
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
 
 "Science isn't about WHY. It's about WHY NOT. Why is so much of our science dangerous? Why not marry safe science if you love it so much. In fact, why not invent a special safety door that won't hit you on the butt on the way out, because you are fired." — Cave Johnson (Portal 2)
@@ -30,6 +32,14 @@ This project depends on:
 
 ### Installing
 
+#### Ubuntu
+@eddelbuettel runs a PPA with activate linux in it, so it can be installed with
+```
+sudo add-apt-repository ppa:edd/misc
+sudo apt update
+sudo apt install activate-linux
+```
+
 #### Arch Linux
 This project is in the AUR under [activate-linux-git](https://aur.archlinux.org/packages/activate-linux-git).
 
@@ -37,6 +47,9 @@ Install/uninstall it using your favorite AUR helper.
 
 #### OpenSUSE (Open Build Service)
 This project is in the OBS under [activate-linux](https://software.opensuse.org//download.html?project=home%3AWoMspace&package=activate-linux).
+
+### Nix (NixOS)
+This repository is a flake. Run it using `nix run "github:MrGlockenspiel/activate-linux"`.
 
 #### Other
 
