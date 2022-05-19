@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct rgba_color_t rgba_color_new(float r, float g, float b, float a)
-{
+struct rgba_color_t rgba_color_new(float r, float g, float b, float a) {
     struct rgba_color_t color = {
         .r = r,
         .g = g,
@@ -16,15 +15,13 @@ struct rgba_color_t rgba_color_new(float r, float g, float b, float a)
     return color;
 }
 
-struct rgba_color_t rgba_color_default()
-{
+struct rgba_color_t rgba_color_default() {
     const struct rgba_color_t color = rgba_color_new(1.0, 1.0, 1.0, 0.35);
 
     return color;
 }
 
-struct rgba_color_t rgba_color_string(char *src)
-{
+struct rgba_color_t rgba_color_string(char *src) {
     // Implementation note:
     //
     // Due to the way that the parsing is done, it automatically takes care of

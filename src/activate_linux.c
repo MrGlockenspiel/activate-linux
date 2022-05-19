@@ -5,6 +5,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
+#include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 #include <X11/extensions/Xfixes.h>
 #include <X11/extensions/Xinerama.h>
@@ -32,6 +33,7 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     if (boldmode == 1) {
         font_weight = CAIRO_FONT_WEIGHT_BOLD;
     }
+    
     cairo_font_slant_t font_slant = CAIRO_FONT_SLANT_NORMAL;
     if (slantmode == 1) {
         font_slant = CAIRO_FONT_SLANT_ITALIC;
@@ -91,42 +93,84 @@ int main(int argc, char *argv[]) {
     // default scale
     float scale = 1.0f;
 
+    // bypass compositor hint
+    unsigned char bypass_compositor = 0;
+
+    // don't fork to background (default)
+    int daemonize = 0;
+
     int opt;
-    while ((opt = getopt(argc, argv, "?bit:m:s:f:c:")) != -1) {
-           switch (opt) {
-           case 'b':
-               boldmode = 1;
-               break;
-           case 'i':
-               slantmode = 1;
-               break;
-		   case 't':
-               title = optarg;
-               break;
-		   case 'm':
-               subtitle = optarg;
-               break;
-		   case 'f':
-               customfont = optarg;
-               break;
-		   case 's':
-               scale = atof(optarg);
-               if(scale < 0.0f) {
+    while ((opt = getopt(argc, argv, "h?bwdit:m:s:f:c:")) != -1) {
+        switch (opt) {
+            case 'b':
+                boldmode = 1;
+                break;
+            case 'w':
+                bypass_compositor = 1;
+                break;
+            case 'd':
+                daemonize = 1;
+                break;
+            case 'i':
+                slantmode = 1;
+                break;
+            case 't':
+                title = optarg;
+                break;
+            case 'm':
+                subtitle = optarg;
+                break;
+            case 'f':
+                customfont = optarg;
+                break;
+            case 's':
+                scale = atof(optarg);
+                if(scale < 0.0f) {
                     fprintf(stderr, "Error occurred during parsing custom scale.\n");
                     return 1;
-               }
-               break;
-		   case 'c':
+                }
+                break;
+            case 'c':
                 text_color = rgba_color_string(optarg);
-				if (text_color.a < 0.0) {
-					fprintf(stderr, "Error occurred during parsing custom color.\n");
-					return 1;
-				}
-               break;  	
-           case '?':
-               fprintf(stderr, "Usage: %s [-b] [-c color] [-f font (string)] [-i] [-m message (string)] [-s scale (float)] [-t title (string)]\n", argv[0]);
-               exit(EXIT_SUCCESS);
-           }
+                if (text_color.a < 0.0) {
+                    fprintf(stderr, "Error occurred during parsing custom color.\n");
+                    return 1;
+                }
+                break;  	
+            case '?':
+            case 'h':
+                #define HELP(X) fprintf(stderr, "  " X "\n")
+                #define STYLE(x) "\033[" # x "m"
+                #define COLOR(x, y) "\033[" # x ";" # y "m"
+                fprintf(stderr, "Usage: %s [-b] [-i] [-c color] [-f font] [-m message] [-s scale] [-t title]\n", argv[0]);
+                HELP("-b\t\tShow " STYLE(1) "bold" STYLE(0) " text");
+                HELP("-w\t\tSet EWMH bypass_compositor hint");
+                HELP("-d\t\tFork to background on startup");
+                HELP("-i\t\tShow " STYLE(3) "italic/slanted" STYLE(0) " text");
+                HELP("-c color\tSpecify color in " COLOR(1, 31) "r" STYLE(0)
+                    "-" COLOR(1, 32) "g" STYLE(0) "-" COLOR(1,34) "b" STYLE(0)
+                    "-" COLOR(1, 33) "a" STYLE(0)  " notation");
+                HELP("\t\twhere " COLOR(1, 31) "r" STYLE(0) "/" COLOR(1,32)
+                    "g" STYLE(0)  "/" COLOR(1, 34) "b" STYLE(0) "/" COLOR(1, 33)
+                    "a" STYLE(0) " is between " COLOR(1, 32) "0.0" STYLE(0)
+                    "-" COLOR(1, 34) "1.0" STYLE(0));
+                HELP("-f font\tSet the text font (string)");
+                HELP("-t title\tSet title text (string)");
+                HELP("-m message\tSet message text (string)");
+                HELP("-s scale\tScale ratio (float)");
+                #undef HELP
+                #undef STYLE
+                #undef COLOR
+                exit(EXIT_SUCCESS);
+        }
+    }
+
+    // Fork to background
+    if (daemonize == 1) {
+        int pid = -1;
+        pid = fork();
+        if (pid > 0) exit(EXIT_SUCCESS);
+        else if(pid == 0) setsid();
     }
 
     XSetWindowAttributes attrs;
@@ -142,7 +186,7 @@ int main(int argc, char *argv[]) {
     #endif
     
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
-        printf("No visuals found supporting %i bit color, terminating\n", colorDepth);
+        printf("No visuals found supporting %i bit color, terminating \n", colorDepth);
         exit(EXIT_FAILURE);
     }
 
@@ -187,6 +231,12 @@ int main(int argc, char *argv[]) {
         xch->res_name = "activate-linux";
         xch->res_class = "activate-linux";
         XSetClassHint(d, overlay[i], xch);
+
+        // Set _NET_WM_BYPASS_COMPOSITOR
+        if(bypass_compositor == 1)
+        XChangeProperty(d, overlay[i],
+            XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
+            XA_CARDINAL, 32, PropModeReplace, &bypass_compositor, 1);
 
         // cairo context
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);

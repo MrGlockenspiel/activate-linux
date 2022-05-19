@@ -9,8 +9,7 @@
  * All values range from 0 to 1, unless an error occured, in which case the
  * error code will be stored in the alpha field as a negative number.
  */
-struct rgba_color_t
-{
+struct rgba_color_t {
     float r, g, b, a;
 };
 
