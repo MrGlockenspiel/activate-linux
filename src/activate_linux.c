@@ -30,14 +30,12 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     // font weight and slant settings 
     cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
     if (boldmode == 1) {
-	font_weight = CAIRO_FONT_WEIGHT_BOLD;
+        font_weight = CAIRO_FONT_WEIGHT_BOLD;
     }
-	
     cairo_font_slant_t font_slant = CAIRO_FONT_SLANT_NORMAL;
     if (slantmode == 1) {
-	font_slant = CAIRO_FONT_SLANT_ITALIC;
+        font_slant = CAIRO_FONT_SLANT_ITALIC;
     }
-
 	
     cairo_select_font_face(cr, customfont, font_slant, font_weight);
 
@@ -113,6 +111,10 @@ int main(int argc, char *argv[]) {
                break;
 		   case 's':
                scale = atof(optarg);
+               if(scale < 0.0f) {
+                    fprintf(stderr, "Error occurred during parsing custom scale.\n");
+                    return 1;
+               }
                break;
 		   case 'c':
                 text_color = rgba_color_string(optarg);
@@ -197,8 +199,7 @@ int main(int argc, char *argv[]) {
     XEvent event;
     while(1) {
         XNextEvent(d, &event);
-    }  
-
+    }
     // free used resources
     for (int i = 0; i < num_entries; i++) {
         XUnmapWindow(d, overlay[i]);
