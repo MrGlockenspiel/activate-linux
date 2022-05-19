@@ -45,9 +45,6 @@ This project is in the AUR under [activate-linux-git](https://aur.archlinux.org/
 
 Install/uninstall it using your favorite AUR helper.
 
-#### OpenSUSE (Open Build Service)
-This project is in the OBS under [activate-linux](https://software.opensuse.org//download.html?project=home%3AWoMspace&package=activate-linux).
-
 ### Nix (NixOS)
 This repository is a flake. Run it using `nix run "github:MrGlockenspiel/activate-linux"`.
 
