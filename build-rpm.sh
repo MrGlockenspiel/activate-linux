@@ -12,10 +12,12 @@ mkdir -p "$rpm_dir/SOURCES"
 
 # Build tarfile
 tar_out="/tmp/activate-linux-git.tar.gz"
+cur_dir=$(pwd)
 mkdir -p /tmp/tarbuild/
-cp -r ./* /tmp/tarbuild/activate-linux-git
-cd /tmp/tarbuild
+cp -r . /tmp/tarbuild/activate-linux-git
+cd /tmp/tarbuild || exit
 tar -czf $tar_out .
+cd "$cur_dir" || exit
 
 # Build RPM
 cp $tar_out "$rpm_dir/SOURCES/"
