@@ -31,7 +31,7 @@ install: $(BINARY)
 	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
 
 uninstall:
-	$(RM) -f $(DESTDIR)$(PREFIX)$(BINDIR)/$(BINARY)
+	$(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
 
 clean:
 	$(RM) -f $(BINARY)
