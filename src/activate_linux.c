@@ -33,7 +33,7 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     if (boldmode == 1) {
         font_weight = CAIRO_FONT_WEIGHT_BOLD;
     }
-    
+
     cairo_font_slant_t font_slant = CAIRO_FONT_SLANT_NORMAL;
     if (slantmode == 1) {
         font_slant = CAIRO_FONT_SLANT_ITALIC;
@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
         title = "Activate macOS";
         subtitle = "Go to Settings to activate macOS.";
     #elif __FreeBSD__
-		title = "Activate BSD";
-		subtitle = "Go to Settings to activate BSD.";
+        title = "Activate BSD";
+        subtitle = "Go to Settings to activate BSD.";
     #else
         title = "Activate Linux";
         subtitle = "Go to Settings to activate Linux.";
@@ -233,10 +233,13 @@ int main(int argc, char *argv[]) {
         XSetClassHint(d, overlay[i], xch);
 
         // Set _NET_WM_BYPASS_COMPOSITOR
-        if(bypass_compositor == 1)
-        XChangeProperty(d, overlay[i],
-            XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
-            XA_CARDINAL, 32, PropModeReplace, &bypass_compositor, 1);
+        if(bypass_compositor == 1) {
+            XChangeProperty(
+                d, overlay[i],
+                XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
+                XA_CARDINAL, 32, PropModeReplace, &bypass_compositor, 1
+            );
+        }
 
         // cairo context
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
