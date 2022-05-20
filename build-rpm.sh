@@ -5,7 +5,7 @@
 ###
 
 # Create rpmbuild structure
-rpm_dir="/$HOME/rpmbuild"
+rpm_dir="$HOME/rpmbuild"
 mkdir -p "$rpm_dir/RPMS"
 mkdir -p "$rpm_dir/SPECS"
 mkdir -p "$rpm_dir/SOURCES"
@@ -22,7 +22,7 @@ cd "$cur_dir" || exit
 # Build RPM
 cp $tar_out "$rpm_dir/SOURCES/"
 cp activate-linux-rpm.spec "$rpm_dir/SPECS/"
-rpmbuild -bb "$rpm_dir/SPECS/activate-linux.spec" --nodebuginfo
+rpmbuild -bb "$rpm_dir/SPECS/activate-linux-rpm.spec" --nodebuginfo
 
 # Clean
 rm -rf /tmp/tarbuild
