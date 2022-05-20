@@ -29,13 +29,11 @@ struct rgba_color_t rgba_color_string(char *src) {
 
     struct rgba_color_t color = rgba_color_default();
 
-    float r, g, b, a;
-
     float *ptrs[4] = {
-        &r,
-        &g,
-        &b,
-        &a,
+        &color.r,
+        &color.g,
+        &color.b,
+        &color.a,
     };
 
     char *token;
