@@ -45,7 +45,7 @@ This project is in the AUR under [activate-linux-git](https://aur.archlinux.org/
 
 Install/uninstall it using your favorite AUR helper.
 
-### Nix (NixOS)
+#### Nix (NixOS)
 This repository is a flake. Run it using `nix run "github:MrGlockenspiel/activate-linux"`.
 
 #### Other
@@ -61,6 +61,8 @@ Use MacPorts to install the following, then build normally.
 - `xorg-server`
 - `cairo`
 - `xorg-libXinerama`
+
+Alternatively, you can use [this](https://github.com/Lakr233/ActivateMac) project instead because it actually works properly 
 
 ### Wayland
 This works out of the box through XWayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
