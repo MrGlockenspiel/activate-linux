@@ -14,6 +14,7 @@
 #include <cairo-xlib.h>
 
 #include "color.h"
+#include "i18n.h"
 
 // draw text
 void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color, char* customfont, int boldmode, int slantmode) {
@@ -69,18 +70,18 @@ int main(int argc, char *argv[]) {
     }
 
     // title, subtitle text;
-    char *title, *subtitle;
-    char *customfont = "";
+    char *system_name;
     #ifdef __APPLE__
-        title = "Activate macOS";
-        subtitle = "Go to Settings to activate macOS.";
+        system_name = "macOS";
     #elif __FreeBSD__
-        title = "Activate BSD";
-        subtitle = "Go to Settings to activate BSD.";
+        system_name = "BSD";
     #else
-        title = "Activate Linux";
-        subtitle = "Go to Settings to activate Linux.";
+        system_name = "Linux";
     #endif
+    i18n_info i18n = i18n_get_info(system_name);
+    char *title = i18n.title,
+         *subtitle = i18n.subtitle;
+    char *customfont = "";
 
     int overlay_width = 340;
     int overlay_height = 120;
