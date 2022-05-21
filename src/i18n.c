@@ -1,7 +1,6 @@
 #include "i18n.h"
 #include <string.h>
 #include <stdlib.h>
-#include <locale.h>    
 
 #define i18n_map_size 3
 char *i18n_map[i18n_map_size][4] = {
