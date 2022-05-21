@@ -27,8 +27,8 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
 
     // set font size, and scale up or down
     cairo_set_font_size(cr, 24 * scale);
-    
-    // font weight and slant settings 
+
+    // font weight and slant settings
     cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
     if (boldmode == 1) {
         font_weight = CAIRO_FONT_WEIGHT_BOLD;
@@ -38,16 +38,16 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     if (slantmode == 1) {
         font_slant = CAIRO_FONT_SLANT_ITALIC;
     }
-	
+
     cairo_select_font_face(cr, customfont, font_slant, font_weight);
 
     cairo_move_to(cr, 20, 30 * scale);
     cairo_show_text(cr, title);
-    
+
     cairo_set_font_size(cr, 16 * scale);
     cairo_move_to(cr, 20, 55 * scale);
     cairo_show_text(cr, subtitle);
-    
+
     cairo_font_options_destroy(font_options);
 }
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     int default_screen = XDefaultScreen(d);
 
     int num_entries = 0;
-	
+
     // get all screens in use
     XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
 
@@ -84,9 +84,9 @@ int main(int argc, char *argv[]) {
 
     int overlay_width = 340;
     int overlay_height = 120;
-	
+
     int boldmode = 0, slantmode = 0;
-	
+
     // color of text - set default as light grey
     struct rgba_color_t text_color = rgba_color_default();
 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
                     fprintf(stderr, "Error occurred during parsing custom color.\n");
                     return 1;
                 }
-                break;  	
+                break;
             case '?':
             case 'h':
                 #define HELP(X) fprintf(stderr, "  " X "\n")
@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
     #else
         int colorDepth = 32;
     #endif
-    
+
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
         printf("No visuals found supporting %i bit color, terminating \n", colorDepth);
         exit(EXIT_FAILURE);
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
 
     overlay_height *= scale;
     overlay_width *= scale;
-    
+
     // create overlay on each screen
     for (int i = 0; i < num_entries; i++) {
         overlay[i] = XCreateWindow(
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
         // cairo context
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
-        
+
         draw(cairo_ctx[i], title, subtitle, scale, text_color, customfont, boldmode, slantmode);
     }
 

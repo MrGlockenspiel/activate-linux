@@ -27,7 +27,7 @@ jobs:
           mkdir activate-linux
           cp -r src/ Makefile *.md activate-linux/
           tar -cf activate-linux-git.tar.gz activate-linux/
-      
+
       - uses: actions-go/push@master
         with:
             force: true

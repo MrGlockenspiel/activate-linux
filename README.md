@@ -62,7 +62,7 @@ Use MacPorts to install the following, then build normally.
 - `cairo`
 - `xorg-libXinerama`
 
-Alternatively, you can use [this](https://github.com/Lakr233/ActivateMac) project instead because it actually works properly 
+Alternatively, you can use [this](https://github.com/Lakr233/ActivateMac) project instead because it actually works properly
 
 ### Wayland
 This works out of the box through XWayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
