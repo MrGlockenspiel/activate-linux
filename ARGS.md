@@ -10,43 +10,43 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ### Custom Main Message
 
 ```
-./activate_linux -t "Main Message"
+./activate-linux -t "Main Message"
 ```
 
 ### Custom Secondary Message
 
 ```
-./activate_linux -m "Secondary Message"
+./activate-linux -m "Secondary Message"
 ```
 
 ### Custom Scaling
 
 ```
-./activate_linux -s 1.5
+./activate-linux -s 1.5
 ```
 
 ### Custom Font
 
 ```
-./activate_linux -f "Ubuntu"
+./activate-linux -f "Ubuntu"
 ```
 
 ### Custom Color
 
 ```
-./activate_linux -c 0.1-0.1-0.1-0.1
+./activate-linux -c 0.1-0.1-0.1-0.1
 ```
 
 ### Enable Bold Text
 
 ```
-./activate_linux -b
+./activate-linux -b
 ```
 
 ### Enable Italics
 
 ```
-./activate_linux -i
+./activate-linux -i
 ```
 
 ### Run as daemon
