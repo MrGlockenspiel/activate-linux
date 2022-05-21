@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <locale.h>    
 
-#define i18n_map_size 1
+#define i18n_map_size 3
 char *i18n_map[i18n_map_size][4] = {
     {"zh_CN", "激活 ", "转到“设置”以激活 ", "。"},
+    {"zh_TW", "啟用 ", "移至[設定]以啟用 ", "。"},
+    {"zh_HK", "啟用 ", "移至[設定]以啟用 ", "。"},
 };
 char *another_strcat(size_t len, char *strings[]){
     unsigned long t = 0;
