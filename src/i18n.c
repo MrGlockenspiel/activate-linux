@@ -2,11 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define i18n_map_size 3
+#define i18n_map_size 4
 char *i18n_map[i18n_map_size][4] = {
     {"zh_CN", "激活 ", "转到“设置”以激活 ", "。"},
     {"zh_TW", "啟用 ", "移至[設定]以啟用 ", "。"},
     {"zh_HK", "啟用 ", "移至[設定]以啟用 ", "。"},
+    {"ja_JP", " をアクティブ化", "「システム環境設定」 ", "をアクティブ化に行ってください。"},
 };
 char *another_strcat(size_t len, char *strings[]){
     unsigned long t = 0;
@@ -32,6 +33,10 @@ i18n_info i18n_get_info(char *system_name){
         }
     }
     char *argv_title[] = {title, system_name};
+    if (!strncmp(lang, "ja_JP", 5)) {
+        argv_title[0] = system_name;
+        argv_title[1] = title;
+    }
     char *argv_subtitle[] = {subtitle_pre, system_name, subtitle_suf};
     return (i18n_info){another_strcat(2, argv_title), another_strcat(3, argv_subtitle)};
 }
