@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define i18n_map_size 4
+#define i18n_map_size 3
 
 char *i18n_map[i18n_map_size][4] = {
     { "zh_CN", "激活 ", "转到“设置”以激活 ", "。" },
