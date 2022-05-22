@@ -9,7 +9,8 @@
  * All values range from 0 to 1, unless an error occured, in which case the
  * error code will be stored in the alpha field as a negative number.
  */
-struct rgba_color_t {
+struct rgba_color_t
+{
     float r, g, b, a;
 };
 
@@ -28,7 +29,8 @@ struct rgba_color_t {
 struct rgba_color_t rgba_color_new(float r, float g, float b, float a);
 
 /**
- * Constructs a new rgba_color_t with the default values (r=1.0, g=1.0, b=1.0, a=0.35).
+ * Constructs a new rgba_color_t with the default values (r=1.0, g=1.0, b=1.0,
+ * a=0.35).
  *
  * @returns A new rgba_color_t with the default values.
  */
