@@ -35,3 +35,7 @@ i18n_info i18n_get_info(char *system_name){
     char *argv_subtitle[] = {subtitle_pre, system_name, subtitle_suf};
     return (i18n_info){another_strcat(2, argv_title), another_strcat(3, argv_subtitle)};
 }
+void i18n_info_destroy(i18n_info *i18n){
+    free(i18n->title);
+    free(i18n->subtitle);
+}
