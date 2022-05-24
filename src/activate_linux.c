@@ -255,6 +255,7 @@ int main(int argc, char *argv[]) {
         XNextEvent(d, &event);
     }
     // free used resources
+    i18n_info_destroy(&i18n);
     for (int i = 0; i < num_entries; i++) {
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
