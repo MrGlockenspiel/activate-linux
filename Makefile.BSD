@@ -3,10 +3,14 @@ MAN=
 
 .PATH: ${.CURDIR}/src
 
-SRCS=		activate_linux.c
+SRCS=		$(wildcard *.c)
 
 CFLAGS+=	-I/usr/local/include
 CFLAGS+=	-I/usr/local/include/cairo
+CFLAGS += \
+	$(CFLAGS) \
+	$(shell pkg-config --cflags --libs x11 xfixes xinerama) \
+	$(shell pkg-config --cflags --libs cairo)
 
 LDFLAGS+=	-L/usr/local/lib
 

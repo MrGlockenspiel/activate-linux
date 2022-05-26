@@ -52,10 +52,22 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     cairo_font_options_destroy(font_options);
 }
 
+// check if compositor is running
+int compositor_check(Display *d, int screen) {
+    char prop_name[16];
+    snprintf(prop_name, 16, "_NET_WM_CM_S%d", screen);
+    Atom prop_atom = XInternAtom(d, prop_name, False);
+    return XGetSelectionOwner(d, prop_atom) != None;
+}
+
 int main(int argc, char *argv[]) {
     Display *d = XOpenDisplay(NULL);
     Window root = DefaultRootWindow(d);
     int default_screen = XDefaultScreen(d);
+
+    if (compositor_check(d, XDefaultScreen(d)) == False) {
+        printf("No running compositor detected. Program may not work as intended. \n");
+    }
 
     int num_entries = 0;
 
@@ -254,6 +266,7 @@ int main(int argc, char *argv[]) {
     while(1) {
         XNextEvent(d, &event);
     }
+
     // free used resources
     i18n_info_destroy(&i18n);
     for (int i = 0; i < num_entries; i++) {
