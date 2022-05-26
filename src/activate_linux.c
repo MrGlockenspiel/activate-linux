@@ -48,26 +48,21 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     cairo_set_font_size(cr, 16 * scale);
 
     subtitle = "subtitle\nnewline\n\nnewnewline";
+    int loc = 55;
     char *tmp = (char*)malloc((strlen(subtitle)+1) * sizeof(char));
     strcpy(tmp, subtitle);
-    char *p1 = tmp, *p2 = tmp;
-    int loc = 55;
-    while (p1){
+    char *p1 = tmp;
+    for (char *p2 = tmp; *p2; ++p2){
         if (*p2 == '\n'){
             *p2 = '\0';
             cairo_move_to(cr, 20, loc * scale);
             cairo_show_text(cr, p1);
             loc += 20;
-            p1 = ++p2;
+            p1 = p2 + 1;
         }
-        else if (*p2 == '\0'){
-            cairo_move_to(cr, 20, loc * scale);
-            cairo_show_text(cr, p1);
-            break;
-        }
-        else
-            ++p2;
     }
+    cairo_move_to(cr, 20, loc * scale);
+    cairo_show_text(cr, p1);
     free(tmp);
 
     cairo_font_options_destroy(font_options);
