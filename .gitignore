@@ -1,4 +1,6 @@
-activate-linux
+# Build directories
+bin/
+obj/
 
 # Prerequisites
 *.d
