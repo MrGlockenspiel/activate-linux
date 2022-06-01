@@ -48,6 +48,14 @@ Install/uninstall it using your favorite AUR helper.
 #### Nix (NixOS)
 This repository is a flake. Run it using `nix run "github:MrGlockenspiel/activate-linux"`.
 
+#### Gentoo
+@Plexvola maintains an ebuild for activate-linux and can be installed with the following
+```
+eselect repository enable vaacus
+emerge --sync vaacus
+emerge -av activate-linux
+```
+
 #### Other
 
 You can use `make install` to install and `make uninstall` to remove it.
