@@ -9,7 +9,7 @@ The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
 
 ## Building
 
-```
+```console
 make
 ```
 
@@ -29,12 +29,19 @@ This project depends on:
 - `libxt-dev`
 - `libxfixes-dev`
 - `libxinerama-dev`
+- `libxrandr-dev`
+
+Those packages may be installed (in Debain-based distros) like this:
+```console
+sudo apt install libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev
+```
+
 
 ### Installing
 
 #### Ubuntu
 @eddelbuettel runs a PPA with activate linux in it, so it can be installed with
-```
+```console
 sudo add-apt-repository ppa:edd/misc
 sudo apt update
 sudo apt install activate-linux
@@ -50,7 +57,7 @@ This repository is a flake. Run it using `nix run "github:MrGlockenspiel/activat
 
 #### Gentoo
 @Plexvola maintains an ebuild for activate-linux and can be installed with the following
-```
+```console
 eselect repository enable vaacus
 emerge --sync vaacus
 emerge -av activate-linux

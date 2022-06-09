@@ -9,52 +9,52 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 
 ### Custom Main Message
 
-```
+```console
 ./activate-linux -t "Main Message"
 ```
 
 ### Custom Secondary Message
 
-```
+```console
 ./activate-linux -m "Secondary Message"
 ```
 
 ### Custom Scaling
 
-```
+```console
 ./activate-linux -s 1.5
 ```
 
 ### Custom Font
 
-```
+```console
 ./activate-linux -f "Ubuntu"
 ```
 
 ### Custom Color
 
-```
+```console
 ./activate-linux -c 0.1-0.1-0.1-0.1
 ```
 
 ### Enable Bold Text
 
-```
+```console
 ./activate-linux -b
 ```
 
 ### Enable Italics
 
-```
+```console
 ./activate-linux -i
 ```
 
 ### Run as daemon
-```
+```console
 ./activate-linux -d
 ```
 
 ### Skip compositor (only works for compliant compositors)
-```
+```console
 ./activate-linux -w
 ```
