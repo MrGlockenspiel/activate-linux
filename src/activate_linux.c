@@ -9,6 +9,7 @@
 #include <X11/extensions/shape.h>
 #include <X11/extensions/Xfixes.h>
 #include <X11/extensions/Xinerama.h>
+#include <X11/extensions/Xrandr.h>
 
 #include <cairo.h>
 #include <cairo-xlib.h>
@@ -18,7 +19,13 @@
 
 // draw text
 void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color, char* customfont, int boldmode, int slantmode) {
-    // set color
+    // clear surface
+    cairo_operator_t prevoperator = cairo_get_operator(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
+    cairo_paint(cr);
+    cairo_set_operator(cr, prevoperator);
+
+    // set text color
     cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
 
     // no subpixel anti-aliasing because we are on transparent BG
@@ -52,10 +59,10 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     char *new_line_ptr = strchr(subtitle, '\n');
     if (new_line_ptr) {
         *new_line_ptr = '\0';
-        new_line_ptr++;
         cairo_show_text(cr, subtitle);
         cairo_move_to(cr, 20, 75 * scale);
-        cairo_show_text(cr, new_line_ptr);
+        cairo_show_text(cr, new_line_ptr + 1);
+        *new_line_ptr = '\n';
     } else {
         cairo_show_text(cr, subtitle);
     }
@@ -91,6 +98,17 @@ int main(int argc, char *argv[]) {
         XCloseDisplay(d);
         return 1;
     }
+
+    // init Xrandr
+    int xrr_error_base;
+    int xrr_event_base;
+    if (!XRRQueryExtension(d, &xrr_event_base, &xrr_error_base)) {
+        perror("Required X extension Xrandr is not active");
+        XFree(si);
+        XCloseDisplay(d);
+        return 1;
+    }
+    XRRSelectInput(d, root, RRScreenChangeNotifyMask);
 
     // title, subtitle text;
     char *system_name;
@@ -202,7 +220,7 @@ int main(int argc, char *argv[]) {
 
     XVisualInfo vinfo;
 
-    // MacOS doesnt support 32 bit color through XQuartz, massive hack
+    // MacOS doesn't support 32 bit color through XQuartz, massive hack
     #ifdef __APPLE__
         int colorDepth = 24;
     #else
@@ -276,6 +294,20 @@ int main(int argc, char *argv[]) {
     XEvent event;
     while(1) {
         XNextEvent(d, &event);
+        // handle screen resize via catching Xrandr event
+        if (XRRUpdateConfiguration(&event) && event.type-xrr_event_base == RRScreenChangeNotify) {
+            // update screen sizes
+            si = XineramaQueryScreens(d, &num_entries);
+            for (int i = 0; i < num_entries; i++) {
+                XMoveWindow(
+                    d,                                           // display
+                    overlay[i],                                  // window
+                    si[i].x_org + si[i].width - overlay_width,   // x position
+                    si[i].y_org + si[i].height - overlay_height  // y position
+                );
+                draw(cairo_ctx[i], title, subtitle, scale, text_color, customfont, boldmode, slantmode);
+            }
+        }
     }
 
     // free used resources
