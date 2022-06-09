@@ -47,7 +47,18 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
 
     cairo_set_font_size(cr, 16 * scale);
     cairo_move_to(cr, 20, 55 * scale);
-    cairo_show_text(cr, subtitle);
+
+    // handle string with \n as cairo cannot do it out of the box
+    char *new_line_ptr = strchr(subtitle, '\n');
+    if (new_line_ptr) {
+        *new_line_ptr = '\0';
+        new_line_ptr++;
+        cairo_show_text(cr, subtitle);
+        cairo_move_to(cr, 20, 75 * scale);
+        cairo_show_text(cr, new_line_ptr);
+    } else {
+        cairo_show_text(cr, subtitle);
+    }
 
     cairo_font_options_destroy(font_options);
 }
