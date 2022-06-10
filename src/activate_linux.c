@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <unistd.h>
 
 #include <X11/Xlib.h>
@@ -17,16 +18,18 @@
 #include "color.h"
 #include "i18n.h"
 
-// draw text
-void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color, char* customfont, int boldmode, int slantmode) {
+bool verbose_mode = 0;
+#define verbose_printf(...) if (verbose_mode) printf(__VA_ARGS__)
+
+void draw_text(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t text_color, char* custom_font, bool bold_mode, bool slant_mode) {
     // clear surface
-    cairo_operator_t prevoperator = cairo_get_operator(cr);
+    cairo_operator_t prev_operator = cairo_get_operator(cr);
     cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
     cairo_paint(cr);
-    cairo_set_operator(cr, prevoperator);
+    cairo_set_operator(cr, prev_operator);
 
     // set text color
-    cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
+    cairo_set_source_rgba(cr, text_color.r, text_color.g, text_color.b, text_color.a);
 
     // no subpixel anti-aliasing because we are on transparent BG
     cairo_font_options_t* font_options = cairo_font_options_create();
@@ -38,16 +41,16 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
 
     // font weight and slant settings
     cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
-    if (boldmode == 1) {
+    if (bold_mode) {
         font_weight = CAIRO_FONT_WEIGHT_BOLD;
     }
 
     cairo_font_slant_t font_slant = CAIRO_FONT_SLANT_NORMAL;
-    if (slantmode == 1) {
+    if (slant_mode) {
         font_slant = CAIRO_FONT_SLANT_ITALIC;
     }
 
-    cairo_select_font_face(cr, customfont, font_slant, font_weight);
+    cairo_select_font_face(cr, custom_font, font_slant, font_weight);
 
     cairo_move_to(cr, 20, 30 * scale);
     cairo_show_text(cr, title);
@@ -58,11 +61,14 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
     // handle string with \n as cairo cannot do it out of the box
     char *new_line_ptr = strchr(subtitle, '\n');
     if (new_line_ptr) {
-        *new_line_ptr = '\0';
-        cairo_show_text(cr, subtitle);
+        size_t first_line_len = new_line_ptr-subtitle;
+        char* first_line = calloc(1, first_line_len+1);
+        memcpy(first_line, subtitle, first_line_len);
+        cairo_show_text(cr, first_line);
+        free(first_line);
+
         cairo_move_to(cr, 20, 75 * scale);
         cairo_show_text(cr, new_line_ptr + 1);
-        *new_line_ptr = '\n';
     } else {
         cairo_show_text(cr, subtitle);
     }
@@ -71,7 +77,7 @@ void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_col
 }
 
 // check if compositor is running
-int compositor_check(Display *d, int screen) {
+bool compositor_check(Display *d, int screen) {
     char prop_name[16];
     snprintf(prop_name, 16, "_NET_WM_CM_S%d", screen);
     Atom prop_atom = XInternAtom(d, prop_name, False);
@@ -79,55 +85,14 @@ int compositor_check(Display *d, int screen) {
 }
 
 int main(int argc, char *argv[]) {
-    Display *d = XOpenDisplay(NULL);
-    Window root = DefaultRootWindow(d);
-    int default_screen = XDefaultScreen(d);
-
-    if (compositor_check(d, XDefaultScreen(d)) == False) {
-        printf("No running compositor detected. Program may not work as intended. \n");
-    }
-
-    int num_entries = 0;
-
-    // get all screens in use
-    XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
-
-    // if xinerama fails
-    if (si == NULL) {
-        perror("Required X extension Xinerama is not active");
-        XCloseDisplay(d);
-        return 1;
-    }
-
-    // init Xrandr
-    int xrr_error_base;
-    int xrr_event_base;
-    if (!XRRQueryExtension(d, &xrr_event_base, &xrr_error_base)) {
-        perror("Required X extension Xrandr is not active");
-        XFree(si);
-        XCloseDisplay(d);
-        return 1;
-    }
-    XRRSelectInput(d, root, RRScreenChangeNotifyMask);
-
     // title, subtitle text;
-    char *system_name;
-    #ifdef __APPLE__
-        system_name = "macOS";
-    #elif __FreeBSD__
-        system_name = "BSD";
-    #else
-        system_name = "Linux";
-    #endif
-    i18n_info i18n = i18n_get_info(system_name);
-    char *title = i18n.title,
-         *subtitle = i18n.subtitle;
-    char *customfont = "";
+    i18n_info i18n = i18n_get_info();
+    char *title = i18n.title;
+    char *subtitle = i18n.subtitle;
+    char *custom_font = "";
 
-    int overlay_width = 340;
-    int overlay_height = 120;
-
-    int boldmode = 0, slantmode = 0;
+    bool bold_mode = false;
+    bool slant_mode = false;
 
     // color of text - set default as light grey
     struct rgba_color_t text_color = rgba_color_default();
@@ -135,26 +100,34 @@ int main(int argc, char *argv[]) {
     // default scale
     float scale = 1.0f;
 
+    int overlay_width = 340;
+    int overlay_height = 120;
+    int offset_left = 0;
+    int offset_top = 0;
+
     // bypass compositor hint
-    unsigned char bypass_compositor = 0;
+    bool bypass_compositor = false;
 
     // don't fork to background (default)
-    int daemonize = 0;
+    bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?bwdit:m:s:f:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:")) != -1) {
         switch (opt) {
+            case 'v':
+                verbose_mode = true;
+                break;
             case 'b':
-                boldmode = 1;
+                bold_mode = true;
                 break;
             case 'w':
-                bypass_compositor = 1;
+                bypass_compositor = true;
                 break;
             case 'd':
-                daemonize = 1;
+                daemonize = true;
                 break;
             case 'i':
-                slantmode = 1;
+                slant_mode = true;
                 break;
             case 't':
                 title = optarg;
@@ -163,7 +136,7 @@ int main(int argc, char *argv[]) {
                 subtitle = optarg;
                 break;
             case 'f':
-                customfont = optarg;
+                custom_font = optarg;
                 break;
             case 's':
                 scale = atof(optarg);
@@ -178,6 +151,12 @@ int main(int argc, char *argv[]) {
                     fprintf(stderr, "Error occurred during parsing custom color.\n");
                     return 1;
                 }
+                break;
+            case 'H':
+                offset_left = atoi(optarg);
+                break;
+            case 'V':
+                offset_top = atoi(optarg);
                 break;
             case '?':
             case 'h':
@@ -197,9 +176,12 @@ int main(int argc, char *argv[]) {
                     "a" STYLE(0) " is between " COLOR(1, 32) "0.0" STYLE(0)
                     "-" COLOR(1, 34) "1.0" STYLE(0));
                 HELP("-f font\tSet the text font (string)");
-                HELP("-t title\tSet title text (string)");
+                HELP("-t title\tSet  title  text (string)");
                 HELP("-m message\tSet message text (string)");
                 HELP("-s scale\tScale ratio (float)");
+                HELP("-H offset\tMove overlay horizontally (integer)");
+                HELP("-V offset\tMove overlay  vertically  (integer)");
+                HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
                 #undef STYLE
                 #undef COLOR
@@ -207,8 +189,47 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Fork to background
-    if (daemonize == 1) {
+    verbose_printf("Verbose mode activated\n");
+
+    verbose_printf("Opening display\n");
+    Display *d = XOpenDisplay(NULL);
+    verbose_printf("Finding root window\n");
+    Window root = DefaultRootWindow(d);
+    verbose_printf("Finding default screen\n");
+    int default_screen = XDefaultScreen(d);
+
+    verbose_printf("Checking compositor\n");
+    if (!compositor_check(d, XDefaultScreen(d))) {
+        printf("No running compositor detected. Program may not work as intended. \n");
+    }
+
+    // https://x.org/releases/current/doc/man/man3/Xinerama.3.xhtml
+    verbose_printf("Finding all screens in use using Xinerama\n");
+    int num_entries = 0;
+    XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
+    // if xinerama fails
+    if (si == NULL) {
+        perror("Required X extension Xinerama is not active. It is needed for displaying watermark on multiple screens");
+        XCloseDisplay(d);
+        return 1;
+    }
+    verbose_printf("Found %d screen(s)\n", num_entries);
+
+    // https://cgit.freedesktop.org/xorg/proto/randrproto/tree/randrproto.txt
+    verbose_printf("Initializing Xrandr\n");
+    int xrr_error_base;
+    int xrr_event_base;
+    if (!XRRQueryExtension(d, &xrr_event_base, &xrr_error_base)) {
+        perror("Required X extension Xrandr is not active. It is needed for handling screen size change (e.g. in virtual machine window)");
+        XFree(si);
+        XCloseDisplay(d);
+        return 1;
+    }
+    verbose_printf("Subscribing on screen change events\n");
+    XRRSelectInput(d, root, RRScreenChangeNotifyMask);
+
+    if (daemonize) {
+        verbose_printf("Forking to background\n");
         int pid = -1;
         pid = fork();
         if (pid > 0) exit(EXIT_SUCCESS);
@@ -227,12 +248,13 @@ int main(int argc, char *argv[]) {
         int colorDepth = 32;
     #endif
 
+    verbose_printf("Checking default screen to be %d bit color depth\n", colorDepth);
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
-        printf("No visuals found supporting %i bit color, terminating \n", colorDepth);
+        printf("No screens supporting %i bit color found, terminating\n", colorDepth);
         exit(EXIT_FAILURE);
     }
 
-    // sets 32 bit color depth
+    verbose_printf("Set %d bit color depth\n", colorDepth);
     attrs.colormap = XCreateColormap(d, root, vinfo.visual, AllocNone);
     attrs.background_pixel = 0;
     attrs.border_pixel = 0;
@@ -242,15 +264,17 @@ int main(int argc, char *argv[]) {
     cairo_t *cairo_ctx[num_entries];
 
     overlay_height *= scale;
+    verbose_printf("Scaled height: %d px\n", overlay_height);
     overlay_width *= scale;
+    verbose_printf("Scaled width:  %d px\n", overlay_width);
 
-    // create overlay on each screen
     for (int i = 0; i < num_entries; i++) {
+        verbose_printf("Creating overlay on %d screen\n", i);
         overlay[i] = XCreateWindow(
             d,                                                                     // display
             root,                                                                  // parent
-            si[i].x_org + si[i].width - overlay_width,                             // x position
-            si[i].y_org + si[i].height - overlay_height,                           // y position
+            si[i].x_org + si[i].width + offset_left - overlay_width,               // x position
+            si[i].y_org + si[i].height + offset_top - overlay_height,              // y position
             overlay_width,                                                         // width
             overlay_height,                                                        // height
             0,                                                                     // border width
@@ -275,43 +299,55 @@ int main(int argc, char *argv[]) {
         XSetClassHint(d, overlay[i], xch);
 
         // Set _NET_WM_BYPASS_COMPOSITOR
-        if(bypass_compositor == 1) {
+        // https://specifications.freedesktop.org/wm-spec/wm-spec-latest.html#idm45446104333040
+        if (bypass_compositor) {
+            verbose_printf("Bypassing compositor\n");
+            unsigned char data = 1;
             XChangeProperty(
                 d, overlay[i],
                 XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
-                XA_CARDINAL, 32, PropModeReplace, &bypass_compositor, 1
+                XA_CARDINAL, 32, PropModeReplace, &data, 1
             );
         }
 
-        // cairo context
+        verbose_printf("Creating cairo context\n");
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
 
-        draw(cairo_ctx[i], title, subtitle, scale, text_color, customfont, boldmode, slantmode);
+        verbose_printf("Drawing text\n");
+        draw_text(cairo_ctx[i], title, subtitle, scale, text_color, custom_font, bold_mode, slant_mode);
     }
 
-    // wait for X events forever
+    verbose_printf("\nAll done. Going into X windows event endless loop\n\n");
     XEvent event;
     while(1) {
         XNextEvent(d, &event);
         // handle screen resize via catching Xrandr event
-        if (XRRUpdateConfiguration(&event) && event.type-xrr_event_base == RRScreenChangeNotify) {
-            // update screen sizes
-            si = XineramaQueryScreens(d, &num_entries);
-            for (int i = 0; i < num_entries; i++) {
-                XMoveWindow(
-                    d,                                           // display
-                    overlay[i],                                  // window
-                    si[i].x_org + si[i].width - overlay_width,   // x position
-                    si[i].y_org + si[i].height - overlay_height  // y position
-                );
-                draw(cairo_ctx[i], title, subtitle, scale, text_color, customfont, boldmode, slantmode);
+        if (XRRUpdateConfiguration(&event)) {
+            if (event.type-xrr_event_base == RRScreenChangeNotify) {
+                verbose_printf("! Got Xrandr event about screen change\n");
+                verbose_printf("  Updating info about screen sizes\n");
+                si = XineramaQueryScreens(d, &num_entries);
+                for (int i = 0; i < num_entries; i++) {
+                    verbose_printf("  Moving window on screen %d according new position\n", i);
+                    XMoveWindow(
+                        d,                                                        // display
+                        overlay[i],                                               // window
+                        si[i].x_org + si[i].width + offset_left - overlay_width,  // x position
+                        si[i].y_org + si[i].height + offset_top - overlay_height  // y position
+                    );
+                    verbose_printf("  Redrawing text\n");
+                    draw_text(cairo_ctx[i], title, subtitle, scale, text_color, custom_font, bold_mode, slant_mode);
+                }
+            } else {
+                verbose_printf("! Got Xrandr event, type: %d (0x%X)\n", event.type-xrr_event_base, event.type-xrr_event_base);
             }
+        } else {
+            verbose_printf("! Got X event, type: %d (0x%X)\n", event.type, event.type);
         }
     }
 
     // free used resources
-    i18n_info_destroy(&i18n);
     for (int i = 0; i < num_entries; i++) {
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
