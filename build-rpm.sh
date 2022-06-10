@@ -22,7 +22,7 @@ cd "$cur_dir" || exit
 # Build RPM
 cp $tar_out "$rpm_dir/SOURCES/"
 cp activate-linux-rpm.spec "$rpm_dir/SPECS/"
-rpmbuild -bb "$rpm_dir/SPECS/activate-linux-rpm.spec" --nodebuginfo
+rpmbuild -bb "$rpm_dir/SPECS/activate-linux.spec" --nodebuginfo
 
 # Clean
 rm -rf /tmp/tarbuild
