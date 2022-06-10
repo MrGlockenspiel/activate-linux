@@ -6,7 +6,7 @@
 /**
  * Struct representing an RGB color with alpha.
  *
- * All values range from 0 to 1, unless an error occured, in which case the
+ * All values range from 0 to 1, unless an error occurred, in which case the
  * error code will be stored in the alpha field as a negative number.
  */
 struct rgba_color_t {
