@@ -6,6 +6,26 @@
 #include <cairo.h>
 #include "color.h"
 
-void draw_text(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t text_color, char* custom_font, bool bold_mode, bool slant_mode);
+struct draw_options {
+    char *title;
+    char *subtitle;
+    char *custom_font;
+
+    bool bold_mode;
+    bool slant_mode;
+
+    float scale;
+
+    int overlay_width;
+    int overlay_height;
+    int offset_left;
+    int offset_top;
+
+    struct rgba_color_t text_color;
+
+    bool bypass_compositor;
+};
+
+void draw_text(cairo_t *cr, struct draw_options *options);
 
 #endif

@@ -23,7 +23,6 @@
 bool verbose_mode = 0;
 #define verbose_printf(...) if (verbose_mode) printf(__VA_ARGS__)
 
-
 // check if compositor is running
 bool compositor_check(Display *d, int screen) {
     char prop_name[16];
@@ -35,26 +34,28 @@ bool compositor_check(Display *d, int screen) {
 int main(int argc, char *argv[]) {
     // title, subtitle text;
     i18n_info i18n = i18n_get_info();
-    char *title = i18n.title;
-    char *subtitle = i18n.subtitle;
-    char *custom_font = "";
 
-    bool bold_mode = false;
-    bool slant_mode = false;
+    struct draw_options options = {
+        .title = i18n.title,
+        .subtitle = i18n.subtitle,
+        .custom_font = "",
+        .bold_mode = false,
+        .slant_mode = false,
 
-    // color of text - set default as light grey
-    struct rgba_color_t text_color = rgba_color_default();
+        .scale = 1.0f,
 
-    // default scale
-    float scale = 1.0f;
+        // where the overlay appears
+        .overlay_width = 340,
+        .overlay_height = 120,
+        .offset_left = 0,
+        .offset_top = 0,
 
-    int overlay_width = 340;
-    int overlay_height = 120;
-    int offset_left = 0;
-    int offset_top = 0;
+        // color of text - set default as light grey
+        .text_color = rgba_color_default(),
 
-    // bypass compositor hint
-    bool bypass_compositor = false;
+        // bypass compositor hint
+        .bypass_compositor = false,
+    };
 
     // don't fork to background (default)
     bool daemonize = false;
@@ -66,45 +67,45 @@ int main(int argc, char *argv[]) {
                 verbose_mode = true;
                 break;
             case 'b':
-                bold_mode = true;
+                options.bold_mode = true;
                 break;
             case 'w':
-                bypass_compositor = true;
+                options.bypass_compositor = true;
                 break;
             case 'd':
                 daemonize = true;
                 break;
             case 'i':
-                slant_mode = true;
+                options.slant_mode = true;
                 break;
             case 't':
-                title = optarg;
+                options.title = optarg;
                 break;
             case 'm':
-                subtitle = optarg;
+                options.subtitle = optarg;
                 break;
             case 'f':
-                custom_font = optarg;
+                options.custom_font = optarg;
                 break;
             case 's':
-                scale = atof(optarg);
-                if(scale < 0.0f) {
+                options.scale = atof(optarg);
+                if(options.scale < 0.0f) {
                     fprintf(stderr, "Error occurred during parsing custom scale.\n");
                     return 1;
                 }
                 break;
             case 'c':
-                text_color = rgba_color_string(optarg);
-                if (text_color.a < 0.0) {
+                options.text_color = rgba_color_string(optarg);
+                if (options.text_color.a < 0.0) {
                     fprintf(stderr, "Error occurred during parsing custom color.\n");
                     return 1;
                 }
                 break;
             case 'H':
-                offset_left = atoi(optarg);
+                options.offset_left = atoi(optarg);
                 break;
             case 'V':
-                offset_top = atoi(optarg);
+                options.offset_top = atoi(optarg);
                 break;
             case '?':
             case 'h':
@@ -211,9 +212,9 @@ int main(int argc, char *argv[]) {
     cairo_surface_t *surface[num_entries];
     cairo_t *cairo_ctx[num_entries];
 
-    overlay_height *= scale;
+    int overlay_height = options.overlay_height * options.scale;
     verbose_printf("Scaled height: %d px\n", overlay_height);
-    overlay_width *= scale;
+    int overlay_width = options.overlay_width * options.scale;
     verbose_printf("Scaled width:  %d px\n", overlay_width);
 
     for (int i = 0; i < num_entries; i++) {
@@ -221,8 +222,8 @@ int main(int argc, char *argv[]) {
         overlay[i] = XCreateWindow(
             d,                                                                     // display
             root,                                                                  // parent
-            si[i].x_org + si[i].width + offset_left - overlay_width,               // x position
-            si[i].y_org + si[i].height + offset_top - overlay_height,              // y position
+            si[i].x_org + si[i].width + options.offset_left - overlay_width,               // x position
+            si[i].y_org + si[i].height + options.offset_top - overlay_height,              // y position
             overlay_width,                                                         // width
             overlay_height,                                                        // height
             0,                                                                     // border width
@@ -248,7 +249,7 @@ int main(int argc, char *argv[]) {
 
         // Set _NET_WM_BYPASS_COMPOSITOR
         // https://specifications.freedesktop.org/wm-spec/wm-spec-latest.html#idm45446104333040
-        if (bypass_compositor) {
+        if (options.bypass_compositor) {
             verbose_printf("Bypassing compositor\n");
             unsigned char data = 1;
             XChangeProperty(
@@ -263,7 +264,7 @@ int main(int argc, char *argv[]) {
         cairo_ctx[i] = cairo_create(surface[i]);
 
         verbose_printf("Drawing text\n");
-        draw_text(cairo_ctx[i], title, subtitle, scale, text_color, custom_font, bold_mode, slant_mode);
+        draw_text(cairo_ctx[i], &options);
     }
 
     verbose_printf("\nAll done. Going into X windows event endless loop\n\n");
@@ -281,11 +282,11 @@ int main(int argc, char *argv[]) {
                     XMoveWindow(
                         d,                                                        // display
                         overlay[i],                                               // window
-                        si[i].x_org + si[i].width + offset_left - overlay_width,  // x position
-                        si[i].y_org + si[i].height + offset_top - overlay_height  // y position
+                        si[i].x_org + si[i].width + options.offset_left - overlay_width,  // x position
+                        si[i].y_org + si[i].height + options.offset_top - overlay_height  // y position
                     );
                     verbose_printf("  Redrawing text\n");
-                    draw_text(cairo_ctx[i], title, subtitle, scale, text_color, custom_font, bold_mode, slant_mode);
+                    draw_text(cairo_ctx[i], &options);
                 }
             } else {
                 verbose_printf("! Got Xrandr event, type: %d (0x%X)\n", event.type-xrr_event_base, event.type-xrr_event_base);
