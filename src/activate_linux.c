@@ -140,6 +140,14 @@ int main(int argc, char *argv[]) {
 
     verbose_printf("Verbose mode activated\n");
 
+    if (daemonize) {
+        verbose_printf("Forking to background\n");
+        int pid = -1;
+        pid = fork();
+        if (pid > 0) exit(EXIT_SUCCESS);
+        else if(pid == 0) setsid();
+    }
+
     verbose_printf("Opening display\n");
     Display *d = XOpenDisplay(NULL);
     verbose_printf("Finding root window\n");
@@ -176,14 +184,6 @@ int main(int argc, char *argv[]) {
     }
     verbose_printf("Subscribing on screen change events\n");
     XRRSelectInput(d, root, RRScreenChangeNotifyMask);
-
-    if (daemonize) {
-        verbose_printf("Forking to background\n");
-        int pid = -1;
-        pid = fork();
-        if (pid > 0) exit(EXIT_SUCCESS);
-        else if(pid == 0) setsid();
-    }
 
     XSetWindowAttributes attrs;
     attrs.override_redirect = 1;
