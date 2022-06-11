@@ -19,9 +19,7 @@
 #include "i18n.h"
 
 #include "draw.h"
-
-bool verbose_mode = 0;
-#define verbose_printf(...) if (verbose_mode) printf(__VA_ARGS__)
+#include "log.h"
 
 // check if compositor is running
 bool compositor_check(Display *d, int screen) {
