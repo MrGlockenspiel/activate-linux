@@ -294,7 +294,7 @@ int main(int argc, char *argv[]) {
     if(!(display_screen & 0xFFFFFFFF >> (32 - num_entries)))
     {
         // No screen enabled
-        fprintf(stderr, "No screen enabled, exiting.\n");
+        printf("No screen to display the overlay found, terminating\n");
         exit(EXIT_FAILURE);
     }
 
