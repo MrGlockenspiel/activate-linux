@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <unistd.h>
 
 #include <X11/Xlib.h>
@@ -84,6 +85,20 @@ bool compositor_check(Display *d, int screen) {
     return XGetSelectionOwner(d, prop_atom) != None;
 }
 
+uint32_t mask_from_string(const char *list)
+{
+    uint32_t mask = 0;
+    char *list_cpy = alloca(strlen(list) + 1);
+    strcpy(list_cpy, list);
+    char *token = strtok(list_cpy, ",");
+    while(token != NULL)
+    {
+        mask |= (1 << atoi(token));
+        token = strtok(NULL, ",");
+    }
+    return mask;
+}
+
 int main(int argc, char *argv[]) {
     // title, subtitle text;
     i18n_info i18n = i18n_get_info();
@@ -108,11 +123,14 @@ int main(int argc, char *argv[]) {
     // bypass compositor hint
     bool bypass_compositor = false;
 
+    // screen to display to as a bit mask, up to 32 screen supported
+    uint32_t screens_mask = 0xFFFFFFFF;
+
     // don't fork to background (default)
     bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:")) != -1) {
+    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:S:")) != -1) {
         switch (opt) {
             case 'v':
                 verbose_mode = true;
@@ -158,6 +176,9 @@ int main(int argc, char *argv[]) {
             case 'V':
                 offset_top = atoi(optarg);
                 break;
+            case 'S':
+                screens_mask = mask_from_string(optarg);
+                break;
             case '?':
             case 'h':
                 #define HELP(X) fprintf(stderr, "  " X "\n")
@@ -181,6 +202,8 @@ int main(int argc, char *argv[]) {
                 HELP("-s scale\tScale ratio (float)");
                 HELP("-H offset\tMove overlay horizontally (integer)");
                 HELP("-V offset\tMove overlay  vertically  (integer)");
+                HELP("-S screens\tSelect screens to display the message");
+                HELP("\t\tscreen numbers are separated by commas");
                 HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
                 #undef STYLE
@@ -268,7 +291,20 @@ int main(int argc, char *argv[]) {
     overlay_width *= scale;
     verbose_printf("Scaled width:  %d px\n", overlay_width);
 
+    if(!(screens_mask & 0xFFFFFFFF >> (32 - num_entries)))
+    {
+        // No screen enabled
+        printf("No screen to display the overlay found, terminating\n");
+        exit(EXIT_FAILURE);
+    }
+
     for (int i = 0; i < num_entries; i++) {
+        if(!(screens_mask & 1 << i))
+        {
+            verbose_printf("Overlay on screen %i is disabled via command line parameter\n", i);
+            continue;
+        }
+
         verbose_printf("Creating overlay on %d screen\n", i);
         overlay[i] = XCreateWindow(
             d,                                                                     // display
@@ -329,6 +365,8 @@ int main(int argc, char *argv[]) {
                 verbose_printf("  Updating info about screen sizes\n");
                 si = XineramaQueryScreens(d, &num_entries);
                 for (int i = 0; i < num_entries; i++) {
+                    if(!(screens_mask & 1 << i))
+                        continue;
                     verbose_printf("  Moving window on screen %d according new position\n", i);
                     XMoveWindow(
                         d,                                                        // display
@@ -349,6 +387,8 @@ int main(int argc, char *argv[]) {
 
     // free used resources
     for (int i = 0; i < num_entries; i++) {
+        if(!(screens_mask & 1 << i))
+            continue;
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
         cairo_surface_destroy(surface[i]);
