@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <unistd.h>
 
 #include <X11/Xlib.h>
@@ -84,9 +85,9 @@ bool compositor_check(Display *d, int screen) {
     return XGetSelectionOwner(d, prop_atom) != None;
 }
 
-unsigned int mask_from_string(const char *list)
+uint32_t mask_from_string(const char *list)
 {
-    unsigned int mask = 0;
+    uint32_t mask = 0;
     char *list_cpy = alloca(strlen(list) + 1);
     strcpy(list_cpy, list);
     char *token = strtok(list_cpy, ",");
@@ -123,7 +124,7 @@ int main(int argc, char *argv[]) {
     bool bypass_compositor = false;
 
     // screen to display to as a bit mask, up to 32 screen supported
-    unsigned int display_screen = 0xFFFFFFFF;
+    uint32_t display_screen = 0xFFFFFFFF;
 
     // don't fork to background (default)
     bool daemonize = false;
@@ -383,7 +384,7 @@ int main(int argc, char *argv[]) {
     // free used resources
     for (int i = 0; i < num_entries; i++) {
         if(!(display_screen & 1 << i))
-            continue
+            continue;
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
         cairo_surface_destroy(surface[i]);
