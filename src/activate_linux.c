@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
                 HELP("-s scale\tScale ratio (float)");
                 HELP("-H offset\tMove overlay horizontally (integer)");
                 HELP("-V offset\tMove overlay  vertically  (integer)");
-                HELP("-S screen_list\tSelect screens to display the message");
+                HELP("-S screens\tSelect screens to display the message");
                 HELP("\t\tscreen numbers are separated by commas");
                 HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
@@ -293,7 +293,7 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < num_entries; i++) {
         if(!(display_screen & 1 << i))
         {
-            verbose_printf("Screen %i disabled\n", i);
+            verbose_printf("Overlay on screen %i is disabled via command line parameter\n", i);
             continue;
         }
 
