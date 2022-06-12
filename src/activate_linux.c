@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
     bool bypass_compositor = false;
 
     // screen to display to as a bit mask, up to 32 screen supported
-    uint32_t display_screen = 0xFFFFFFFF;
+    uint32_t screens_mask = 0xFFFFFFFF;
 
     // don't fork to background (default)
     bool daemonize = false;
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
                 offset_top = atoi(optarg);
                 break;
             case 'S':
-                display_screen = mask_from_string(optarg);
+                screens_mask = mask_from_string(optarg);
                 break;
             case '?':
             case 'h':
@@ -291,7 +291,7 @@ int main(int argc, char *argv[]) {
     overlay_width *= scale;
     verbose_printf("Scaled width:  %d px\n", overlay_width);
 
-    if(!(display_screen & 0xFFFFFFFF >> (32 - num_entries)))
+    if(!(screens_mask & 0xFFFFFFFF >> (32 - num_entries)))
     {
         // No screen enabled
         printf("No screen to display the overlay found, terminating\n");
@@ -299,7 +299,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < num_entries; i++) {
-        if(!(display_screen & 1 << i))
+        if(!(screens_mask & 1 << i))
         {
             verbose_printf("Overlay on screen %i is disabled via command line parameter\n", i);
             continue;
@@ -365,7 +365,7 @@ int main(int argc, char *argv[]) {
                 verbose_printf("  Updating info about screen sizes\n");
                 si = XineramaQueryScreens(d, &num_entries);
                 for (int i = 0; i < num_entries; i++) {
-                    if(!(display_screen & 1 << i))
+                    if(!(screens_mask & 1 << i))
                         continue;
                     verbose_printf("  Moving window on screen %d according new position\n", i);
                     XMoveWindow(
@@ -387,7 +387,7 @@ int main(int argc, char *argv[]) {
 
     // free used resources
     for (int i = 0; i < num_entries; i++) {
-        if(!(display_screen & 1 << i))
+        if(!(screens_mask & 1 << i))
             continue;
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
