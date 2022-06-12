@@ -291,6 +291,13 @@ int main(int argc, char *argv[]) {
     overlay_width *= scale;
     verbose_printf("Scaled width:  %d px\n", overlay_width);
 
+    if(!(display_screen & 0xFFFFFFFF >> (32 - num_entries)))
+    {
+        // No screen enabled
+        fprintf(stderr, "No screen enabled, exiting.\n");
+        exit(EXIT_FAILURE);
+    }
+
     for (int i = 0; i < num_entries; i++) {
         if(!(display_screen & 1 << i))
         {
