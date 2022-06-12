@@ -296,7 +296,7 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < num_entries; i++) {
         if(!(display_screen & 1 << i))
         {
-            verbose_printf("Screen %i disabled\n", i);
+            verbose_printf("Overlay on screen %i is disabled via command line parameter\n", i);
             continue;
         }
 
