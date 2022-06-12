@@ -84,6 +84,20 @@ bool compositor_check(Display *d, int screen) {
     return XGetSelectionOwner(d, prop_atom) != None;
 }
 
+unsigned int mask_from_string(const char *list)
+{
+    unsigned int mask = 0;
+    char *list_cpy = alloca(strlen(list) + 1);
+    strcpy(list_cpy, list);
+    char *token = strtok(list_cpy, ",");
+    while(token != NULL)
+    {
+        mask |= (1 << atoi(token));
+        token = strtok(NULL, ",");
+    }
+    return mask;
+}
+
 int main(int argc, char *argv[]) {
     // title, subtitle text;
     i18n_info i18n = i18n_get_info();
@@ -108,11 +122,14 @@ int main(int argc, char *argv[]) {
     // bypass compositor hint
     bool bypass_compositor = false;
 
+    // screen to display to as a bit mask, up to 32 screen supported
+    unsigned int display_screen = 0;
+
     // don't fork to background (default)
     bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:")) != -1) {
+    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:S:")) != -1) {
         switch (opt) {
             case 'v':
                 verbose_mode = true;
@@ -158,6 +175,9 @@ int main(int argc, char *argv[]) {
             case 'V':
                 offset_top = atoi(optarg);
                 break;
+            case 'S':
+                display_screen = mask_from_string(optarg);
+                break;
             case '?':
             case 'h':
                 #define HELP(X) fprintf(stderr, "  " X "\n")
@@ -181,6 +201,8 @@ int main(int argc, char *argv[]) {
                 HELP("-s scale\tScale ratio (float)");
                 HELP("-H offset\tMove overlay horizontally (integer)");
                 HELP("-V offset\tMove overlay  vertically  (integer)");
+                HELP("-S screen_list\tSelect screens to display the message");
+                HELP("\t\tscreen numbers are separated by comma");
                 HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
                 #undef STYLE
@@ -268,7 +290,16 @@ int main(int argc, char *argv[]) {
     overlay_width *= scale;
     verbose_printf("Scaled width:  %d px\n", overlay_width);
 
+    if(display_screen == 0)
+        display_screen = 0xFFFFFFFF;
+
     for (int i = 0; i < num_entries; i++) {
+        if(!(display_screen & 1 << i))
+        {
+            verbose_printf("Screen %i disabled\n", i);
+            continue;
+        }
+
         verbose_printf("Creating overlay on %d screen\n", i);
         overlay[i] = XCreateWindow(
             d,                                                                     // display
