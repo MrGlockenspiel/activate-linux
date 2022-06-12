@@ -360,6 +360,11 @@ int main(int argc, char *argv[]) {
                 verbose_printf("  Updating info about screen sizes\n");
                 si = XineramaQueryScreens(d, &num_entries);
                 for (int i = 0; i < num_entries; i++) {
+                    if(!(display_screen & 1 << i))
+                    {
+                        verbose_printf("Screen %i disabled\n", i);
+                        continue;
+                    }
                     verbose_printf("  Moving window on screen %d according new position\n", i);
                     XMoveWindow(
                         d,                                                        // display
@@ -380,6 +385,8 @@ int main(int argc, char *argv[]) {
 
     // free used resources
     for (int i = 0; i < num_entries; i++) {
+        if(!(display_screen & 1 << i))
+            continue
         XUnmapWindow(d, overlay[i]);
         cairo_destroy(cairo_ctx[i]);
         cairo_surface_destroy(surface[i]);
