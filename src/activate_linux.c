@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
     bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:W:")) != -1) {
+    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:x:y:")) != -1) {
         switch (opt) {
             case 'v':
                 verbose_mode = true;
@@ -158,8 +158,11 @@ int main(int argc, char *argv[]) {
             case 'V':
                 offset_top = atoi(optarg);
                 break;
-            case 'W':
+            case 'x':
                 overlay_width = atoi(optarg);
+                break;
+            case 'y':
+                overlay_height = atoi(optarg);
                 break;
             case '?':
             case 'h':
@@ -184,7 +187,8 @@ int main(int argc, char *argv[]) {
                 HELP("-s scale\tScale ratio (float)");
                 HELP("-H offset\tMove overlay horizontally (integer)");
                 HELP("-V offset\tMove overlay  vertically  (integer)");
-                HELP("-W width\tSet overlay width");
+                HELP("-x width\tSet overlay width before scaling (integer)");
+                HELP("-y height\tSet overlay height before scaling (integer)");
                 HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
                 #undef STYLE
