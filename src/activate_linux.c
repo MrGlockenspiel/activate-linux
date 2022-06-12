@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
                 HELP("-H offset\tMove overlay horizontally (integer)");
                 HELP("-V offset\tMove overlay  vertically  (integer)");
                 HELP("-S screen_list\tSelect screens to display the message");
-                HELP("\t\tscreen numbers are separated by comma");
+                HELP("\t\tscreen numbers are separated by commas");
                 HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
                 #undef STYLE
