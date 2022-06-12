@@ -366,10 +366,7 @@ int main(int argc, char *argv[]) {
                 si = XineramaQueryScreens(d, &num_entries);
                 for (int i = 0; i < num_entries; i++) {
                     if(!(display_screen & 1 << i))
-                    {
-                        verbose_printf("Screen %i disabled\n", i);
                         continue;
-                    }
                     verbose_printf("  Moving window on screen %d according new position\n", i);
                     XMoveWindow(
                         d,                                                        // display
