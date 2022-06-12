@@ -10,6 +10,7 @@
 #include "draw.h"
 #include "log.h"
 #include "x11.h"
+#include "wayland.h"
 
 int main(int argc, char *argv[]) {
     // title, subtitle text;
@@ -126,6 +127,12 @@ int main(int argc, char *argv[]) {
         pid = fork();
         if (pid > 0) exit(EXIT_SUCCESS);
         else if(pid == 0) setsid();
+    }
+
+    int wayland = wayland_backend_start(&options);
+    // if the wayland backend fails, fallback to x11
+    if (wayland == 0) {
+        return 0;
     }
 
     return x11_backend_start(&options);

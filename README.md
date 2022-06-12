@@ -1,7 +1,7 @@
 # activate-linux
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
+The "Activate Windows" watermark ported to Linux with cairo in C
 
 "Science isn't about WHY. It's about WHY NOT. Why is so much of our science dangerous? Why not marry safe science if you love it so much. In fact, why not invent a special safety door that won't hit you on the butt on the way out, because you are fired." — Cave Johnson (Portal 2)
 
@@ -30,10 +30,11 @@ This project depends on:
 - `libxfixes-dev`
 - `libxinerama-dev`
 - `libxrandr-dev`
+- `libwayland-dev`
 
 Those packages may be installed (in Debain-based distros) like this:
 ```console
-sudo apt install libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev
+sudo apt install libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev
 ```
 
 
@@ -78,9 +79,6 @@ Use MacPorts to install the following, then build normally.
 - `xorg-libXinerama`
 
 Alternatively, you can use [this](https://github.com/Lakr233/ActivateMac) project instead because it actually works properly
-
-### Wayland
-This works out of the box through XWayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
 
 ## Example:
 
