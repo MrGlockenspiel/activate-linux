@@ -80,7 +80,7 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ./activate-linux -v
 ```
 
-## Select the screens where to activate the overlay
+### Select the screens where to activate the overlay
 ```console
 # Activate on screens 0 and 2
 ./activate-linux -S 0,2
