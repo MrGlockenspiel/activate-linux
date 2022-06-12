@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
     bool bypass_compositor = false;
 
     // screen to display to as a bit mask, up to 32 screen supported
-    unsigned int display_screen = 0;
+    unsigned int display_screen = 0xFFFFFFFF;
 
     // don't fork to background (default)
     bool daemonize = false;
@@ -289,9 +289,6 @@ int main(int argc, char *argv[]) {
     verbose_printf("Scaled height: %d px\n", overlay_height);
     overlay_width *= scale;
     verbose_printf("Scaled width:  %d px\n", overlay_width);
-
-    if(display_screen == 0)
-        display_screen = 0xFFFFFFFF;
 
     for (int i = 0; i < num_entries; i++) {
         if(!(display_screen & 1 << i))
