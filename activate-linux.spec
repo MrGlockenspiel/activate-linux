@@ -3,6 +3,7 @@ Version: 0
 License: GPL-3.0-only
 Name: activate-linux
 Release: 1
+Group: System/GUI/Other
 Source: activate-linux-%{version}.tar.gz
 URL: https://github.com/MrGlockenspiel/activate-linux
 Buildroot: /tmp/activate-linux-git
