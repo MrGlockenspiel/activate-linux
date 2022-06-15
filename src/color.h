@@ -1,3 +1,6 @@
+#ifndef INCLUDE_COLOR_H
+#define INCLUDE_COLOR_H
+
 /**
  * The separator used in the CLI for color values.
  */
@@ -45,3 +48,5 @@ struct rgba_color_t rgba_color_default();
  * @returns A new rgba_color_t with the given values.
  */
 struct rgba_color_t rgba_color_string(char *src);
+
+#endif
