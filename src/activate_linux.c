@@ -89,10 +89,10 @@ int main(int argc, char *argv[]) {
                 options.offset_top = atoi(optarg);
                 break;
             case 'x':
-                overlay_width = atoi(optarg);
+                options.overlay_width = atoi(optarg);
                 break;
             case 'y':
-                overlay_height = atoi(optarg);
+                options.overlay_height = atoi(optarg);
                 break;
             case '?':
             case 'h':
