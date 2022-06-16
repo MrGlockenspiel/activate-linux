@@ -7,56 +7,57 @@ so is not recommended to be changed unless you are not using a 1080p screen.
 
 Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. Default is a light grey color.
 
-### Custom Main Message
+## Text
 
+### Custom Main Message
 ```console
 ./activate-linux -t "Main Message"
 ```
 
 ### Custom Secondary Message
-
 ```console
 ./activate-linux -m "Secondary Message"
 ```
 
-### Custom Scaling
-
-```console
-./activate-linux -s 1.5
-```
+## Appearance
 
 ### Custom Font
-
 ```console
 ./activate-linux -f "Ubuntu"
 ```
 
-### Custom Color (r-g-b-a)
-
-```console
-./activate-linux -c 0.1-0.1-0.1-0.1
-```
-
 ### Enable Bold Text
-
 ```console
 ./activate-linux -b
 ```
 
 ### Enable Italics
-
 ```console
 ./activate-linux -i
 ```
 
-### Run as daemon
+### Custom Color (r-g-b-a)
 ```console
-./activate-linux -d
+./activate-linux -c 0.1-0.1-0.1-0.1
 ```
 
-### Skip compositor (only works for compliant compositors)
+## Size and position
+
+### Custom overlay width
 ```console
-./activate-linux -w
+# Default width = 340px
+./activate-linux -x 340
+```
+
+### Custom overlay height
+```console
+# Default height = 120px
+./activate-linux -y 120
+```
+
+### Custom Scaling
+```console
+./activate-linux -s 1.5
 ```
 
 ### Move overlay horizontally
@@ -73,6 +74,18 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ./activate-linux -V 42
 # 42 pixels up
 ./activate-linux -V -42
+```
+
+## Other
+
+### Skip compositor (only works for compliant compositors)
+```console
+./activate-linux -w
+```
+
+### Run as daemon
+```console
+./activate-linux -d
 ```
 
 ### Verbose output (useful for debugging, shows received X events)
