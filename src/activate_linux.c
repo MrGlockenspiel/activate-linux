@@ -99,10 +99,15 @@ int main(int argc, char *argv[]) {
                 #define HELP(X) fprintf(stderr, "  " X "\n")
                 #define STYLE(x) "\033[" # x "m"
                 #define COLOR(x, y) "\033[" # x ";" # y "m"
-                fprintf(stderr, "Usage: %s [-b] [-i] [-c color] [-f font] [-m message] [-s scale] [-t title]\n", argv[0]);
+                fprintf(stderr, "Usage: %s [-b] [-i] [-c color] [-f font] [-m message] [-s scale] [-t title] ...\n", argv[0]);
+                HELP("");
+                fprintf(stderr, "Text:\n");
+                HELP("-t title\tSet  title  text (string)");
+                HELP("-m message\tSet message text (string)");
+                HELP("");
+                fprintf(stderr, "Appearance:\n");
+                HELP("-f font\tSet the text font (string)");
                 HELP("-b\t\tShow " STYLE(1) "bold" STYLE(0) " text");
-                HELP("-w\t\tSet EWMH bypass_compositor hint");
-                HELP("-d\t\tFork to background on startup");
                 HELP("-i\t\tShow " STYLE(3) "italic/slanted" STYLE(0) " text");
                 HELP("-c color\tSpecify color in " COLOR(1, 31) "r" STYLE(0)
                     "-" COLOR(1, 32) "g" STYLE(0) "-" COLOR(1,34) "b" STYLE(0)
@@ -111,14 +116,17 @@ int main(int argc, char *argv[]) {
                     "g" STYLE(0)  "/" COLOR(1, 34) "b" STYLE(0) "/" COLOR(1, 33)
                     "a" STYLE(0) " is between " COLOR(1, 32) "0.0" STYLE(0)
                     "-" COLOR(1, 34) "1.0" STYLE(0));
-                HELP("-f font\tSet the text font (string)");
-                HELP("-t title\tSet  title  text (string)");
-                HELP("-m message\tSet message text (string)");
+                HELP("");
+                fprintf(stderr, "Size and position:\n");
+                HELP("-x width\tSet overlay width  before scaling (integer)");
+                HELP("-y height\tSet overlay height before scaling (integer)");
                 HELP("-s scale\tScale ratio (float)");
                 HELP("-H offset\tMove overlay horizontally (integer)");
                 HELP("-V offset\tMove overlay  vertically  (integer)");
-                HELP("-x width\tSet overlay width before scaling (integer)");
-                HELP("-y height\tSet overlay height before scaling (integer)");
+                HELP("");
+                fprintf(stderr, "Other:\n");
+                HELP("-w\t\tSet EWMH bypass_compositor hint");
+                HELP("-d\t\tFork to background on startup");
                 HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
                 #undef STYLE
