@@ -10,7 +10,8 @@ SOURCES := $(wildcard src/*.c)
 NAME := $(shell uname -s)
 CFLAGS := \
 	$(CFLAGS) \
-	$(shell pkg-config --cflags --libs x11 xfixes xinerama) \
+	$(shell pkg-config --cflags --libs x11 xfixes xinerama xrandr) \
+	$(shell pkg-config --cflags --libs wayland-client) \
 	$(shell pkg-config --cflags --libs cairo)
 
 ifeq ($(NAME),Linux)

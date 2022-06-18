@@ -2,43 +2,30 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define i18n_map_size 4
-char *i18n_map[i18n_map_size][5] = {
-    {"zh_CN", "激活 ", "", "转到“设置”以激活 ", "。"},
-    {"zh_TW", "啟用 ", "",  "移至[設定]以啟用 ", "。"},
-    {"zh_HK", "啟用 ", "", "移至[設定]以啟用 ", "。"},
-    {"ja_JP", "", " をアクティブ化", "「システム環境設定」 ", "をアクティブ化に行ってください。"},
+#ifdef __APPLE__
+    #define SYSTEM_NAME "macOS"
+#elif __FreeBSD__
+    #define SYSTEM_NAME "BSD"
+#else
+    #define SYSTEM_NAME "Linux"
+#endif
+
+i18n_info i18n_map[] = {
+    // Must be first, used as default
+    {"en_US", "Activate "SYSTEM_NAME, "Go to Settings to activate "SYSTEM_NAME"."},
+    {"zh_CN", "激活 "SYSTEM_NAME, "转到“设置”以激活 "SYSTEM_NAME"。"},
+    {"zh_TW", "啟用 "SYSTEM_NAME, "移至[設定]以啟用 "SYSTEM_NAME"。"},
+    {"zh_HK", "啟用 "SYSTEM_NAME, "移至[設定]以啟用 "SYSTEM_NAME"。"},
+    {"ru_RU", "Активация "SYSTEM_NAME, "чтобы активировать "SYSTEM_NAME",\nперейдите в раздел \"Параметры\"."},
+    {NULL, NULL, NULL}
 };
-char *another_strcat(size_t len, char *strings[]){
-    unsigned long t = 0;
-    for (size_t i = 0; i < len; ++i)
-        t += strlen(strings[i]);
-    char *tmp = (char*)malloc((t+1) * sizeof(char));
-    tmp[0] = '\0';
-    for (size_t i = 0; i < len; ++i)
-        strcat(tmp, strings[i]);
-    return tmp;
-}
-i18n_info i18n_get_info(char *system_name){
-    char *title_pre = "Activate ",
-         *title_suf = "",
-         *subtitle_pre = "Go to Settings to activate ",
-         *subtitle_suf = ".";
-    char *lang = getenv("LANG"); 
-    for (size_t i = 0; i < i18n_map_size; ++i){
-        if (!strncmp(lang, i18n_map[i][0], 5)){
-            title_pre = i18n_map[i][1];
-            title_suf = i18n_map[i][2];
-            subtitle_pre = i18n_map[i][3],
-            subtitle_suf = i18n_map[i][4];
-            break;
+
+i18n_info i18n_get_info() {
+    char *lang = getenv("LANG");
+    for (size_t i = 0; i18n_map[i].lang; ++i) {
+        if (!strncmp(lang, i18n_map[i].lang, 5)) {
+            return i18n_map[i];
         }
     }
-    char *argv_title[] = {title_pre, system_name, title_suf};
-    char *argv_subtitle[] = {subtitle_pre, system_name, subtitle_suf};
-    return (i18n_info){another_strcat(3, argv_title), another_strcat(3, argv_subtitle)};
-}
-void i18n_info_destroy(i18n_info *i18n){
-    free(i18n->title);
-    free(i18n->subtitle);
+    return i18n_map[0];
 }

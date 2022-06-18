@@ -1,3 +1,6 @@
+#ifndef INCLUDE_COLOR_H
+#define INCLUDE_COLOR_H
+
 /**
  * The separator used in the CLI for color values.
  */
@@ -6,7 +9,7 @@
 /**
  * Struct representing an RGB color with alpha.
  *
- * All values range from 0 to 1, unless an error occured, in which case the
+ * All values range from 0 to 1, unless an error occurred, in which case the
  * error code will be stored in the alpha field as a negative number.
  */
 struct rgba_color_t {
@@ -45,3 +48,5 @@ struct rgba_color_t rgba_color_default();
  * @returns A new rgba_color_t with the given values.
  */
 struct rgba_color_t rgba_color_string(char *src);
+
+#endif

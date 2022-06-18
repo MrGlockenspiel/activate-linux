@@ -1,152 +1,113 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <unistd.h>
-
-#include <X11/Xlib.h>
-#include <X11/X.h>
-#include <X11/Xatom.h>
-#include <X11/extensions/shape.h>
-#include <X11/extensions/Xfixes.h>
-#include <X11/extensions/Xinerama.h>
-
-#include <cairo.h>
-#include <cairo-xlib.h>
 
 #include "color.h"
 #include "i18n.h"
 
-// draw text
-void draw(cairo_t *cr, char *title, char *subtitle, float scale, struct rgba_color_t color, char* customfont, int boldmode, int slantmode) {
-    // set color
-    cairo_set_source_rgba(cr, color.r, color.g, color.b, color.a);
-
-    // no subpixel anti-aliasing because we are on transparent BG
-    cairo_font_options_t* font_options = cairo_font_options_create();
-    cairo_font_options_set_antialias(font_options, CAIRO_ANTIALIAS_GRAY);
-    cairo_set_font_options(cr, font_options);
-
-    // set font size, and scale up or down
-    cairo_set_font_size(cr, 24 * scale);
-
-    // font weight and slant settings
-    cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
-    if (boldmode == 1) {
-        font_weight = CAIRO_FONT_WEIGHT_BOLD;
-    }
-
-    cairo_font_slant_t font_slant = CAIRO_FONT_SLANT_NORMAL;
-    if (slantmode == 1) {
-        font_slant = CAIRO_FONT_SLANT_ITALIC;
-    }
-
-    cairo_select_font_face(cr, customfont, font_slant, font_weight);
-
-    cairo_move_to(cr, 20, 30 * scale);
-    cairo_show_text(cr, title);
-
-    cairo_set_font_size(cr, 16 * scale);
-    cairo_move_to(cr, 20, 55 * scale);
-    cairo_show_text(cr, subtitle);
-
-    cairo_font_options_destroy(font_options);
-}
+#include "draw.h"
+#include "log.h"
+#include "x11.h"
+#include "wayland.h"
 
 int main(int argc, char *argv[]) {
-    Display *d = XOpenDisplay(NULL);
-    Window root = DefaultRootWindow(d);
-    int default_screen = XDefaultScreen(d);
-
-    int num_entries = 0;
-
-    // get all screens in use
-    XineramaScreenInfo *si = XineramaQueryScreens(d, &num_entries);
-
-    // if xinerama fails
-    if (si == NULL) {
-        perror("Required X extension Xinerama is not active");
-        XCloseDisplay(d);
-        return 1;
-    }
-
     // title, subtitle text;
-    char *system_name;
-    #ifdef __APPLE__
-        system_name = "macOS";
-    #elif __FreeBSD__
-        system_name = "BSD";
-    #else
-        system_name = "Linux";
-    #endif
-    i18n_info i18n = i18n_get_info(system_name);
-    char *title = i18n.title,
-         *subtitle = i18n.subtitle;
-    char *customfont = "";
+    i18n_info i18n = i18n_get_info();
 
-    int overlay_width = 340;
-    int overlay_height = 120;
+    struct draw_options options = {
+        .title = i18n.title,
+        .subtitle = i18n.subtitle,
+        .custom_font = "",
+        .bold_mode = false,
+        .slant_mode = false,
 
-    int boldmode = 0, slantmode = 0;
+        .scale = 1.0f,
 
-    // color of text - set default as light grey
-    struct rgba_color_t text_color = rgba_color_default();
+        // where the overlay appears
+        .overlay_width = 340,
+        .overlay_height = 120,
+        .offset_left = 0,
+        .offset_top = 0,
 
-    // default scale
-    float scale = 1.0f;
+        // color of text - set default as light grey
+        .text_color = rgba_color_default(),
 
-    // bypass compositor hint
-    unsigned char bypass_compositor = 0;
+        // bypass compositor hint
+        .bypass_compositor = false,
+    };
 
     // don't fork to background (default)
-    int daemonize = 0;
+    bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?bwdit:m:s:f:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:x:y:")) != -1) {
         switch (opt) {
+            case 'v':
+                verbose_mode = true;
+                break;
             case 'b':
-                boldmode = 1;
+                options.bold_mode = true;
                 break;
             case 'w':
-                bypass_compositor = 1;
+                options.bypass_compositor = true;
                 break;
             case 'd':
-                daemonize = 1;
+                daemonize = true;
                 break;
             case 'i':
-                slantmode = 1;
+                options.slant_mode = true;
                 break;
             case 't':
-                title = optarg;
+                options.title = optarg;
                 break;
             case 'm':
-                subtitle = optarg;
+                options.subtitle = optarg;
                 break;
             case 'f':
-                customfont = optarg;
+                options.custom_font = optarg;
                 break;
             case 's':
-                scale = atof(optarg);
-                if(scale < 0.0f) {
+                options.scale = atof(optarg);
+                if(options.scale < 0.0f) {
                     fprintf(stderr, "Error occurred during parsing custom scale.\n");
                     return 1;
                 }
                 break;
             case 'c':
-                text_color = rgba_color_string(optarg);
-                if (text_color.a < 0.0) {
+                options.text_color = rgba_color_string(optarg);
+                if (options.text_color.a < 0.0) {
                     fprintf(stderr, "Error occurred during parsing custom color.\n");
                     return 1;
                 }
+                break;
+            case 'H':
+                options.offset_left = atoi(optarg);
+                break;
+            case 'V':
+                options.offset_top = atoi(optarg);
+                break;
+            case 'x':
+                options.overlay_width = atoi(optarg);
+                break;
+            case 'y':
+                options.overlay_height = atoi(optarg);
                 break;
             case '?':
             case 'h':
                 #define HELP(X) fprintf(stderr, "  " X "\n")
                 #define STYLE(x) "\033[" # x "m"
                 #define COLOR(x, y) "\033[" # x ";" # y "m"
-                fprintf(stderr, "Usage: %s [-b] [-i] [-c color] [-f font] [-m message] [-s scale] [-t title]\n", argv[0]);
+                fprintf(stderr, "Usage: %s [-b] [-i] [-c color] [-f font] [-m message] [-s scale] [-t title] ...\n", argv[0]);
+                HELP("");
+                fprintf(stderr, "Text:\n");
+                HELP("-t title\tSet  title  text (string)");
+                HELP("-m message\tSet message text (string)");
+                HELP("");
+                fprintf(stderr, "Appearance:\n");
+                HELP("-f font\tSet the text font (string)");
                 HELP("-b\t\tShow " STYLE(1) "bold" STYLE(0) " text");
-                HELP("-w\t\tSet EWMH bypass_compositor hint");
-                HELP("-d\t\tFork to background on startup");
                 HELP("-i\t\tShow " STYLE(3) "italic/slanted" STYLE(0) " text");
                 HELP("-c color\tSpecify color in " COLOR(1, 31) "r" STYLE(0)
                     "-" COLOR(1, 32) "g" STYLE(0) "-" COLOR(1,34) "b" STYLE(0)
@@ -155,10 +116,18 @@ int main(int argc, char *argv[]) {
                     "g" STYLE(0)  "/" COLOR(1, 34) "b" STYLE(0) "/" COLOR(1, 33)
                     "a" STYLE(0) " is between " COLOR(1, 32) "0.0" STYLE(0)
                     "-" COLOR(1, 34) "1.0" STYLE(0));
-                HELP("-f font\tSet the text font (string)");
-                HELP("-t title\tSet title text (string)");
-                HELP("-m message\tSet message text (string)");
+                HELP("");
+                fprintf(stderr, "Size and position:\n");
+                HELP("-x width\tSet overlay width  before scaling (integer)");
+                HELP("-y height\tSet overlay height before scaling (integer)");
                 HELP("-s scale\tScale ratio (float)");
+                HELP("-H offset\tMove overlay horizontally (integer)");
+                HELP("-V offset\tMove overlay  vertically  (integer)");
+                HELP("");
+                fprintf(stderr, "Other:\n");
+                HELP("-w\t\tSet EWMH bypass_compositor hint");
+                HELP("-d\t\tFork to background on startup");
+                HELP("-v\t\tBe verbose and spam console");
                 #undef HELP
                 #undef STYLE
                 #undef COLOR
@@ -166,103 +135,21 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Fork to background
-    if (daemonize == 1) {
+    verbose_printf("Verbose mode activated\n");
+
+    if (daemonize) {
+        verbose_printf("Forking to background\n");
         int pid = -1;
         pid = fork();
         if (pid > 0) exit(EXIT_SUCCESS);
         else if(pid == 0) setsid();
     }
 
-    XSetWindowAttributes attrs;
-    attrs.override_redirect = 1;
-
-    XVisualInfo vinfo;
-
-    // MacOS doesnt support 32 bit color through XQuartz, massive hack
-    #ifdef __APPLE__
-        int colorDepth = 24;
-    #else
-        int colorDepth = 32;
-    #endif
-
-    if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
-        printf("No visuals found supporting %i bit color, terminating \n", colorDepth);
-        exit(EXIT_FAILURE);
+    int wayland = wayland_backend_start(&options);
+    // if the wayland backend fails, fallback to x11
+    if (wayland == 0) {
+        return 0;
     }
 
-    // sets 32 bit color depth
-    attrs.colormap = XCreateColormap(d, root, vinfo.visual, AllocNone);
-    attrs.background_pixel = 0;
-    attrs.border_pixel = 0;
-
-    Window overlay[num_entries];
-    cairo_surface_t *surface[num_entries];
-    cairo_t *cairo_ctx[num_entries];
-
-    overlay_height *= scale;
-    overlay_width *= scale;
-
-    // create overlay on each screen
-    for (int i = 0; i < num_entries; i++) {
-        overlay[i] = XCreateWindow(
-            d,                                                                     // display
-            root,                                                                  // parent
-            si[i].x_org + si[i].width - overlay_width,                             // x position
-            si[i].y_org + si[i].height - overlay_height,                           // y position
-            overlay_width,                                                         // width
-            overlay_height,                                                        // height
-            0,                                                                     // border width
-            vinfo.depth,                                                           // depth
-            InputOutput,                                                           // class
-            vinfo.visual,                                                          // visual
-            CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
-            &attrs                                                                 // attributes
-        );
-        XMapWindow(d, overlay[i]);
-
-        // allows the mouse to click through the overlay
-        XRectangle rect;
-        XserverRegion region = XFixesCreateRegion(d, &rect, 1);
-        XFixesSetWindowShapeRegion(d, overlay[i], ShapeInput, 0, 0, region);
-        XFixesDestroyRegion(d, region);
-
-        // sets a WM_CLASS to allow the user to blacklist some effect from compositor
-        XClassHint *xch = XAllocClassHint();
-        xch->res_name = "activate-linux";
-        xch->res_class = "activate-linux";
-        XSetClassHint(d, overlay[i], xch);
-
-        // Set _NET_WM_BYPASS_COMPOSITOR
-        if(bypass_compositor == 1) {
-            XChangeProperty(
-                d, overlay[i],
-                XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
-                XA_CARDINAL, 32, PropModeReplace, &bypass_compositor, 1
-            );
-        }
-
-        // cairo context
-        surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
-        cairo_ctx[i] = cairo_create(surface[i]);
-
-        draw(cairo_ctx[i], title, subtitle, scale, text_color, customfont, boldmode, slantmode);
-    }
-
-    // wait for X events forever
-    XEvent event;
-    while(1) {
-        XNextEvent(d, &event);
-    }
-    // free used resources
-    i18n_info_destroy(&i18n);
-    for (int i = 0; i < num_entries; i++) {
-        XUnmapWindow(d, overlay[i]);
-        cairo_destroy(cairo_ctx[i]);
-        cairo_surface_destroy(surface[i]);
-    }
-
-    XFree(si);
-    XCloseDisplay(d);
-    return 0;
+    return x11_backend_start(&options);
 }

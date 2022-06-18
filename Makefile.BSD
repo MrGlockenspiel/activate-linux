@@ -3,10 +3,12 @@ MAN=
 
 .PATH: ${.CURDIR}/src
 
-SRCS=		activate_linux.c
+SRCS=		activate_linux.c color.c i18n.c
 
 CFLAGS+=	-I/usr/local/include
-CFLAGS+=	-I/usr/local/include/cairo
+CFLAGS!=	pkg-config --cflags --libs x11 xfixes xinerama xrandr
+CFLAGS!=	pkg-config --cflags --libs wayland-client
+CFLAGS!=	pkg-config --cflags --libs cairo
 
 LDFLAGS+=	-L/usr/local/lib
 
