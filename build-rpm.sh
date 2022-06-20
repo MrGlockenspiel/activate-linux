@@ -10,7 +10,7 @@ tar_dir="/tmp"
 cur_dir=$(pwd)
 
 tar_suffix=".tar.gz"
-tar_name=activate-linux-$(sed -nr 's/^Version: (.+$)/\1/p' activate-linux.spec)
+tar_name=activate-linux-$(sed -nr 's/^Version:\s+(.+$)/\1/p' activate-linux.spec)
 tar_file=$tar_name$tar_suffix
 
 # Create rpmbuild structure

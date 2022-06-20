@@ -65,11 +65,11 @@ emerge -av activate-linux
 ```
 
 ### openSUSE / SLE
-The package is built on
-[OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux)
+The package is built for various releases on
+[OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux).
 
 Installation instructions for your specific distribution are available here:
-[https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux](https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux)
+**[https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux](https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux)**
 
 Here are the Tumbleweed instructions:
 ```console
@@ -79,11 +79,11 @@ zypper install activate-linux
 ```
 
 ### Fedora
-The package is built on
-[OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux)
+The package is built for various releases on
+[OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux).
 
 Installation instructions for your specific distribution are available here:
-[https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux](https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux)
+**[https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux](https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux)**
 
 Here are the Fedora Rawhide instructions:
 ```console
