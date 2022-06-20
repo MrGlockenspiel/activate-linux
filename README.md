@@ -32,7 +32,7 @@ This project depends on:
 - `libxrandr-dev`
 - `libwayland-dev`
 
-Those packages may be installed (in Debain-based distros) like this:
+Those packages may be installed (in Debian-based distros) like this:
 ```console
 sudo apt install libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev
 ```
