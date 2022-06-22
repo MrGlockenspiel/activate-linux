@@ -12,11 +12,12 @@
 
 i18n_info i18n_map[] = {
     // Must be first, used as default
-    {"en_US", "Activate "SYSTEM_NAME, "Go to Settings to activate "SYSTEM_NAME"."},
+    {"en_US", "Activate "SYSTEM_NAME, "Go to Settings to activate " SYSTEM_NAME "."},
     {"zh_CN", "激活 "SYSTEM_NAME, "转到“设置”以激活 "SYSTEM_NAME"。"},
     {"zh_TW", "啟用 "SYSTEM_NAME, "移至[設定]以啟用 "SYSTEM_NAME"。"},
     {"zh_HK", "啟用 "SYSTEM_NAME, "移至[設定]以啟用 "SYSTEM_NAME"。"},
     {"ru_RU", "Активация "SYSTEM_NAME, "чтобы активировать "SYSTEM_NAME",\nперейдите в раздел \"Параметры\"."},
+    {"ja_JP", SYSTEM_NAME"のライセンス認証", "設定を開き、" SYSTEM_NAME "のライセンス認証を行ってください"},
     {NULL, NULL, NULL}
 };
 
