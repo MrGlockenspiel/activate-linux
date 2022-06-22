@@ -1,14 +1,21 @@
 Summary: The "Activate Windows" watermark ported to Linux
-%define version git
-Version: %{version}
-License: GPLv3, https://github.com/MrGlockenspiel/activate-linux/blob/main/LICENSE.md
+Version: 0
+License: GPL-3.0-only
 Name: activate-linux
 Release: 1
+Group: System/GUI/Other
 Source: activate-linux-%{version}.tar.gz
 URL: https://github.com/MrGlockenspiel/activate-linux
 Buildroot: /tmp/activate-linux-git
-BuildRequires: clang cairo-devel libXi-devel libX11-devel
-BuildRequires: xorgproto-devel xcb-proto-devel libXt-devel libXinerama-devel
+BuildRequires: clang cairo-devel libXi-devel libX11-devel libXrandr-devel libXt-devel libXinerama-devel
+
+%if 0%{?suse_version}
+BuildRequires: xcb-proto-devel
+%endif
+
+%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
+BuildRequires: glibc-all-langpacks
+%endif
 
 %description
 The "Activate Windows" watermark ported to Linux with Xlib and cairo in C
