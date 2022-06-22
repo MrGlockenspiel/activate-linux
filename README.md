@@ -32,7 +32,7 @@ This project depends on:
 - `libxrandr-dev`
 - `libwayland-dev`
 
-Those packages may be installed (in Debain-based distros) like this:
+Those packages may be installed (in Debian-based distros) like this:
 ```console
 sudo apt install libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev
 ```
@@ -62,6 +62,33 @@ This repository is a flake. Run it using `nix run "github:MrGlockenspiel/activat
 eselect repository enable vaacus
 emerge --sync vaacus
 emerge -av activate-linux
+```
+
+### openSUSE / SLE
+The package is built for various releases on
+[OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux).
+
+Installation instructions for your specific distribution are available here:
+**[https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux](https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux)**
+
+Here are the Tumbleweed instructions:
+```console
+zypper addrepo https://download.opensuse.org/repositories/home:tschmitz:activate-linux/openSUSE_Tumbleweed/home:tschmitz:activate-linux.repo
+zypper refresh
+zypper install activate-linux
+```
+
+### Fedora
+The package is built for various releases on
+[OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux).
+
+Installation instructions for your specific distribution are available here:
+**[https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux](https://software.opensuse.org/download.html?project=home%3Atschmitz%3Aactivate-linux&package=activate-linux)**
+
+Here are the Fedora Rawhide instructions:
+```console
+dnf config-manager --add-repo https://download.opensuse.org/repositories/home:tschmitz:activate-linux/Fedora_Rawhide/home:tschmitz:activate-linux.repo
+dnf install activate-linux
 ```
 
 #### Other
