@@ -7,7 +7,9 @@ Group: System/GUI/Other
 Source: activate-linux-%{version}.tar.gz
 URL: https://github.com/MrGlockenspiel/activate-linux
 Buildroot: /tmp/activate-linux-git
-BuildRequires: clang cairo-devel libXi-devel libX11-devel libXrandr-devel libXt-devel libXinerama-devel
+BuildRequires: clang cairo-devel
+BuildRequires: libXi-devel libX11-devel libXrandr-devel libXt-devel libXinerama-devel
+BuildRequires: wayland-devel
 
 %if 0%{?suse_version}
 BuildRequires: xcb-proto-devel
