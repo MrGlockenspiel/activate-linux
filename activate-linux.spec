@@ -1,5 +1,5 @@
 Summary: The "Activate Windows" watermark ported to Linux
-Version: 0
+Version: 0.2
 License: GPL-3.0-only
 Name: activate-linux
 Release: 1
