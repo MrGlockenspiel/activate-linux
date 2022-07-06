@@ -64,7 +64,7 @@ emerge --sync vaacus
 emerge -av activate-linux
 ```
 
-### openSUSE / SLE
+#### openSUSE / SLE
 The package is built for various releases on
 [OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux).
 
@@ -78,7 +78,7 @@ zypper refresh
 zypper install activate-linux
 ```
 
-### Fedora
+#### Fedora
 The package is built for various releases on
 [OBS](https://build.opensuse.org/package/show/home:tschmitz:activate-linux/activate-linux).
 

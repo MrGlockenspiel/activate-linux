@@ -1,5 +1,5 @@
 Summary: The "Activate Windows" watermark ported to Linux
-Version: 0
+Version: 0.2
 License: GPL-3.0-only
 Name: activate-linux
 Release: 1
@@ -7,7 +7,9 @@ Group: System/GUI/Other
 Source: activate-linux-%{version}.tar.gz
 URL: https://github.com/MrGlockenspiel/activate-linux
 Buildroot: /tmp/activate-linux-git
-BuildRequires: clang cairo-devel libXi-devel libX11-devel libXrandr-devel libXt-devel libXinerama-devel
+BuildRequires: clang cairo-devel
+BuildRequires: libXi-devel libX11-devel libXrandr-devel libXt-devel libXinerama-devel
+BuildRequires: wayland-devel
 
 %if 0%{?suse_version}
 BuildRequires: xcb-proto-devel
