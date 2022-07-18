@@ -45,7 +45,8 @@ struct output {
     uint32_t width, height;
 };
 
-static void randname(char *buf) {
+static void randname(char *buf)
+{
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
     long r = ts.tv_nsec;
@@ -57,7 +58,8 @@ static void randname(char *buf) {
 
 // Linux provides syscalls to do this for us, but for the interest in broader
 // UNIX compatibility, we're going to open a virtual file on the filesystem.
-static int anonymous_shm_open(void) {
+static int anonymous_shm_open(void)
+{
     char name[] = "/activate-linux-XXXXXX";
     int retries = 100;
 
@@ -77,8 +79,11 @@ static int anonymous_shm_open(void) {
 }
 
 // renders a frame then commits
-static void frame_commit(struct output *output) {
-    if (output->width == 0 || output->height == 0) return;
+static void frame_commit(struct output *output)
+{
+    if (output->width == 0 || output->height == 0) {
+        return;
+    }
 
     verbose_printf("Rendering a wayland frame\n");
 
@@ -93,12 +98,12 @@ static void frame_commit(struct output *output) {
     void *data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     struct wl_shm_pool *pool = wl_shm_create_pool(output->state->shm, fd, size);
     struct wl_buffer *buffer = wl_shm_pool_create_buffer(pool, 0,
-            width, height, stride, WL_SHM_FORMAT_ARGB8888);
+                               width, height, stride, WL_SHM_FORMAT_ARGB8888);
     wl_shm_pool_destroy(pool);
     close(fd);
 
     cairo_surface_t *surface = cairo_image_surface_create_for_data(data,
-            CAIRO_FORMAT_ARGB32, width, height, stride);
+                               CAIRO_FORMAT_ARGB32, width, height, stride);
     cairo_t *cairo = cairo_create(surface);
 
     struct draw_options options = *output->state->options;
@@ -116,20 +121,28 @@ static void frame_commit(struct output *output) {
     munmap(data, size);
 }
 
-static void output_destroy(struct output *output) {
+static void output_destroy(struct output *output)
+{
     verbose_printf("Destroying output\n");
 
-    if (output->layer_surface) zwlr_layer_surface_v1_destroy(output->layer_surface);
-    if (output->wl_output) wl_output_destroy(output->wl_output);
-    if (output->surface) wl_surface_destroy(output->surface);
+    if (output->layer_surface) {
+        zwlr_layer_surface_v1_destroy(output->layer_surface);
+    }
+    if (output->wl_output) {
+        wl_output_destroy(output->wl_output);
+    }
+    if (output->surface) {
+        wl_surface_destroy(output->surface);
+    }
 
     wl_list_remove(&output->link);
     free(output);
 }
 
 static void layer_surface_configure(void *data,
-        struct zwlr_layer_surface_v1 *surface,
-        uint32_t serial, uint32_t width, uint32_t height) {
+                                    struct zwlr_layer_surface_v1 *surface,
+                                    uint32_t serial, uint32_t width, uint32_t height)
+{
     UNUSED(surface);
     struct output *output = data;
 
@@ -147,7 +160,8 @@ static void layer_surface_configure(void *data,
     }
 }
 
-static void layer_surface_closed(void *data, struct zwlr_layer_surface_v1 *surface) {
+static void layer_surface_closed(void *data, struct zwlr_layer_surface_v1 *surface)
+{
     UNUSED(surface);
     struct output *output = data;
     output_destroy(output);
@@ -159,8 +173,9 @@ static const struct zwlr_layer_surface_v1_listener layer_surface_listener = {
 };
 
 static void output_geometry(void *data, struct wl_output *output, int32_t x,
-        int32_t y, int32_t width_mm, int32_t height_mm, int32_t subpixel,
-        const char *make, const char *model, int32_t transform) {
+                            int32_t y, int32_t width_mm, int32_t height_mm, int32_t subpixel,
+                            const char *make, const char *model, int32_t transform)
+{
     UNUSED(data);
     UNUSED(output);
     UNUSED(x);
@@ -174,7 +189,8 @@ static void output_geometry(void *data, struct wl_output *output, int32_t x,
 }
 
 static void output_mode(void *data, struct wl_output *output, uint32_t flags,
-        int32_t width, int32_t height, int32_t refresh) {
+                        int32_t width, int32_t height, int32_t refresh)
+{
     UNUSED(data);
     UNUSED(output);
     UNUSED(flags);
@@ -183,7 +199,8 @@ static void output_mode(void *data, struct wl_output *output, uint32_t flags,
     UNUSED(refresh);
 }
 
-static void output_done(void *data, struct wl_output *wl_output) {
+static void output_done(void *data, struct wl_output *wl_output)
+{
     UNUSED(wl_output);
 
     struct output *output = data;
@@ -198,42 +215,45 @@ static void output_done(void *data, struct wl_output *wl_output) {
         wl_region_destroy(input_region);
 
         output->layer_surface = zwlr_layer_shell_v1_get_layer_surface(
-                output->state->layer_shell, output->surface, output->wl_output,
-                ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, "activate notification");
+                                    output->state->layer_shell, output->surface, output->wl_output,
+                                    ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, "activate notification");
 
         struct draw_options *options = output->state->options;
         zwlr_layer_surface_v1_set_size(output->layer_surface,
-            options->overlay_width * options->scale,
-            options->overlay_height * options->scale);
+                                       options->overlay_width * options->scale,
+                                       options->overlay_height * options->scale);
         zwlr_layer_surface_v1_set_anchor(output->layer_surface,
-                ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM |
-                ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
+                                         ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM |
+                                         ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
         zwlr_layer_surface_v1_set_exclusive_zone(output->layer_surface, -1);
         zwlr_layer_surface_v1_set_margin(output->layer_surface,
-            0, options->offset_top,
-            0, options->offset_left);
+                                         0, options->offset_top,
+                                         0, options->offset_left);
         zwlr_layer_surface_v1_add_listener(output->layer_surface,
-                &layer_surface_listener, output);
+                                           &layer_surface_listener, output);
         wl_surface_commit(output->surface);
     }
 
     frame_commit(output);
 }
 
-static void output_scale(void *data, struct wl_output *wl_output, int32_t scale) {
+static void output_scale(void *data, struct wl_output *wl_output, int32_t scale)
+{
     UNUSED(wl_output);
     struct output *output = data;
     output->scale = scale;
 }
 
-static void output_name(void *data, struct wl_output *wl_output, const char *name) {
+static void output_name(void *data, struct wl_output *wl_output, const char *name)
+{
     UNUSED(data);
     UNUSED(wl_output);
     UNUSED(name);
 }
 
 static void output_description(void *data, struct wl_output *wl_output,
-        const char *description) {
+                               const char *description)
+{
     UNUSED(data);
     UNUSED(wl_output);
     UNUSED(description);
@@ -251,7 +271,8 @@ static const struct wl_output_listener output_listener = {
 };
 
 static void handle_global(void *data, struct wl_registry *registry,
-        uint32_t name, const char *interface, uint32_t version) {
+                          uint32_t name, const char *interface, uint32_t version)
+{
     UNUSED(version);
 
     verbose_printf("Hadling wayland global: %s\n", interface);
@@ -275,7 +296,8 @@ static void handle_global(void *data, struct wl_registry *registry,
 }
 
 static void handle_global_remove(void *data, struct wl_registry *registry,
-        uint32_t name) {
+                                 uint32_t name)
+{
     UNUSED(registry);
     verbose_printf("Hadling wayland global remove\n");
     struct state *state = data;
@@ -293,10 +315,10 @@ static const struct wl_registry_listener registry_listener = {
     .global_remove = handle_global_remove,
 };
 
-int wayland_backend_start(struct draw_options *options) {
-    struct state state = {
-        .options = options,
-    };
+int wayland_backend_start(struct draw_options *options)
+{
+    struct state state =
+    {   .options = options, };
 
     wl_list_init(&state.outputs);
 
@@ -312,7 +334,7 @@ int wayland_backend_start(struct draw_options *options) {
         return 1;
     }
     if (state.compositor == NULL || state.shm == NULL ||
-            state.layer_shell == NULL) {
+        state.layer_shell == NULL) {
         verbose_printf("Missing a required wayland interface\n");
         return 1;
     }

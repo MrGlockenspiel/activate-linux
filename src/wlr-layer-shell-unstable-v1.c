@@ -45,49 +45,49 @@ extern const struct wl_interface xdg_popup_interface;
 extern const struct wl_interface zwlr_layer_surface_v1_interface;
 
 static const struct wl_interface *wlr_layer_shell_unstable_v1_types[] = {
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	&zwlr_layer_surface_v1_interface,
-	&wl_surface_interface,
-	&wl_output_interface,
-	NULL,
-	NULL,
-	&xdg_popup_interface,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    &zwlr_layer_surface_v1_interface,
+    &wl_surface_interface,
+    &wl_output_interface,
+    NULL,
+    NULL,
+    &xdg_popup_interface,
 };
 
 static const struct wl_message zwlr_layer_shell_v1_requests[] = {
-	{ "get_layer_surface", "no?ous", wlr_layer_shell_unstable_v1_types + 4 },
-	{ "destroy", "3", wlr_layer_shell_unstable_v1_types + 0 },
+    { "get_layer_surface", "no?ous", wlr_layer_shell_unstable_v1_types + 4 },
+    { "destroy", "3", wlr_layer_shell_unstable_v1_types + 0 },
 };
 
 WL_PRIVATE const struct wl_interface zwlr_layer_shell_v1_interface = {
-	"zwlr_layer_shell_v1", 4,
-	2, zwlr_layer_shell_v1_requests,
-	0, NULL,
+    "zwlr_layer_shell_v1", 4,
+    2, zwlr_layer_shell_v1_requests,
+    0, NULL,
 };
 
 static const struct wl_message zwlr_layer_surface_v1_requests[] = {
-	{ "set_size", "uu", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "set_anchor", "u", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "set_exclusive_zone", "i", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "set_margin", "iiii", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "set_keyboard_interactivity", "u", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "get_popup", "o", wlr_layer_shell_unstable_v1_types + 9 },
-	{ "ack_configure", "u", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "destroy", "", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "set_layer", "2u", wlr_layer_shell_unstable_v1_types + 0 },
+    { "set_size", "uu", wlr_layer_shell_unstable_v1_types + 0 },
+    { "set_anchor", "u", wlr_layer_shell_unstable_v1_types + 0 },
+    { "set_exclusive_zone", "i", wlr_layer_shell_unstable_v1_types + 0 },
+    { "set_margin", "iiii", wlr_layer_shell_unstable_v1_types + 0 },
+    { "set_keyboard_interactivity", "u", wlr_layer_shell_unstable_v1_types + 0 },
+    { "get_popup", "o", wlr_layer_shell_unstable_v1_types + 9 },
+    { "ack_configure", "u", wlr_layer_shell_unstable_v1_types + 0 },
+    { "destroy", "", wlr_layer_shell_unstable_v1_types + 0 },
+    { "set_layer", "2u", wlr_layer_shell_unstable_v1_types + 0 },
 };
 
 static const struct wl_message zwlr_layer_surface_v1_events[] = {
-	{ "configure", "uuu", wlr_layer_shell_unstable_v1_types + 0 },
-	{ "closed", "", wlr_layer_shell_unstable_v1_types + 0 },
+    { "configure", "uuu", wlr_layer_shell_unstable_v1_types + 0 },
+    { "closed", "", wlr_layer_shell_unstable_v1_types + 0 },
 };
 
 WL_PRIVATE const struct wl_interface zwlr_layer_surface_v1_interface = {
-	"zwlr_layer_surface_v1", 4,
-	9, zwlr_layer_surface_v1_requests,
-	2, zwlr_layer_surface_v1_events,
+    "zwlr_layer_surface_v1", 4,
+    9, zwlr_layer_surface_v1_requests,
+    2, zwlr_layer_surface_v1_events,
 };
 

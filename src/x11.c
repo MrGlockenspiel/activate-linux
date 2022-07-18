@@ -19,14 +19,16 @@
 #include "draw.h"
 
 // check if compositor is running
-static bool compositor_check(Display *d, int screen) {
+static bool compositor_check(Display *d, int screen)
+{
     char prop_name[16];
     snprintf(prop_name, 16, "_NET_WM_CM_S%d", screen);
     Atom prop_atom = XInternAtom(d, prop_name, False);
     return XGetSelectionOwner(d, prop_atom) != None;
 }
 
-int x11_backend_start(struct draw_options *options) {
+int x11_backend_start(struct draw_options *options)
+{
     verbose_printf("Opening display\n");
     Display *d = XOpenDisplay(NULL);
     verbose_printf("Finding root window\n");
@@ -70,11 +72,11 @@ int x11_backend_start(struct draw_options *options) {
     XVisualInfo vinfo;
 
     // MacOS doesn't support 32 bit color through XQuartz, massive hack
-    #ifdef __APPLE__
-        int colorDepth = 24;
-    #else
-        int colorDepth = 32;
-    #endif
+#ifdef __APPLE__
+    int colorDepth = 24;
+#else
+    int colorDepth = 32;
+#endif
 
     verbose_printf("Checking default screen to be %d bit color depth\n", colorDepth);
     if (!XMatchVisualInfo(d, default_screen, colorDepth, TrueColor, &vinfo)) {
@@ -99,19 +101,19 @@ int x11_backend_start(struct draw_options *options) {
     for (int i = 0; i < num_entries; i++) {
         verbose_printf("Creating overlay on %d screen\n", i);
         overlay[i] = XCreateWindow(
-            d,                                                                     // display
-            root,                                                                  // parent
-            si[i].x_org + si[i].width + options->offset_left - overlay_width,               // x position
-            si[i].y_org + si[i].height + options->offset_top - overlay_height,              // y position
-            overlay_width,                                                         // width
-            overlay_height,                                                        // height
-            0,                                                                     // border width
-            vinfo.depth,                                                           // depth
-            InputOutput,                                                           // class
-            vinfo.visual,                                                          // visual
-            CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
-            &attrs                                                                 // attributes
-        );
+                         d,                                                                     // display
+                         root,                                                                  // parent
+                         si[i].x_org + si[i].width + options->offset_left - overlay_width,               // x position
+                         si[i].y_org + si[i].height + options->offset_top - overlay_height,              // y position
+                         overlay_width,                                                         // width
+                         overlay_height,                                                        // height
+                         0,                                                                     // border width
+                         vinfo.depth,                                                           // depth
+                         InputOutput,                                                           // class
+                         vinfo.visual,                                                          // visual
+                         CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
+                         &attrs                                                                 // attributes
+                     );
         XMapWindow(d, overlay[i]);
 
         // allows the mouse to click through the overlay
