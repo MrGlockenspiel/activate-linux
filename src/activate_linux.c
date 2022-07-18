@@ -43,10 +43,13 @@ int main(int argc, char *argv[])
     bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?vbwdit:m:f:s:c:H:V:x:y:")) != -1) {
+    while ((opt = getopt(argc, argv, "h?vqbwdit:m:f:s:c:H:V:x:y:")) != -1) {
         switch (opt) {
         case 'v':
-            verbose_mode = true;
+            inc_verbose();
+            break;
+        case 'q':
+            set_silent();
             break;
         case 'b':
             options.bold_mode = true;
@@ -129,6 +132,7 @@ int main(int argc, char *argv[])
             HELP("-w\t\tSet EWMH bypass_compositor hint");
             HELP("-d\t\tFork to background on startup");
             HELP("-v\t\tBe verbose and spam console");
+            HELP("-q\t\tBe completely silent");
 #undef HELP
 #undef STYLE
 #undef COLOR
@@ -136,10 +140,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    verbose_printf("Verbose mode activated\n");
+    __debug__("Verbose mode activated\n");
 
     if (daemonize) {
-        verbose_printf("Forking to background\n");
+        __debug__("Forking to background\n");
         int pid = -1;
         pid = fork();
         if (pid > 0) {

@@ -85,7 +85,7 @@ static void frame_commit(struct output *output)
         return;
     }
 
-    verbose_printf("Rendering a wayland frame\n");
+    __debug__("Rendering a wayland frame\n");
 
     int width = output->width * output->state->options->scale * output->scale;
     int height = output->height * output->state->options->scale * output->scale;
@@ -123,7 +123,7 @@ static void frame_commit(struct output *output)
 
 static void output_destroy(struct output *output)
 {
-    verbose_printf("Destroying output\n");
+    __debug__("Destroying output\n");
 
     if (output->layer_surface) {
         zwlr_layer_surface_v1_destroy(output->layer_surface);
@@ -146,7 +146,7 @@ static void layer_surface_configure(void *data,
     UNUSED(surface);
     struct output *output = data;
 
-    verbose_printf("Handling wayland surface configure\n");
+    __debug__("Handling wayland surface configure\n");
     zwlr_layer_surface_v1_ack_configure(output->layer_surface, serial);
 
     // ignore same size configures
@@ -275,7 +275,7 @@ static void handle_global(void *data, struct wl_registry *registry,
 {
     UNUSED(version);
 
-    verbose_printf("Hadling wayland global: %s\n", interface);
+    __debug__("Hadling wayland global: %s\n", interface);
     struct state *state = data;
     if (strcmp(interface, wl_compositor_interface.name) == 0) {
         state->compositor =
@@ -299,7 +299,7 @@ static void handle_global_remove(void *data, struct wl_registry *registry,
                                  uint32_t name)
 {
     UNUSED(registry);
-    verbose_printf("Hadling wayland global remove\n");
+    __debug__("Hadling wayland global remove\n");
     struct state *state = data;
     struct output *output, *tmp;
     wl_list_for_each_safe(output, tmp, &state->outputs, link) {
@@ -330,12 +330,12 @@ int wayland_backend_start(struct draw_options *options)
     struct wl_registry *registry = wl_display_get_registry(state.display);
     wl_registry_add_listener(registry, &registry_listener, &state);
     if (wl_display_roundtrip(state.display) < 0) {
-        verbose_printf("Failed to roundtrip wayland display\n");
+        __error__("Failed to roundtrip wayland display\n");
         return 1;
     }
     if (state.compositor == NULL || state.shm == NULL ||
         state.layer_shell == NULL) {
-        verbose_printf("Missing a required wayland interface\n");
+        __error__("Missing a required wayland interface\n");
         return 1;
     }
 
