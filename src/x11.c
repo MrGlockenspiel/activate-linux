@@ -114,6 +114,8 @@ int x11_backend_start(struct draw_options *options)
                          CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
                          &attrs                                                                 // attributes
                      );
+        // Subscribe to Exposure Events, required for redrawing after DPMS blanking
+        XSelectInput(d, overlay[i], ExposureMask);
         XMapWindow(d, overlay[i]);
 
         // allows the mouse to click through the overlay
@@ -143,9 +145,6 @@ int x11_backend_start(struct draw_options *options)
         __debug__("Creating cairo context\n");
         surface[i] = cairo_xlib_surface_create(d, overlay[i], vinfo.visual, overlay_width, overlay_height);
         cairo_ctx[i] = cairo_create(surface[i]);
-
-        __debug__("Drawing text\n");
-        draw_text(cairo_ctx[i], options);
     }
 
     __debug__("All done. Going into X windows event endless loop\n\n");
@@ -166,11 +165,24 @@ int x11_backend_start(struct draw_options *options)
                         si[i].x_org + si[i].width + options->offset_left - overlay_width,  // x position
                         si[i].y_org + si[i].height + options->offset_top - overlay_height  // y position
                     );
-                    __debug__("  Redrawing text\n");
-                    draw_text(cairo_ctx[i], options);
                 }
             } else {
                 __debug__("! Got Xrandr event, type: %d (0x%X)\n", event.type-xrr_event_base, event.type-xrr_event_base);
+            }
+        } else if (event.type == Expose) {
+            /*
+             * See https://www.x.org/releases/X11R7.5/doc/man/man3/XExposeEvent.3.html
+             * removed draw_text() call from elsewhere because XExposeEvent is emitted
+             * on both window init and window damage.
+             */
+
+            __debug__("! Got X event, type: %d (0x%X)\n", event.type, event.type);
+            for (int i = 0; i < num_entries && event.xexpose.count == 0; i++) {
+                if (overlay[i] == event.xexpose.window) {
+                    __debug__("\tRedrawing overlay: %d\n", i);
+                    draw_text(cairo_ctx[i], options);
+                    break;
+                }
             }
         } else {
             __debug__("! Got X event, type: %d (0x%X)\n", event.type, event.type);
