@@ -13,6 +13,9 @@ RM = rm
 SOURCES := $(wildcard src/*.c)
 OBJECTS = $(SOURCES:src/%.c=obj/%.o)
 
+GENERATORS := $(wildcard src/*.cgen)
+OBJECTS += $(GENERATORS:src/%.cgen=obj/%.o)
+
 NAME := $(shell uname -s)
 CFLAGS := \
 	$(CFLAGS) \
@@ -33,10 +36,16 @@ endif
 all: $(BINARY)
 
 obj/%.o: src/%.c
-	$(CC) -c $(<) -o $(@) $(CFLAGS)
+	@echo "  CC\t" $(<)
+	@$(CC) -c $(<) -o $(@) $(CFLAGS)
+
+%.c: %.cgen
+	@echo " GEN\t" $(<)
+	@sh $(<) > $(@)
 
 $(BINARY): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(@) $(LDFLAGS)
+	@echo "LINK\t" $(^)
+	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
 install: $(BINARY)
 	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)

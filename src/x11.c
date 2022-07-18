@@ -18,6 +18,8 @@
 #include "log.h"
 #include "draw.h"
 
+// generated function: returns XEvent name
+const char* XEventName(int type);
 // check if compositor is running
 static bool compositor_check(Display *d, int screen)
 {
@@ -176,7 +178,7 @@ int x11_backend_start(struct draw_options *options)
              * on both window init and window damage.
              */
 
-            __debug__("! Got X event, type: %d (0x%X)\n", event.type, event.type);
+            __debug__("! Got X event, type: %s (0x%X)\n", XEventName(event.type), event.type);
             for (int i = 0; i < num_entries && event.xexpose.count == 0; i++) {
                 if (overlay[i] == event.xexpose.window) {
                     __debug__("\tRedrawing overlay: %d\n", i);
@@ -185,7 +187,7 @@ int x11_backend_start(struct draw_options *options)
                 }
             }
         } else {
-            __debug__("! Got X event, type: %d (0x%X)\n", event.type, event.type);
+            __debug__("! Got X event, type: %s (0x%X)\n", XEventName(event.type), event.type);
         }
     }
 
