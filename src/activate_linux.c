@@ -100,16 +100,20 @@ int main(int argc, char *argv[])
             break;
         case '?':
         case 'h':
-#define HELP(X) fprintf(stderr, "  " X "\n")
+#define HELP(fmtstr, ...) fprintf(stderr, "  " fmtstr "\n", ## __VA_ARGS__)
+#define SECTION(name, fmtstr, ...) fprintf(stderr,(STYLE(1) "" name ": " STYLE(0) fmtstr "\n"), ## __VA_ARGS__)
+#define END() fprintf(stderr, "\n")
 #define STYLE(x) "\033[" # x "m"
 #define COLOR(x, y) "\033[" # x ";" # y "m"
-            fprintf(stderr, "Usage: %s [-b] [-i] [-c color] [-f font] [-m message] [-s scale] [-t title] ...\n", argv[0]);
-            HELP("");
-            fprintf(stderr, "Text:\n");
+            SECTION("Usage", "%s [-biwdvq] [-c color] [-f font] [-m message] [-s scale] [-t title] ...", argv[0]);
+            END();
+
+            SECTION("Text", "");
             HELP("-t title\tSet  title  text (string)");
             HELP("-m message\tSet message text (string)");
-            HELP("");
-            fprintf(stderr, "Appearance:\n");
+            END();
+
+            SECTION("Appearance", "");
             HELP("-f font\tSet the text font (string)");
             HELP("-b\t\tShow " STYLE(1) "bold" STYLE(0) " text");
             HELP("-i\t\tShow " STYLE(3) "italic/slanted" STYLE(0) " text");
@@ -120,20 +124,25 @@ int main(int argc, char *argv[])
                  "g" STYLE(0)  "/" COLOR(1, 34) "b" STYLE(0) "/" COLOR(1, 33)
                  "a" STYLE(0) " is between " COLOR(1, 32) "0.0" STYLE(0)
                  "-" COLOR(1, 34) "1.0" STYLE(0));
-            HELP("");
-            fprintf(stderr, "Size and position:\n");
+            END();
+
+            SECTION("Geometry", "");
             HELP("-x width\tSet overlay width  before scaling (integer)");
             HELP("-y height\tSet overlay height before scaling (integer)");
             HELP("-s scale\tScale ratio (float)");
             HELP("-H offset\tMove overlay horizontally (integer)");
             HELP("-V offset\tMove overlay  vertically  (integer)");
-            HELP("");
-            fprintf(stderr, "Other:\n");
+            END();
+
+            SECTION("Other", "");
             HELP("-w\t\tSet EWMH bypass_compositor hint");
             HELP("-d\t\tFork to background on startup");
             HELP("-v\t\tBe verbose and spam console");
             HELP("-q\t\tBe completely silent");
+            END();
 #undef HELP
+#undef SECTION
+#undef END
 #undef STYLE
 #undef COLOR
             exit(EXIT_SUCCESS);
