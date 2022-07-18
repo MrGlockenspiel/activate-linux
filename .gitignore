@@ -1,4 +1,5 @@
 activate-linux
+protocols
 
 # Prerequisites
 *.d
