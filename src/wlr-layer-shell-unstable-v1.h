@@ -8,7 +8,8 @@
 #include "wayland-client.h"
 
 #ifdef  __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /**
@@ -127,18 +128,18 @@ extern const struct wl_interface zwlr_layer_surface_v1_interface;
 #ifndef ZWLR_LAYER_SHELL_V1_ERROR_ENUM
 #define ZWLR_LAYER_SHELL_V1_ERROR_ENUM
 enum zwlr_layer_shell_v1_error {
-	/**
-	 * wl_surface has another role
-	 */
-	ZWLR_LAYER_SHELL_V1_ERROR_ROLE = 0,
-	/**
-	 * layer value is invalid
-	 */
-	ZWLR_LAYER_SHELL_V1_ERROR_INVALID_LAYER = 1,
-	/**
-	 * wl_surface has a buffer attached or committed
-	 */
-	ZWLR_LAYER_SHELL_V1_ERROR_ALREADY_CONSTRUCTED = 2,
+    /**
+     * wl_surface has another role
+     */
+    ZWLR_LAYER_SHELL_V1_ERROR_ROLE = 0,
+    /**
+     * layer value is invalid
+     */
+    ZWLR_LAYER_SHELL_V1_ERROR_INVALID_LAYER = 1,
+    /**
+     * wl_surface has a buffer attached or committed
+     */
+    ZWLR_LAYER_SHELL_V1_ERROR_ALREADY_CONSTRUCTED = 2,
 };
 #endif /* ZWLR_LAYER_SHELL_V1_ERROR_ENUM */
 
@@ -156,10 +157,10 @@ enum zwlr_layer_shell_v1_error {
  * single layer is undefined.
  */
 enum zwlr_layer_shell_v1_layer {
-	ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND = 0,
-	ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM = 1,
-	ZWLR_LAYER_SHELL_V1_LAYER_TOP = 2,
-	ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY = 3,
+    ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND = 0,
+    ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM = 1,
+    ZWLR_LAYER_SHELL_V1_LAYER_TOP = 2,
+    ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY = 3,
 };
 #endif /* ZWLR_LAYER_SHELL_V1_LAYER_ENUM */
 
@@ -180,20 +181,20 @@ enum zwlr_layer_shell_v1_layer {
 static inline void
 zwlr_layer_shell_v1_set_user_data(struct zwlr_layer_shell_v1 *zwlr_layer_shell_v1, void *user_data)
 {
-	wl_proxy_set_user_data((struct wl_proxy *) zwlr_layer_shell_v1, user_data);
+    wl_proxy_set_user_data((struct wl_proxy *) zwlr_layer_shell_v1, user_data);
 }
 
 /** @ingroup iface_zwlr_layer_shell_v1 */
 static inline void *
 zwlr_layer_shell_v1_get_user_data(struct zwlr_layer_shell_v1 *zwlr_layer_shell_v1)
 {
-	return wl_proxy_get_user_data((struct wl_proxy *) zwlr_layer_shell_v1);
+    return wl_proxy_get_user_data((struct wl_proxy *) zwlr_layer_shell_v1);
 }
 
 static inline uint32_t
 zwlr_layer_shell_v1_get_version(struct zwlr_layer_shell_v1 *zwlr_layer_shell_v1)
 {
-	return wl_proxy_get_version((struct wl_proxy *) zwlr_layer_shell_v1);
+    return wl_proxy_get_version((struct wl_proxy *) zwlr_layer_shell_v1);
 }
 
 /**
@@ -224,12 +225,12 @@ zwlr_layer_shell_v1_get_version(struct zwlr_layer_shell_v1 *zwlr_layer_shell_v1)
 static inline struct zwlr_layer_surface_v1 *
 zwlr_layer_shell_v1_get_layer_surface(struct zwlr_layer_shell_v1 *zwlr_layer_shell_v1, struct wl_surface *surface, struct wl_output *output, uint32_t layer, const char *namespace)
 {
-	struct wl_proxy *id;
+    struct wl_proxy *id;
 
-	id = wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_shell_v1,
-			 ZWLR_LAYER_SHELL_V1_GET_LAYER_SURFACE, &zwlr_layer_surface_v1_interface, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_shell_v1), 0, NULL, surface, output, layer, namespace);
+    id = wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_shell_v1,
+                                ZWLR_LAYER_SHELL_V1_GET_LAYER_SURFACE, &zwlr_layer_surface_v1_interface, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_shell_v1), 0, NULL, surface, output, layer, namespace);
 
-	return (struct zwlr_layer_surface_v1 *) id;
+    return (struct zwlr_layer_surface_v1 *) id;
 }
 
 /**
@@ -242,8 +243,8 @@ zwlr_layer_shell_v1_get_layer_surface(struct zwlr_layer_shell_v1 *zwlr_layer_she
 static inline void
 zwlr_layer_shell_v1_destroy(struct zwlr_layer_shell_v1 *zwlr_layer_shell_v1)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_shell_v1,
-			 ZWLR_LAYER_SHELL_V1_DESTROY, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_shell_v1), WL_MARSHAL_FLAG_DESTROY);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_shell_v1,
+                           ZWLR_LAYER_SHELL_V1_DESTROY, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_shell_v1), WL_MARSHAL_FLAG_DESTROY);
 }
 
 #ifndef ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_ENUM
@@ -259,66 +260,66 @@ zwlr_layer_shell_v1_destroy(struct zwlr_layer_shell_v1 *zwlr_layer_shell_v1)
  * keyboard focus.
  */
 enum zwlr_layer_surface_v1_keyboard_interactivity {
-	/**
-	 * no keyboard focus is possible
-	 *
-	 * This value indicates that this surface is not interested in
-	 * keyboard events and the compositor should never assign it the
-	 * keyboard focus.
-	 *
-	 * This is the default value, set for newly created layer shell
-	 * surfaces.
-	 *
-	 * This is useful for e.g. desktop widgets that display information
-	 * or only have interaction with non-keyboard input devices.
-	 */
-	ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE = 0,
-	/**
-	 * request exclusive keyboard focus
-	 *
-	 * Request exclusive keyboard focus if this surface is above the
-	 * shell surface layer.
-	 *
-	 * For the top and overlay layers, the seat will always give
-	 * exclusive keyboard focus to the top-most layer which has
-	 * keyboard interactivity set to exclusive. If this layer contains
-	 * multiple surfaces with keyboard interactivity set to exclusive,
-	 * the compositor determines the one receiving keyboard events in
-	 * an implementation- defined manner. In this case, no guarantee is
-	 * made when this surface will receive keyboard focus (if ever).
-	 *
-	 * For the bottom and background layers, the compositor is allowed
-	 * to use normal focus semantics.
-	 *
-	 * This setting is mainly intended for applications that need to
-	 * ensure they receive all keyboard events, such as a lock screen
-	 * or a password prompt.
-	 */
-	ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_EXCLUSIVE = 1,
-	/**
-	 * request regular keyboard focus semantics
-	 *
-	 * This requests the compositor to allow this surface to be
-	 * focused and unfocused by the user in an implementation-defined
-	 * manner. The user should be able to unfocus this surface even
-	 * regardless of the layer it is on.
-	 *
-	 * Typically, the compositor will want to use its normal mechanism
-	 * to manage keyboard focus between layer shell surfaces with this
-	 * setting and regular toplevels on the desktop layer (e.g. click
-	 * to focus). Nevertheless, it is possible for a compositor to
-	 * require a special interaction to focus or unfocus layer shell
-	 * surfaces (e.g. requiring a click even if focus follows the mouse
-	 * normally, or providing a keybinding to switch focus between
-	 * layers).
-	 *
-	 * This setting is mainly intended for desktop shell components
-	 * (e.g. panels) that allow keyboard interaction. Using this option
-	 * can allow implementing a desktop shell that can be fully usable
-	 * without the mouse.
-	 * @since 4
-	 */
-	ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_ON_DEMAND = 2,
+    /**
+     * no keyboard focus is possible
+     *
+     * This value indicates that this surface is not interested in
+     * keyboard events and the compositor should never assign it the
+     * keyboard focus.
+     *
+     * This is the default value, set for newly created layer shell
+     * surfaces.
+     *
+     * This is useful for e.g. desktop widgets that display information
+     * or only have interaction with non-keyboard input devices.
+     */
+    ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE = 0,
+    /**
+     * request exclusive keyboard focus
+     *
+     * Request exclusive keyboard focus if this surface is above the
+     * shell surface layer.
+     *
+     * For the top and overlay layers, the seat will always give
+     * exclusive keyboard focus to the top-most layer which has
+     * keyboard interactivity set to exclusive. If this layer contains
+     * multiple surfaces with keyboard interactivity set to exclusive,
+     * the compositor determines the one receiving keyboard events in
+     * an implementation- defined manner. In this case, no guarantee is
+     * made when this surface will receive keyboard focus (if ever).
+     *
+     * For the bottom and background layers, the compositor is allowed
+     * to use normal focus semantics.
+     *
+     * This setting is mainly intended for applications that need to
+     * ensure they receive all keyboard events, such as a lock screen
+     * or a password prompt.
+     */
+    ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_EXCLUSIVE = 1,
+    /**
+     * request regular keyboard focus semantics
+     *
+     * This requests the compositor to allow this surface to be
+     * focused and unfocused by the user in an implementation-defined
+     * manner. The user should be able to unfocus this surface even
+     * regardless of the layer it is on.
+     *
+     * Typically, the compositor will want to use its normal mechanism
+     * to manage keyboard focus between layer shell surfaces with this
+     * setting and regular toplevels on the desktop layer (e.g. click
+     * to focus). Nevertheless, it is possible for a compositor to
+     * require a special interaction to focus or unfocus layer shell
+     * surfaces (e.g. requiring a click even if focus follows the mouse
+     * normally, or providing a keybinding to switch focus between
+     * layers).
+     *
+     * This setting is mainly intended for desktop shell components
+     * (e.g. panels) that allow keyboard interaction. Using this option
+     * can allow implementing a desktop shell that can be fully usable
+     * without the mouse.
+     * @since 4
+     */
+    ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_ON_DEMAND = 2,
 };
 /**
  * @ingroup iface_zwlr_layer_surface_v1
@@ -329,44 +330,44 @@ enum zwlr_layer_surface_v1_keyboard_interactivity {
 #ifndef ZWLR_LAYER_SURFACE_V1_ERROR_ENUM
 #define ZWLR_LAYER_SURFACE_V1_ERROR_ENUM
 enum zwlr_layer_surface_v1_error {
-	/**
-	 * provided surface state is invalid
-	 */
-	ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_SURFACE_STATE = 0,
-	/**
-	 * size is invalid
-	 */
-	ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_SIZE = 1,
-	/**
-	 * anchor bitfield is invalid
-	 */
-	ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_ANCHOR = 2,
-	/**
-	 * keyboard interactivity is invalid
-	 */
-	ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_KEYBOARD_INTERACTIVITY = 3,
+    /**
+     * provided surface state is invalid
+     */
+    ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_SURFACE_STATE = 0,
+    /**
+     * size is invalid
+     */
+    ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_SIZE = 1,
+    /**
+     * anchor bitfield is invalid
+     */
+    ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_ANCHOR = 2,
+    /**
+     * keyboard interactivity is invalid
+     */
+    ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_KEYBOARD_INTERACTIVITY = 3,
 };
 #endif /* ZWLR_LAYER_SURFACE_V1_ERROR_ENUM */
 
 #ifndef ZWLR_LAYER_SURFACE_V1_ANCHOR_ENUM
 #define ZWLR_LAYER_SURFACE_V1_ANCHOR_ENUM
 enum zwlr_layer_surface_v1_anchor {
-	/**
-	 * the top edge of the anchor rectangle
-	 */
-	ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP = 1,
-	/**
-	 * the bottom edge of the anchor rectangle
-	 */
-	ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM = 2,
-	/**
-	 * the left edge of the anchor rectangle
-	 */
-	ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT = 4,
-	/**
-	 * the right edge of the anchor rectangle
-	 */
-	ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT = 8,
+    /**
+     * the top edge of the anchor rectangle
+     */
+    ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP = 1,
+    /**
+     * the bottom edge of the anchor rectangle
+     */
+    ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM = 2,
+    /**
+     * the left edge of the anchor rectangle
+     */
+    ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT = 4,
+    /**
+     * the right edge of the anchor rectangle
+     */
+    ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT = 8,
 };
 #endif /* ZWLR_LAYER_SURFACE_V1_ANCHOR_ENUM */
 
@@ -375,48 +376,48 @@ enum zwlr_layer_surface_v1_anchor {
  * @struct zwlr_layer_surface_v1_listener
  */
 struct zwlr_layer_surface_v1_listener {
-	/**
-	 * suggest a surface change
-	 *
-	 * The configure event asks the client to resize its surface.
-	 *
-	 * Clients should arrange their surface for the new states, and
-	 * then send an ack_configure request with the serial sent in this
-	 * configure event at some point before committing the new surface.
-	 *
-	 * The client is free to dismiss all but the last configure event
-	 * it received.
-	 *
-	 * The width and height arguments specify the size of the window in
-	 * surface-local coordinates.
-	 *
-	 * The size is a hint, in the sense that the client is free to
-	 * ignore it if it doesn't resize, pick a smaller size (to satisfy
-	 * aspect ratio or resize in steps of NxM pixels). If the client
-	 * picks a smaller size and is anchored to two opposite anchors
-	 * (e.g. 'top' and 'bottom'), the surface will be centered on this
-	 * axis.
-	 *
-	 * If the width or height arguments are zero, it means the client
-	 * should decide its own window dimension.
-	 */
-	void (*configure)(void *data,
-			  struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1,
-			  uint32_t serial,
-			  uint32_t width,
-			  uint32_t height);
-	/**
-	 * surface should be closed
-	 *
-	 * The closed event is sent by the compositor when the surface
-	 * will no longer be shown. The output may have been destroyed or
-	 * the user may have asked for it to be removed. Further changes to
-	 * the surface will be ignored. The client should destroy the
-	 * resource after receiving this event, and create a new surface if
-	 * they so choose.
-	 */
-	void (*closed)(void *data,
-		       struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1);
+    /**
+     * suggest a surface change
+     *
+     * The configure event asks the client to resize its surface.
+     *
+     * Clients should arrange their surface for the new states, and
+     * then send an ack_configure request with the serial sent in this
+     * configure event at some point before committing the new surface.
+     *
+     * The client is free to dismiss all but the last configure event
+     * it received.
+     *
+     * The width and height arguments specify the size of the window in
+     * surface-local coordinates.
+     *
+     * The size is a hint, in the sense that the client is free to
+     * ignore it if it doesn't resize, pick a smaller size (to satisfy
+     * aspect ratio or resize in steps of NxM pixels). If the client
+     * picks a smaller size and is anchored to two opposite anchors
+     * (e.g. 'top' and 'bottom'), the surface will be centered on this
+     * axis.
+     *
+     * If the width or height arguments are zero, it means the client
+     * should decide its own window dimension.
+     */
+    void (*configure)(void *data,
+                      struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1,
+                      uint32_t serial,
+                      uint32_t width,
+                      uint32_t height);
+    /**
+     * surface should be closed
+     *
+     * The closed event is sent by the compositor when the surface
+     * will no longer be shown. The output may have been destroyed or
+     * the user may have asked for it to be removed. Further changes to
+     * the surface will be ignored. The client should destroy the
+     * resource after receiving this event, and create a new surface if
+     * they so choose.
+     */
+    void (*closed)(void *data,
+                   struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1);
 };
 
 /**
@@ -424,10 +425,10 @@ struct zwlr_layer_surface_v1_listener {
  */
 static inline int
 zwlr_layer_surface_v1_add_listener(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1,
-				   const struct zwlr_layer_surface_v1_listener *listener, void *data)
+                                   const struct zwlr_layer_surface_v1_listener *listener, void *data)
 {
-	return wl_proxy_add_listener((struct wl_proxy *) zwlr_layer_surface_v1,
-				     (void (**)(void)) listener, data);
+    return wl_proxy_add_listener((struct wl_proxy *) zwlr_layer_surface_v1,
+                                 (void (**)(void)) listener, data);
 }
 
 #define ZWLR_LAYER_SURFACE_V1_SET_SIZE 0
@@ -490,20 +491,20 @@ zwlr_layer_surface_v1_add_listener(struct zwlr_layer_surface_v1 *zwlr_layer_surf
 static inline void
 zwlr_layer_surface_v1_set_user_data(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, void *user_data)
 {
-	wl_proxy_set_user_data((struct wl_proxy *) zwlr_layer_surface_v1, user_data);
+    wl_proxy_set_user_data((struct wl_proxy *) zwlr_layer_surface_v1, user_data);
 }
 
 /** @ingroup iface_zwlr_layer_surface_v1 */
 static inline void *
 zwlr_layer_surface_v1_get_user_data(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1)
 {
-	return wl_proxy_get_user_data((struct wl_proxy *) zwlr_layer_surface_v1);
+    return wl_proxy_get_user_data((struct wl_proxy *) zwlr_layer_surface_v1);
 }
 
 static inline uint32_t
 zwlr_layer_surface_v1_get_version(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1)
 {
-	return wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1);
+    return wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1);
 }
 
 /**
@@ -523,8 +524,8 @@ zwlr_layer_surface_v1_get_version(struct zwlr_layer_surface_v1 *zwlr_layer_surfa
 static inline void
 zwlr_layer_surface_v1_set_size(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, uint32_t width, uint32_t height)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_SET_SIZE, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, width, height);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_SET_SIZE, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, width, height);
 }
 
 /**
@@ -541,8 +542,8 @@ zwlr_layer_surface_v1_set_size(struct zwlr_layer_surface_v1 *zwlr_layer_surface_
 static inline void
 zwlr_layer_surface_v1_set_anchor(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, uint32_t anchor)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_SET_ANCHOR, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, anchor);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_SET_ANCHOR, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, anchor);
 }
 
 /**
@@ -584,8 +585,8 @@ zwlr_layer_surface_v1_set_anchor(struct zwlr_layer_surface_v1 *zwlr_layer_surfac
 static inline void
 zwlr_layer_surface_v1_set_exclusive_zone(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, int32_t zone)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_SET_EXCLUSIVE_ZONE, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, zone);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_SET_EXCLUSIVE_ZONE, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, zone);
 }
 
 /**
@@ -602,8 +603,8 @@ zwlr_layer_surface_v1_set_exclusive_zone(struct zwlr_layer_surface_v1 *zwlr_laye
 static inline void
 zwlr_layer_surface_v1_set_margin(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, int32_t top, int32_t right, int32_t bottom, int32_t left)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_SET_MARGIN, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, top, right, bottom, left);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_SET_MARGIN, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, top, right, bottom, left);
 }
 
 /**
@@ -625,8 +626,8 @@ zwlr_layer_surface_v1_set_margin(struct zwlr_layer_surface_v1 *zwlr_layer_surfac
 static inline void
 zwlr_layer_surface_v1_set_keyboard_interactivity(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, uint32_t keyboard_interactivity)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_SET_KEYBOARD_INTERACTIVITY, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, keyboard_interactivity);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_SET_KEYBOARD_INTERACTIVITY, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, keyboard_interactivity);
 }
 
 /**
@@ -643,8 +644,8 @@ zwlr_layer_surface_v1_set_keyboard_interactivity(struct zwlr_layer_surface_v1 *z
 static inline void
 zwlr_layer_surface_v1_get_popup(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, struct xdg_popup *popup)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_GET_POPUP, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, popup);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_GET_POPUP, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, popup);
 }
 
 /**
@@ -669,8 +670,8 @@ zwlr_layer_surface_v1_get_popup(struct zwlr_layer_surface_v1 *zwlr_layer_surface
 static inline void
 zwlr_layer_surface_v1_ack_configure(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, uint32_t serial)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_ACK_CONFIGURE, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, serial);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_ACK_CONFIGURE, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, serial);
 }
 
 /**
@@ -681,8 +682,8 @@ zwlr_layer_surface_v1_ack_configure(struct zwlr_layer_surface_v1 *zwlr_layer_sur
 static inline void
 zwlr_layer_surface_v1_destroy(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_DESTROY, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), WL_MARSHAL_FLAG_DESTROY);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_DESTROY, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), WL_MARSHAL_FLAG_DESTROY);
 }
 
 /**
@@ -695,8 +696,8 @@ zwlr_layer_surface_v1_destroy(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v
 static inline void
 zwlr_layer_surface_v1_set_layer(struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, uint32_t layer)
 {
-	wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
-			 ZWLR_LAYER_SURFACE_V1_SET_LAYER, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, layer);
+    wl_proxy_marshal_flags((struct wl_proxy *) zwlr_layer_surface_v1,
+                           ZWLR_LAYER_SURFACE_V1_SET_LAYER, NULL, wl_proxy_get_version((struct wl_proxy *) zwlr_layer_surface_v1), 0, layer);
 }
 
 #ifdef  __cplusplus

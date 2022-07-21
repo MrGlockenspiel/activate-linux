@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include "draw.h"
 
-void draw_text(cairo_t *cr, struct draw_options *options) {
+void draw_text(cairo_t *cr, struct draw_options *options)
+{
     // clear surface
     cairo_operator_t prev_operator = cairo_get_operator(cr);
     cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
@@ -10,7 +11,7 @@ void draw_text(cairo_t *cr, struct draw_options *options) {
 
     // set text color
     cairo_set_source_rgba(cr, options->text_color.r, options->text_color.g,
-        options->text_color.b, options->text_color.a);
+                          options->text_color.b, options->text_color.a);
 
     // no subpixel anti-aliasing because we are on transparent BG
     cairo_font_options_t* font_options = cairo_font_options_create();
