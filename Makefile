@@ -4,14 +4,20 @@ PREFIX ?= /usr/local
 BINDIR ?= bin
 DESTDIR ?=
 
+<< := @echo
+
+ifneq ($(shell eval 'echo -e'),-e)
+	<< += -e
+endif
+
 PKGS := \
 	x11 xfixes xinerama xrandr \
 	wayland-client cairo
 
-RM = rm
+RM := rm
 
 SOURCES := $(wildcard src/*.c)
-OBJECTS = $(SOURCES:src/%.c=obj/%.o)
+OBJECTS := $(SOURCES:src/%.c=obj/%.o)
 
 GENERATORS := $(wildcard src/*.cgen)
 OBJECTS += $(GENERATORS:src/%.cgen=obj/%.o)
@@ -36,15 +42,15 @@ endif
 all: $(BINARY)
 
 obj/%.o: src/%.c
-	@echo "  CC\t" $(<)
+	$(<<) "  CC\t" $(<)
 	@$(CC) -c $(<) -o $(@) $(CFLAGS)
 
 %.c: %.cgen
-	@echo " GEN\t" $(<)
+	$(<<) " GEN\t" $(<)
 	@sh $(<) > $(@)
 
 $(BINARY): $(OBJECTS)
-	@echo "LINK\t" $(^)
+	$(<<) "LINK\t" $(^)
 	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
 install: $(BINARY)
