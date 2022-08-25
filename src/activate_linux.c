@@ -9,8 +9,21 @@
 
 #include "draw.h"
 #include "log.h"
-#include "x11.h"
-#include "wayland.h"
+#include "x11/x11.h"
+#include "wayland/wayland.h"
+
+#if defined(NO_WAYLAND) && defined(NO_X11)
+#error "Either Wayland or X11 backend must be enabled."
+#endif
+
+#if defined(NO_X11) || defined(NO_WAYLAND)
+#define try_backend(X, ...) return  X ## _backend_start(__VA_ARGS__)
+#else
+#define try_backend(X, ...) \
+    const int ret_ ## X =  X ## _backend_start(__VA_ARGS__); \
+    if (ret_ ## X == 0 || strncmp(# X, "x11", 3) == 0) return ret_ ## X
+#endif
+
 
 int main(int argc, char *argv[])
 {
@@ -162,11 +175,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    int wayland = wayland_backend_start(&options);
-    // if the wayland backend fails, fallback to x11
-    if (wayland == 0) {
-        return 0;
-    }
-
-    return x11_backend_start(&options);
+#ifndef NO_WAYLAND
+    // if the wayland backend fails, fallback to x11 if it was enabled.
+    try_backend(wayland, &options);
+#endif
+#ifndef NO_X11
+    try_backend(x11, &options);
+#endif
 }

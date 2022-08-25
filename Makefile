@@ -1,25 +1,45 @@
 CC ?= clang
-CFLAGS ?= -Og -Wall -Wpedantic -Wextra
+CFLAGS ?= -Og -Wall -Wpedantic -Wextra -Isrc
 PREFIX ?= /usr/local
 BINDIR ?= bin
 DESTDIR ?=
+x11 := yes
+wayland := yes
 
 << := @echo
+PKGS := cairo
 
 ifneq ($(shell eval 'echo -e'),-e)
 	<< += -e
 endif
 
-PKGS := \
-	x11 xfixes xinerama xrandr \
-	wayland-client cairo
+ifneq ($(x11),no)
+	PKGS += x11 xfixes xinerama xrandr
+else
+	CFLAGS += -DNO_X11
+endif
+
+ifneq ($(wayland),no)
+	PKGS += wayland-client
+else
+	CFLAGS += -DNO_WAYLAND
+endif
 
 RM := rm
 
 SOURCES := $(wildcard src/*.c)
-OBJECTS := $(SOURCES:src/%.c=obj/%.o)
-
 GENERATORS := $(wildcard src/*.cgen)
+
+ifneq ($(wayland),no)
+	SOURCES += $(wildcard src/wayland/*.c)
+	GENERATORS += $(wildcard src/wayland/*.cgen)
+endif
+ifneq ($(x11),no)
+	SOURCES += $(wildcard src/x11/*.c)
+	GENERATORS += $(wildcard src/x11/*.cgen)
+endif
+
+OBJECTS := $(SOURCES:src/%.c=obj/%.o)
 OBJECTS += $(GENERATORS:src/%.cgen=obj/%.o)
 
 NAME := $(shell uname -s)
@@ -42,7 +62,8 @@ endif
 all: $(BINARY)
 
 obj/%.o: src/%.c
-	$(<<) "  CC\t" $(<)
+	$(<<) "  CC\t" $(<:src/%=%)
+	@mkdir -p $(shell dirname $(@))
 	@$(CC) -c $(<) -o $(@) $(CFLAGS)
 
 %.c: %.cgen
@@ -50,7 +71,7 @@ obj/%.o: src/%.c
 	@sh $(<) > $(@)
 
 $(BINARY): $(OBJECTS)
-	$(<<) "LINK\t" $(^)
+	$(<<) "LINK\t" $(^:obj/%=%)
 	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
 install: $(BINARY)
@@ -60,9 +81,19 @@ uninstall:
 	$(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
 
 clean:
-	$(RM) -f $(OBJECTS) $(BINARY)
+	$(<<) "  RM\t" $(OBJECTS:obj/%=%) $(BINARY)
+	@$(RM) -f $(OBJECTS) $(BINARY) obj/.enabled
 
 test: $(BINARY)
 	./$(BINARY)
 
-.PHONY: all clean install test
+obj/activate_linux.o: obj/.enabled
+
+obj/.enabled: .REBUILD
+	@test -f $(@) || touch $(@)
+	@test "$(x11)" = "no" && grep -q x11 $(@) && sed -i '/x11/d' $(@) || true
+	@test "$(x11)" = "no" || grep -q x11 $(@) || (echo 'x11' >> $(@))
+	@test "$(wayland)" = "no" && grep -q wayland $(@) && sed -i '/wayland/d' $(@) || true
+	@test "$(wayland)" = "no" || grep -q wayland $(@) || (echo 'wayland' >> $(@))
+
+.PHONY: all clean install test .REBUILD
