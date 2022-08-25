@@ -67,8 +67,8 @@ obj/%.o: src/%.c
 	@$(CC) -c $(<) -o $(@) $(CFLAGS)
 
 %.c: %.cgen
-	$(<<) " GEN\t" $(<)
-	@sh $(<) > $(@)
+	$(<<) " GEN\t" $(@:src/%=%)
+	@sh -- $(<) $(@)
 
 $(BINARY): $(OBJECTS)
 	$(<<) "LINK\t" $(^:obj/%=%)

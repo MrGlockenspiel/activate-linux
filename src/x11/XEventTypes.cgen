@@ -1,4 +1,5 @@
 #!/bin/sh
+exec 1> "${1:-/dev/stdout}"
 cat << EOF
 const char* XEventName(int type) {
 	switch(type) {
