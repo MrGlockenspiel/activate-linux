@@ -29,6 +29,7 @@
         ];
 
         buildInputs = with pkgs; [
+          gawk
           pkg-config
 
           cairo
@@ -38,6 +39,9 @@
           xorg.libXt
           xorg.libXfixes
           xorg.libXinerama
+          xorg.libXrandr
+          wayland
+          wayland-protocols
         ];
       };
 
