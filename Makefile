@@ -29,14 +29,17 @@ RM := rm
 
 SOURCES := $(wildcard src/*.c)
 GENERATORS := $(wildcard src/*.cgen)
+HGENERATORS := $(wildcard src/*.hgen)
 
 ifneq ($(wayland),no)
 	SOURCES += $(wildcard src/wayland/*.c)
 	GENERATORS += $(wildcard src/wayland/*.cgen)
+	HGENERATORS += $(wildcard src/wayland/*.hgen)
 endif
 ifneq ($(x11),no)
 	SOURCES += $(wildcard src/x11/*.c)
 	GENERATORS += $(wildcard src/x11/*.cgen)
+	HGENERATORS += $(wildcard src/x11/*.hgen)
 endif
 
 OBJECTS := $(SOURCES:src/%.c=obj/%.o)
@@ -66,6 +69,10 @@ obj/%.o: src/%.c
 	@mkdir -p $(shell dirname $(@))
 	@$(CC) -c $(<) -o $(@) $(CFLAGS)
 
+%.h: %.hgen
+	$(<<) " GEN\t" $(@:src/%=%)
+	@sh -- $(<) $(@)
+
 %.c: %.cgen
 	$(<<) " GEN\t" $(@:src/%=%)
 	@sh -- $(<) $(@)
@@ -88,6 +95,7 @@ test: $(BINARY)
 	./$(BINARY)
 
 obj/activate_linux.o: obj/.enabled
+obj/wayland/wayland.o: src/wayland/wlr-layer-shell-unstable-v1.h
 
 obj/.enabled: .REBUILD
 	@test -f $(@) || touch $(@)
@@ -97,3 +105,4 @@ obj/.enabled: .REBUILD
 	@test "$(wayland)" = "no" || grep -q wayland $(@) || (echo 'wayland' >> $(@))
 
 .PHONY: all clean install test .REBUILD
+.INTERMEDIATE: $(HGENERATORS:%.hgen=%.h)
