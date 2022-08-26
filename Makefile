@@ -16,6 +16,9 @@ PKGS := \
 
 RM := rm
 
+WAYLAND_PROTOCOLS_DIR := $(shell pkg-config --variable=pkgdatadir wayland-protocols)
+WAYLAND_PROTOCOL_HEADERS := protocols
+
 SOURCES := $(wildcard src/*.c)
 OBJECTS := $(SOURCES:src/%.c=obj/%.o)
 
@@ -25,6 +28,7 @@ OBJECTS += $(GENERATORS:src/%.cgen=obj/%.o)
 NAME := $(shell uname -s)
 CFLAGS := \
 	$(CFLAGS) \
+	-I$(WAYLAND_PROTOCOL_HEADERS) \
 	$(shell pkg-config --cflags $(PKGS))
 
 LDFLAGS := \
@@ -42,8 +46,12 @@ endif
 all: $(BINARY)
 
 obj/%.o: src/%.c
+  mkdir -p $(WAYLAND_PROTOCOL_HEADERS)
+	wayland-scanner private-code $(WAYLAND_PROTOCOLS_DIR)/stable/xdg-shell/xdg-shell.xml $(WAYLAND_PROTOCOL_HEADERS)/xdg-shell.c
+	wayland-scanner client-header wlr-layer-shell-unstable-v1.xml $(WAYLAND_PROTOCOL_HEADERS)/wlr-layer-shell-unstable-v1.h
+	wayland-scanner private-code wlr-layer-shell-unstable-v1.xml $(WAYLAND_PROTOCOL_HEADERS)/wlr-layer-shell-unstable-v1.c
 	$(<<) "  CC\t" $(<)
-	@$(CC) -c $(<) -o $(@) $(CFLAGS)
+	@$(CC) -c $(<) $(WAYLAND_PROTOCOL_HEADERS)/*.c -o $(@) $(CFLAGS)
 
 %.c: %.cgen
 	$(<<) " GEN\t" $(<)

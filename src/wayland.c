@@ -12,7 +12,7 @@
 
 #include <cairo.h>
 
-#include "wlr-layer-shell-unstable-v1.h"
+#include <wlr-layer-shell-unstable-v1.h>
 
 #include "wayland.h"
 #include "log.h"
@@ -244,21 +244,6 @@ static void output_scale(void *data, struct wl_output *wl_output, int32_t scale)
     output->scale = scale;
 }
 
-static void output_name(void *data, struct wl_output *wl_output, const char *name)
-{
-    UNUSED(data);
-    UNUSED(wl_output);
-    UNUSED(name);
-}
-
-static void output_description(void *data, struct wl_output *wl_output,
-                               const char *description)
-{
-    UNUSED(data);
-    UNUSED(wl_output);
-    UNUSED(description);
-}
-
 // We need all these empty handlers because libwayland will complain if one of
 // them is NULL
 static const struct wl_output_listener output_listener = {
@@ -266,8 +251,6 @@ static const struct wl_output_listener output_listener = {
     .mode = output_mode,
     .done = output_done,
     .scale = output_scale,
-    .name = output_name,
-    .description = output_description,
 };
 
 static void handle_global(void *data, struct wl_registry *registry,
@@ -286,7 +269,7 @@ static void handle_global(void *data, struct wl_registry *registry,
         struct output *output = calloc(1, sizeof(struct output));
         output->state = state;
         output->wl_name = name;
-        output->wl_output = wl_registry_bind(registry, name, &wl_output_interface, 4);
+        output->wl_output = wl_registry_bind(registry, name, &wl_output_interface, 2);
         wl_output_add_listener(output->wl_output, &output_listener, output);
         wl_list_insert(&state->outputs, &output->link);
     } else if (strcmp(interface, zwlr_layer_shell_v1_interface.name) == 0) {
