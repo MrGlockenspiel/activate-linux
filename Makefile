@@ -3,8 +3,7 @@ CFLAGS ?= -Og -Wall -Wpedantic -Wextra -Isrc
 PREFIX ?= /usr/local
 BINDIR ?= bin
 DESTDIR ?=
-x11 := yes
-wayland := yes
+backends ?= wayland x11
 
 << := @echo
 PKGS := cairo
@@ -13,37 +12,33 @@ ifneq ($(shell eval 'echo -e'),-e)
 	<< += -e
 endif
 
-ifneq ($(x11),no)
+<<backends>> = $(sort $(filter x11 wayland,$(backends)))
+ifeq ($(filter x11,$(<<backends>>)),x11)
 	PKGS += x11 xfixes xinerama xrandr
 else
 	CFLAGS += -DNO_X11
 endif
 
-ifneq ($(wayland),no)
+ifeq ($(filter wayland,$(<<backends>>)),wayland)
 	PKGS += wayland-client
 else
 	CFLAGS += -DNO_WAYLAND
 endif
 
-RM := rm
+<<sources>> := \
+	$(wildcard src/*.c) \
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.c))
 
-SOURCES := $(wildcard src/*.c)
-GENERATORS := $(wildcard src/*.cgen)
-HGENERATORS := $(wildcard src/*.hgen)
+<<generators>> := \
+	$(wildcard src/*.cgen) \
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.cgen))
 
-ifneq ($(wayland),no)
-	SOURCES += $(wildcard src/wayland/*.c)
-	GENERATORS += $(wildcard src/wayland/*.cgen)
-	HGENERATORS += $(wildcard src/wayland/*.hgen)
-endif
-ifneq ($(x11),no)
-	SOURCES += $(wildcard src/x11/*.c)
-	GENERATORS += $(wildcard src/x11/*.cgen)
-	HGENERATORS += $(wildcard src/x11/*.hgen)
-endif
+<<hgenerators>> := \
+	$(wildcard src/*.hgen) \
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.hgen))
 
-OBJECTS := $(SOURCES:src/%.c=obj/%.o)
-OBJECTS += $(GENERATORS:src/%.cgen=obj/%.o)
+<<objects>> := $(<<sources>>:src/%.c=obj/%.o)
+<<objects>> += $(<<generators>>:src/%.cgen=obj/%.o)
 
 NAME := $(shell uname -s)
 CFLAGS := \
@@ -77,7 +72,7 @@ obj/%.o: src/%.c
 	$(<<) " GEN\t" $(@:src/%=%)
 	@sh -- $(<) $(@)
 
-$(BINARY): $(OBJECTS)
+$(BINARY): $(<<objects>>)
 	$(<<) "LINK\t" $(^:obj/%=%)
 	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
@@ -88,8 +83,8 @@ uninstall:
 	$(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
 
 clean:
-	$(<<) "  RM\t" $(OBJECTS:obj/%=%) $(BINARY)
-	@$(RM) -f $(OBJECTS) $(BINARY) obj/.enabled
+	$(<<) "  RM\t" $(<<objects>>:obj/%=%) $(BINARY)
+	@$(RM) -f $(<<objects>>) $(BINARY) obj/.enabled
 
 test: $(BINARY)
 	./$(BINARY)
@@ -99,10 +94,7 @@ obj/wayland/wayland.o: src/wayland/wlr-layer-shell-unstable-v1.h
 
 obj/.enabled: .REBUILD
 	@test -f $(@) || touch $(@)
-	@test "$(x11)" = "no" && grep -q x11 $(@) && sed -i '/x11/d' $(@) || true
-	@test "$(x11)" = "no" || grep -q x11 $(@) || (echo 'x11' >> $(@))
-	@test "$(wayland)" = "no" && grep -q wayland $(@) && sed -i '/wayland/d' $(@) || true
-	@test "$(wayland)" = "no" || grep -q wayland $(@) || (echo 'wayland' >> $(@))
+	@grep -Fqx "$(<<backends>>)" $(@) || echo "$(<<backends>>)" > $(@)
 
-.PHONY: all clean install test .REBUILD
-.INTERMEDIATE: $(HGENERATORS:%.hgen=%.h)
+.PHONY: all clean install uninstall test .REBUILD
+.INTERMEDIATE: $(<<hgenerators>>:%.hgen=%.h) $(<<generators>>:%.cgen=%.c)
