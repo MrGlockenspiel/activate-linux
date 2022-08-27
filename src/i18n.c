@@ -6,10 +6,13 @@
 
 #ifdef __APPLE__
 #define DEFAULT_PRESET 0
+#define SYSTEM_NAME "macOS"
 #elif __FreeBSD__
 #define DEFAULT_PRESET 1
+#define SYSTEM_NAME "BSD"
 #else
 #define DEFAULT_PRESET 2
+#define SYSTEM_NAME "Linux"
 #endif
 
 #define match_str(L, P) strncmp(L, P, 5) == 0
@@ -23,6 +26,7 @@ static preset_map presets[] = {
     {"mac",   "Platform preset for macOS"}
     , {"bsd",   "Platform preset for *BSD"}
     , {"linux", "Platform preset for linux"}
+    , {"m$",     "Diss M!cr0$0f+"}
 };
 
 static char *langs[] = {
@@ -39,6 +43,7 @@ i18n_info i18n_map[] = {
     , platform_preset("zh_HK", "啟用 ",, "移至[設定]以啟用 ", "。")
     , platform_preset("ru_RU", "Активация ",, "Чтобы активировать ", ",\nперейдите в раздел \"Параметры\".")
     , platform_preset("ja_JP",,"のライセンス認証", "設定を開き、", "のライセンス認証を行ってください")
+    , {"en_US", "m$\0\0\0", "No need to activate "SYSTEM_NAME, "We're not as annoying as Microsoft."}
 };
 
 void i18n_set_info(char* preset, struct draw_options* options)
@@ -59,6 +64,9 @@ void i18n_set_info(char* preset, struct draw_options* options)
 
     if(preset_id == (size_t)-1 || !match_str(presets[preset_id].name, preset))
         preset_id = DEFAULT_PRESET;
+
+    if(preset_id > 2)
+        preset_id += (sizeof(langs)/sizeof(char*) - 1) * 3;
 
     if(preset_id + ilang * 3 < sizeof(i18n_map) / sizeof(i18n_info))
         preset_id += ilang * 3;
