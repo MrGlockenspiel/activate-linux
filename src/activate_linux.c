@@ -27,12 +27,9 @@
 
 int main(int argc, char *argv[])
 {
-    // title, subtitle text;
-    i18n_info i18n = i18n_get_info();
-
     struct draw_options options = {
-        .title = i18n.title,
-        .subtitle = i18n.subtitle,
+        .title = NULL,
+        .subtitle = NULL,
         .custom_font = "",
         .bold_mode = false,
         .slant_mode = false,
@@ -52,11 +49,13 @@ int main(int argc, char *argv[])
         .bypass_compositor = false,
     };
 
+    i18n_set_info(NULL, &options);
+
     // don't fork to background (default)
     bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?vqbwdit:m:f:s:c:H:V:x:y:")) != -1) {
+    while ((opt = getopt(argc, argv, "h?vqbwdilp:t:m:f:s:c:H:V:x:y:")) != -1) {
         switch (opt) {
         case 'v':
             inc_verbose();
@@ -75,6 +74,9 @@ int main(int argc, char *argv[])
             break;
         case 'i':
             options.slant_mode = true;
+            break;
+        case 'p':
+            i18n_set_info(optarg, &options);
             break;
         case 't':
             options.title = optarg;
@@ -112,18 +114,22 @@ int main(int argc, char *argv[])
             options.overlay_height = atoi(optarg);
             break;
         case '?':
+        case 'l':
+            i18n_list_presets();
+            exit(EXIT_SUCCESS);
         case 'h':
 #define HELP(fmtstr, ...) fprintf(stderr, "  " fmtstr "\n", ## __VA_ARGS__)
 #define SECTION(name, fmtstr, ...) fprintf(stderr,(STYLE(1) "" name ": " STYLE(0) fmtstr "\n"), ## __VA_ARGS__)
 #define END() fprintf(stderr, "\n")
 #define STYLE(x) "\033[" # x "m"
 #define COLOR(x, y) "\033[" # x ";" # y "m"
-            SECTION("Usage", "%s [-biwdvq] [-c color] [-f font] [-m message] [-s scale] [-t title] ...", argv[0]);
+            SECTION("Usage", "%s [-biwdvq] [-p preset] [-c color] [-f font] [-m message] [-s scale] [-t title] ...", argv[0]);
             END();
 
             SECTION("Text", "");
             HELP("-t title\tSet  title  text (string)");
             HELP("-m message\tSet message text (string)");
+            HELP("-p preset\tSelect predefined preset (conflicts -t/-m)");
             END();
 
             SECTION("Appearance", "");
@@ -149,6 +155,7 @@ int main(int argc, char *argv[])
 
             SECTION("Other", "");
             HELP("-w\t\tSet EWMH bypass_compositor hint");
+            HELP("-l\t\tList predefined presets");
             HELP("-d\t\tFork to background on startup");
             HELP("-v\t\tBe verbose and spam console");
             HELP("-q\t\tBe completely silent");
