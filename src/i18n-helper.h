@@ -3,10 +3,13 @@
 
 #ifdef __APPLE__
 #define DEFAULT_PRESET 0
+#define SYSTEM_NAME "macOS"
 #elif __FreeBSD__
 #define DEFAULT_PRESET 1
+#define SYSTEM_NAME "BSD"
 #else
 #define DEFAULT_PRESET 2
+#define SYSTEM_NAME "Linux"
 #endif
 
 // typedefs

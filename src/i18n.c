@@ -1,78 +1,87 @@
 #include "i18n.h"
+#include "i18n-helper.h"
 #include "draw.h"
+#include "log.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __APPLE__
-#define DEFAULT_PRESET 0
-#define SYSTEM_NAME "macOS"
-#elif __FreeBSD__
-#define DEFAULT_PRESET 1
-#define SYSTEM_NAME "BSD"
-#else
-#define DEFAULT_PRESET 2
-#define SYSTEM_NAME "Linux"
-#endif
-
-#define match_str(L, P) strncmp(L, P, 5) == 0
-
-#define platform_preset(L,TP,TS,SP,SS) \
-    {L, "mac\0\0", TP "macOS" TS, SP "macOS" SS }, \
-    {L, "bsd\0\0", TP "BSD"   TS, SP "BSD"   SS }, \
-    {L, "linux"  , TP "Linux" TS, SP "Linux" SS }
-
+// FIXME: You must follow the order of presets[] in i18n_map[]
 static preset_map presets[] = {
-    {"mac",   "Platform preset for macOS"}
-    , {"bsd",   "Platform preset for *BSD"}
-    , {"linux", "Platform preset for linux"}
-    , {"m$",     "Diss M!cr0$0f+"}
+    map_preset("mac",   "Platform preset for macOS")
+    map_preset("bsd",   "Platform preset for *BSD")
+    map_preset("linux", "Platform preset for linux")
+    map_preset("m$",    "Diss M!cr0$0f+")
 };
 
-static char *langs[] = {
-    "en_US", "zh_CN", "zh_TW"
-    , "zh_HK", "ru_RU", "ja_JP"
+// FIXME: You must follow the order of langs[] in i18n_map[][]
+static lang_map langs[] = {
+    _LANG("en", "US")
+    _LANG("zh", "CN")
+    _LANG("zh", "TW")
+    _LANG("zh", "HK")
+    _LANG("ru", "RU")
+    _LANG("ja", "JP")
 };
+
+// selected language id
 static size_t ilang = -1;
 
-i18n_info i18n_map[] = {
-    // Must be first, used as default
-    platform_preset("en_US", "Activate ",, "Go to Settings to activate ", ".")
-    , platform_preset("zh_CN", "激活 ",, "转到“设置”以激活 ", "。")
-    , platform_preset("zh_TW", "啟用 ",, "移至[設定]以啟用 ", "。")
-    , platform_preset("zh_HK", "啟用 ",, "移至[設定]以啟用 ", "。")
-    , platform_preset("ru_RU", "Активация ",, "Чтобы активировать ", ",\nперейдите в раздел \"Параметры\".")
-    , platform_preset("ja_JP",,"のライセンス認証", "設定を開き、", "のライセンス認証を行ってください")
-    , {"en_US", "m$\0\0\0", "No need to activate "SYSTEM_NAME, "We're not as annoying as Microsoft."}
+// FIXME: You must follow the order of langs[] here
+#define platform_preset(platform) \
+    {\
+        platform_i18n(platform, "en_US", "Activate ",, "Go to Settings to activate ", ".") \
+        platform_i18n(platform, "zh_CN", "激活 ",, "转到“设置”以激活 ", "。") \
+        platform_i18n(platform, "zh_TW", "啟用 ",, "移至[設定]以啟用 ", "。") \
+        platform_i18n(platform, "zh_HK", "啟用 ",, "移至[設定]以啟用 ", "。") \
+        platform_i18n(platform, "ru_RU", "Активация ",, "Чтобы активировать ", ",\nперейдите в раздел \"Параметры\".") \
+        platform_i18n(platform, "ja_JP",,"のライセンス認証", "設定を開き、", "のライセンス認証を行ってください") \
+    },
+
+// FIXME: You must follow the order of langs[] here
+#define ms_diss_preset() \
+    { \
+        system_i18n ("en_US", "No need to activate ",, "We're not as annoying as Microsoft.") \
+        untranslated("zh_CN") \
+        untranslated("zh_TW") \
+        untranslated("zh_HK") \
+        untranslated("ru_RU") \
+        untranslated("ja_JP") \
+    },
+
+// FIXME: You must follow the order of presets[] here
+i18n_info i18n_map[][length(langs)] = {
+    platform_preset("macOS") // macOS platform preset
+    platform_preset("BSD")   // BSD platform preset
+    platform_preset("Linux") // Linux platform preset
+    ms_diss_preset()         // ms-diss system preset
 };
 
 void i18n_set_info(char* preset, struct draw_options* options)
 {
-    size_t preset_id = -1;
+    size_t ipreset = DEFAULT_PRESET;
 
     if (ilang == (size_t)-1) {
-        ilang = sizeof(langs) / sizeof(char*);
+        ilang = length(langs);
         char *lang = getenv("LANG");
-
         while(--ilang && ! match_str(langs[ilang], lang));
     }
 
     if (preset != NULL) {
-        preset_id = sizeof(presets) / sizeof(preset_map);
-        while(--preset_id && ! match_str(presets[preset_id].name, preset));
+        ipreset = length(presets);
+        while(--ipreset && ! match_str(presets[ipreset].name, preset));
+        if(!match_str(presets[ipreset].name, preset)) {
+            __warn__("Undefined preset: %s\n", preset);
+            ipreset = DEFAULT_PRESET;
+        }
     }
 
-    if(preset_id == (size_t)-1 || !match_str(presets[preset_id].name, preset))
-        preset_id = DEFAULT_PRESET;
+    __info__("Loading preset: %s\n", presets[ipreset].name);
+    if (!(PRESET.title && PRESET.subtitle))
+        ilang = 0;
 
-    if(preset_id > 2)
-        preset_id += (sizeof(langs)/sizeof(char*) - 1) * 3;
-
-    if(preset_id + ilang * 3 < sizeof(i18n_map) / sizeof(i18n_info))
-        preset_id += ilang * 3;
-
-    options->title = i18n_map[preset_id].title;
-    options->subtitle = i18n_map[preset_id].subtitle;
+    options->title = PRESET.title;
+    options->subtitle = PRESET.subtitle;
 }
 
 #define HELP(fmtstr, ...) fprintf(stderr, "  " fmtstr "\n", ## __VA_ARGS__)
