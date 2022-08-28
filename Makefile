@@ -61,18 +61,10 @@ endif
 all: $(BINARY)
 
 obj/%.o: src/%.c
-<<<<<<< HEAD
-	mkdir -p $(WAYLAND_PROTOCOL_HEADERS)
-	wayland-scanner private-code $(WAYLAND_PROTOCOLS_DIR)/stable/xdg-shell/xdg-shell.xml $(WAYLAND_PROTOCOL_HEADERS)/xdg-shell.c
-	wayland-scanner client-header wlr-layer-shell-unstable-v1.xml $(WAYLAND_PROTOCOL_HEADERS)/wlr-layer-shell-unstable-v1.h
-	wayland-scanner private-code wlr-layer-shell-unstable-v1.xml $(WAYLAND_PROTOCOL_HEADERS)/wlr-layer-shell-unstable-v1.c
-	$(<<) "  CC\t" $(<)
-	@$(CC) -c $(<) $(WAYLAND_PROTOCOL_HEADERS)/*.c -o $(@) $(CFLAGS)
-=======
 	$(<<) "  CC\t" $(<:src/%=%)
 	@mkdir -p $(shell dirname $(@))
 	@$(CC) -c $(<) -o $(@) $(CFLAGS)
->>>>>>> ahm-forks-optional-backends
+
 
 %.h: %.hgen
 	$(<<) " GEN\t" $(@:src/%=%)
