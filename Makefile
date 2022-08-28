@@ -43,7 +43,6 @@ endif
 NAME := $(shell uname -s)
 CFLAGS := \
 	$(CFLAGS) \
-	-I$(WAYLAND_PROTOCOL_HEADERS) \
 	$(shell pkg-config --cflags $(PKGS))
 
 LDFLAGS := \
