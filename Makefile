@@ -1,29 +1,44 @@
 CC ?= clang
-CFLAGS ?= -Og -Wall -Wpedantic -Wextra
+CFLAGS ?= -Og -Wall -Wpedantic -Wextra -Isrc
 PREFIX ?= /usr/local
 BINDIR ?= bin
 DESTDIR ?=
+backends ?= wayland x11
 
 << := @echo
+PKGS := cairo
 
 ifneq ($(shell eval 'echo -e'),-e)
 	<< += -e
 endif
 
-PKGS := \
-	x11 xfixes xinerama xrandr \
-	wayland-client cairo
+<<backends>> = $(sort $(filter x11 wayland,$(backends)))
+ifeq ($(filter x11,$(<<backends>>)),x11)
+	PKGS += x11 xfixes xinerama xrandr
+else
+	CFLAGS += -DNO_X11
+endif
 
-RM := rm
+ifeq ($(filter wayland,$(<<backends>>)),wayland)
+	PKGS += wayland-client
+else
+	CFLAGS += -DNO_WAYLAND
+endif
 
-WAYLAND_PROTOCOLS_DIR := $(shell pkg-config --variable=pkgdatadir wayland-protocols)
-WAYLAND_PROTOCOL_HEADERS := protocols
+<<sources>> := \
+	$(wildcard src/*.c) \
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.c))
 
-SOURCES := $(wildcard src/*.c)
-OBJECTS := $(SOURCES:src/%.c=obj/%.o)
+<<generators>> := \
+	$(wildcard src/*.cgen) \
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.cgen))
 
-GENERATORS := $(wildcard src/*.cgen)
-OBJECTS += $(GENERATORS:src/%.cgen=obj/%.o)
+<<hgenerators>> := \
+	$(wildcard src/*.hgen) \
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.hgen))
+
+<<objects>> := $(<<sources>>:src/%.c=obj/%.o)
+<<objects>> += $(<<generators>>:src/%.cgen=obj/%.o)
 
 NAME := $(shell uname -s)
 CFLAGS := \
@@ -46,19 +61,29 @@ endif
 all: $(BINARY)
 
 obj/%.o: src/%.c
+<<<<<<< HEAD
 	mkdir -p $(WAYLAND_PROTOCOL_HEADERS)
 	wayland-scanner private-code $(WAYLAND_PROTOCOLS_DIR)/stable/xdg-shell/xdg-shell.xml $(WAYLAND_PROTOCOL_HEADERS)/xdg-shell.c
 	wayland-scanner client-header wlr-layer-shell-unstable-v1.xml $(WAYLAND_PROTOCOL_HEADERS)/wlr-layer-shell-unstable-v1.h
 	wayland-scanner private-code wlr-layer-shell-unstable-v1.xml $(WAYLAND_PROTOCOL_HEADERS)/wlr-layer-shell-unstable-v1.c
 	$(<<) "  CC\t" $(<)
 	@$(CC) -c $(<) $(WAYLAND_PROTOCOL_HEADERS)/*.c -o $(@) $(CFLAGS)
+=======
+	$(<<) "  CC\t" $(<:src/%=%)
+	@mkdir -p $(shell dirname $(@))
+	@$(CC) -c $(<) -o $(@) $(CFLAGS)
+>>>>>>> ahm-forks-optional-backends
+
+%.h: %.hgen
+	$(<<) " GEN\t" $(@:src/%=%)
+	@sh -- $(<) $(@)
 
 %.c: %.cgen
-	$(<<) " GEN\t" $(<)
-	@sh $(<) > $(@)
+	$(<<) " GEN\t" $(@:src/%=%)
+	@sh -- $(<) $(@)
 
-$(BINARY): $(OBJECTS)
-	$(<<) "LINK\t" $(^)
+$(BINARY): $(<<objects>>)
+	$(<<) "LINK\t" $(^:obj/%=%)
 	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
 install: $(BINARY)
@@ -68,9 +93,18 @@ uninstall:
 	$(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
 
 clean:
-	$(RM) -f $(OBJECTS) $(BINARY)
+	$(<<) "  RM\t" $(<<objects>>:obj/%=%) $(BINARY)
+	@$(RM) -f $(<<objects>>) $(BINARY) obj/.enabled
 
 test: $(BINARY)
 	./$(BINARY)
 
-.PHONY: all clean install test
+obj/activate_linux.o: obj/.enabled
+obj/wayland/wayland.o: src/wayland/wlr-layer-shell-unstable-v1.h
+
+obj/.enabled: .REBUILD
+	@test -f $(@) || touch $(@)
+	@grep -Fqx "$(<<backends>>)" $(@) || echo "$(<<backends>>)" > $(@)
+
+.PHONY: all clean install uninstall test .REBUILD
+.INTERMEDIATE: $(<<hgenerators>>:%.hgen=%.h) $(<<generators>>:%.cgen=%.c)

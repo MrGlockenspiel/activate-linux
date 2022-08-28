@@ -29,16 +29,9 @@
         ];
 
         buildInputs = with pkgs; [
+          gawk
           pkg-config
-
-          cairo
-          xorg.libXi
-          xorg.libX11
-          xorg.xorgproto
-          xorg.libXt
-          xorg.libXfixes
-          xorg.libXinerama
-        ];
+        ] ++ (import ./deps.nix {inherit pkgs;});
       };
 
       packages.default = self.packages.${system}.activate-linux;

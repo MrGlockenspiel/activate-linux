@@ -1,0 +1,4 @@
+#!/bin/sh
+wayland-scanner client-header \
+	wlr-layer-shell-unstable-v1.xml \
+	"${1:-/dev/stdout}"

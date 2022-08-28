@@ -1,0 +1,6 @@
+#!/bin/sh
+PROTOCOLS=$(pkg-config --variable=pkgdatadir wayland-protocols)
+
+wayland-scanner private-code \
+	"$PROTOCOLS/stable/xdg-shell/xdg-shell.xml" \
+	"${1:-/dev/stdout}"

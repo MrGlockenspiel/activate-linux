@@ -94,7 +94,23 @@ static void frame_commit(struct output *output)
     size_t size = stride * height;
 
     int fd = anonymous_shm_open();
-    ftruncate(fd, size);
+    switch(ftruncate(fd, size)) {
+    case EINTR:
+        __error__("! Signal caught during frame rendering.");
+        break;
+    case EINVAL:
+        __error__("! Can't truncate to negative length.");
+        break;
+    case EFBIG:
+        __error__("! Length is bigger than the allowed value.");
+        break;
+    case EIO:
+        __error__("! I/O error during frame rendering.");
+        break;
+    case EBADF:
+        __error__("! ftruncate called with bad FD.");
+        break;
+    }
     void *data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     struct wl_shm_pool *pool = wl_shm_create_pool(output->state->shm, fd, size);
     struct wl_buffer *buffer = wl_shm_pool_create_buffer(pool, 0,

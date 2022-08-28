@@ -1,0 +1,4 @@
+#!/bin/sh
+wayland-scanner private-code \
+	wlr-layer-shell-unstable-v1.xml \
+	"${1:-/dev/stdout}"
