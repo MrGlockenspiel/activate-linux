@@ -12,7 +12,7 @@
 
 #include <cairo.h>
 
-#include <wlr-layer-shell-unstable-v1.h>
+#include "wlr-layer-shell-unstable-v1.h"
 
 #include "wayland.h"
 #include "log.h"
