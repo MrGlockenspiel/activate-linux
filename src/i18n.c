@@ -18,6 +18,7 @@ i18n_info i18n_map[] = {
     {"zh_HK", "啟用 "SYSTEM_NAME, "移至[設定]以啟用 "SYSTEM_NAME"。" },
     {"ru_RU", "Активация "SYSTEM_NAME, "Чтобы активировать "SYSTEM_NAME",\nперейдите в раздел \"Параметры\"." },
     {"ja_JP", SYSTEM_NAME"のライセンス認証", "設定を開き、" SYSTEM_NAME "のライセンス認証を行ってください" },
+    {"it_IT", "Attiva "SYSTEM_NAME, "Passa a Impostazioni per attivare " SYSTEM_NAME "." },
     {NULL, NULL, NULL }
 };
 
