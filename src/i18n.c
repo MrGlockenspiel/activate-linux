@@ -10,7 +10,9 @@
 static preset_map presets[] = {
     map_preset("mac",   "Platform preset for macOS")
     map_preset("bsd",   "Platform preset for *BSD")
-    map_preset("linux", "Platform preset for linux")
+    map_preset("linux", "Platform preset for Linux")
+    map_preset("hurd",  "Platform preset for GNU/Hurd")
+    map_preset("unix",  "Platform preset for *nix")
     map_preset("m$",    "Diss M!cr0$0f+")
 };
 
@@ -51,10 +53,12 @@ static size_t ilang = -1;
 
 // FIXME: You must follow the order of presets[] here
 i18n_info i18n_map[][length(langs)] = {
-    platform_preset("macOS") // macOS platform preset
-    platform_preset("BSD")   // BSD platform preset
-    platform_preset("Linux") // Linux platform preset
-    ms_diss_preset()         // ms-diss system preset
+    platform_preset("macOS")    // macOS platform preset
+    platform_preset("BSD")      // BSD platform preset
+    platform_preset("Linux")    // Linux platform preset
+    platform_preset("GNU/Hurd") // GNU/Hurd platform preset
+    platform_preset("*nix")     //  *nix platform preset
+    ms_diss_preset()            // ms-diss system preset
 };
 
 void i18n_set_info(char* preset, struct draw_options* options)
@@ -89,11 +93,11 @@ void i18n_set_info(char* preset, struct draw_options* options)
 #define END() fprintf(stderr, "\n")
 void i18n_list_presets()
 {
-    size_t len = sizeof(presets) / sizeof(preset_map);
     fprintf(stderr, "Built-in Presets:\n\n");
 
     HELP(STYLE(1) "Name\t\tDescription" STYLE(0));
-    while(len --) HELP(STYLE(1) "%s"STYLE(0) "\t\t%s", presets[len].name, presets[len].info);
+    for(size_t len = 0; len < length(presets); len++ )
+        HELP(STYLE(1) "%s"STYLE(0) "\t\t%s", presets[len].name, presets[len].info);
 }
 #undef END
 #undef STYLE

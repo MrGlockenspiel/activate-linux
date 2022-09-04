@@ -1,15 +1,29 @@
 #ifndef __I18N_HELPER__
 #define __I18N_HELPER__
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__MACH__)
 #define DEFAULT_PRESET 0
 #define SYSTEM_NAME "macOS"
-#elif __FreeBSD__
+
+#elif defined(__FreeBSD__) || defined(__NetBSD__) \
+		|| defined(__OpenBSD__) || defined(__DragonFly__) \
+		|| defined(__bsdi__)
 #define DEFAULT_PRESET 1
-#define SYSTEM_NAME "BSD"
-#else
+#define SYSTEM_NAME "*BSD"
+
+#elif defined(__linux__)
 #define DEFAULT_PRESET 2
 #define SYSTEM_NAME "Linux"
+
+#elif defined(__gnu_hurd__) || defined(__GNU__)
+#define DEFAULT_PRESET 3
+#define SYSTEM_NAME "GNU/Hurd"
+
+
+#elif defined(__unix__)
+#define DEFAULT_PRESET 4
+#define SYSTEM_NAME "*nix"
+
 #endif
 
 // typedefs
