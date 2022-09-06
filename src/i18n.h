@@ -1,7 +1,11 @@
 #ifndef I18N
 #define I18N
+#include "draw.h"
+
 typedef struct {
-    char *lang, *title, *subtitle;
+    char *title, *subtitle;
 } i18n_info;
-i18n_info i18n_get_info();
+
+void i18n_set_info(char* preset, struct draw_options* options);
+void i18n_list_presets();
 #endif
