@@ -19,6 +19,11 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ./activate-linux -m "Secondary Message"
 ```
 
+### Run with a text preset
+```console
+./activate-linux -p "bsd"
+```
+
 ## Appearance
 
 ### Custom Font
@@ -91,4 +96,9 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ### Verbose output (useful for debugging, shows received X events)
 ```console
 ./activate-linux -v
+```
+
+### List predefined presets
+```console
+./activate-linux -l
 ```
