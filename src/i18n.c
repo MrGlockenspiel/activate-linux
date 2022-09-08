@@ -24,6 +24,7 @@ static lang_map langs[] = {
     _LANG("zh", "HK")
     _LANG("ru", "RU")
     _LANG("ja", "JP")
+    _LANG("it", "IT")
 };
 
 // selected language id
@@ -38,6 +39,7 @@ static size_t ilang = -1;
         platform_i18n(platform, "zh_HK", "啟用 ",, "移至[設定]以啟用 ", "。") \
         platform_i18n(platform, "ru_RU", "Активация ",, "Чтобы активировать ", ",\nперейдите в раздел \"Параметры\".") \
         platform_i18n(platform, "ja_JP",,"のライセンス認証", "設定を開き、", "のライセンス認証を行ってください") \
+        platform_i18n(platform, "it_IT", "Attiva ",, "Passa a Impostazioni per attivare ", ".") \
     },
 
 // FIXME: You must follow the order of langs[] here
@@ -49,6 +51,7 @@ static size_t ilang = -1;
         untranslated("zh_HK") \
         untranslated("ru_RU") \
         untranslated("ja_JP") \
+        untranslated("it_IT") \
     },
 
 // FIXME: You must follow the order of presets[] here
