@@ -24,6 +24,7 @@ static lang_map langs[] = {
     _LANG("zh", "HK")
     _LANG("ru", "RU")
     _LANG("ja", "JP")
+    _LANG("it", "IT")
     _LANG("fr", "FR")
     _LANG("nl", "NL")
 };
@@ -40,6 +41,7 @@ static size_t ilang = -1;
         platform_i18n(platform, "zh_HK", "啟用 ",, "移至[設定]以啟用 ", "。") \
         platform_i18n(platform, "ru_RU", "Активация ",, "Чтобы активировать ", ",\nперейдите в раздел \"Параметры\".") \
         platform_i18n(platform, "ja_JP",,"のライセンス認証", "設定を開き、", "のライセンス認証を行ってください") \
+        platform_i18n(platform, "it_IT", "Attiva ",, "Passa a Impostazioni per attivare ", ".") \
         platform_i18n(platform, "fr_FR", "Activer ",, "Aller en les paramètres pour activer ", ".") \
         platform_i18n(platform, "nl_NL", "Activeren ",, "Gaan naar instellingen om te activeren ", ".")\
     },
@@ -53,6 +55,7 @@ static size_t ilang = -1;
         untranslated("zh_HK") \
         untranslated("ru_RU") \
         untranslated("ja_JP") \
+        untranslated("it_IT") \
         untranslated("fr_FR") \
         untranslated("nl_NL") \
     },
