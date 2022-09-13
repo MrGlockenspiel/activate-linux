@@ -38,6 +38,7 @@ protocols
 *.i*86
 *.x86_64
 *.hex
+*.AppImage
 
 # Debug files
 *.dSYM/
@@ -54,5 +55,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+AppDir
 .vscode/
 result

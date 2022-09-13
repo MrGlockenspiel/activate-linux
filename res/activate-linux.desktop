@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Activate Linux
+Comment=a very cool software
+Exec=activate-linux
+Icon=icon
+GenericName=Activate Linux
+Categories=Utility
+Terminal=false
