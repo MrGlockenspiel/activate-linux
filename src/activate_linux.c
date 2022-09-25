@@ -47,6 +47,9 @@ int main(int argc, char *argv[])
 
         // bypass compositor hint
         .bypass_compositor = false,
+
+        // enable gamescope overlay rendering (HIGHLY EXPERIMENTAL!!!)
+        .gamescope_overlay = false,
     };
 
     i18n_set_info(NULL, &options);
@@ -55,7 +58,7 @@ int main(int argc, char *argv[])
     bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "h?vqbwdilp:t:m:f:s:c:H:V:x:y:")) != -1) {
+    while ((opt = getopt(argc, argv, "Gh?vqbwdilp:t:m:f:s:c:H:V:x:y:")) != -1) {
         switch (opt) {
         case 'v':
             inc_verbose();
@@ -86,6 +89,9 @@ int main(int argc, char *argv[])
             break;
         case 'f':
             options.custom_font = optarg;
+            break;
+        case 'G':
+            options.gamescope_overlay = true;
             break;
         case 's':
             options.scale = atof(optarg);
@@ -159,6 +165,7 @@ int main(int argc, char *argv[])
             HELP("-d\t\tFork to background on startup");
             HELP("-v\t\tBe verbose and spam console");
             HELP("-q\t\tBe completely silent");
+            HELP("-G\t\tRun as external gamescope overlay (EXPERIMENTAL)");
             END();
 #undef HELP
 #undef SECTION

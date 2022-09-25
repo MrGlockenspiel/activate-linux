@@ -24,6 +24,8 @@ struct draw_options {
     struct rgba_color_t text_color;
 
     bool bypass_compositor;
+
+    bool gamescope_overlay;
 };
 
 void draw_text(cairo_t *cr, struct draw_options *options);
