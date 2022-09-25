@@ -8,12 +8,13 @@
 
 // FIXME: You must follow the order of presets[] in i18n_map[]
 static preset_map presets[] = {
-    map_preset("mac",   "Platform preset for macOS")
-    map_preset("bsd",   "Platform preset for *BSD")
-    map_preset("linux", "Platform preset for Linux")
-    map_preset("hurd",  "Platform preset for GNU/Hurd")
-    map_preset("unix",  "Platform preset for *nix")
-    map_preset("m$",    "Diss M!cr0$0f+")
+    map_preset("mac",       "Platform preset for macOS")
+    map_preset("bsd",       "Platform preset for *BSD")
+    map_preset("linux",     "Platform preset for Linux")
+    map_preset("hurd",      "Platform preset for GNU/Hurd")
+    map_preset("unix",      "Platform preset for *nix")
+    map_preset("m$",        "Diss M!cr0$0f+")
+    map_preset("deck", "Platform preset for the Steam Deck")
 };
 
 // FIXME: You must follow the order of langs[] in i18n_map[][]
@@ -62,12 +63,13 @@ static size_t ilang = -1;
 
 // FIXME: You must follow the order of presets[] here
 i18n_info i18n_map[][length(langs)] = {
-    platform_preset("macOS")    // macOS platform preset
-    platform_preset("BSD")      // BSD platform preset
-    platform_preset("Linux")    // Linux platform preset
-    platform_preset("GNU/Hurd") // GNU/Hurd platform preset
-    platform_preset("*nix")     //  *nix platform preset
-    ms_diss_preset()            // ms-diss system preset
+    platform_preset("macOS")      // macOS platform preset
+    platform_preset("BSD")        // BSD platform preset
+    platform_preset("Linux")      // Linux platform preset
+    platform_preset("GNU/Hurd")   // GNU/Hurd platform preset
+    platform_preset("*nix")       //  *nix platform preset
+    ms_diss_preset()              // ms-diss system preset
+    platform_preset("Steam Deck") // Steam Deck platform preset
 };
 
 void i18n_set_info(char* preset, struct draw_options* options)
