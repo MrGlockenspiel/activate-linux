@@ -31,6 +31,7 @@ This project depends on:
 - `libxinerama-dev`
 - `libxrandr-dev`
 - `libwayland-dev`
+- `wayland-protocols`
 
 Those packages may be installed (in Debian-based distros) like this:
 ```console
