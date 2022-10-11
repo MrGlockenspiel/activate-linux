@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "color.h"
 #include "i18n.h"
@@ -24,9 +25,31 @@
     if (ret_ ## X == 0 || strncmp(# X, "x11", 3) == 0) return ret_ ## X
 #endif
 
-
 int main(int argc, char *argv[])
 {
+	int option_index = 0;
+    const struct option long_options[] = {
+		{ "text-title", 1, NULL, 't' },
+		{ "text-message", 1, NULL, 'm' },
+		{ "text-preset", 1, NULL, 'p' },
+		{ "text-font", 1, NULL, 'f' },
+		{ "text-bold", 0, NULL, 'b' },
+		{ "text-italic", 0, NULL, 'i' },
+		{ "text-color", 1, NULL, 'c' },
+	    { "overlay-width", 1, NULL, 'x' },
+		{ "overlay-height", 1, NULL, 'y' },
+	    { "overlay-offset-top", 1, NULL, 'V' },
+		{ "overlay-offset-left", 1, NULL, 'H' },
+		{ "scale", 1, NULL, 's' },
+		{ "daemonize", 0, NULL, 'd' },
+		{ "skip-compositior", 0, NULL, 'w' },
+		{ "verbose", 0, NULL, 'v' },
+		{ "text-preset-list", 0, NULL, 'l' },
+		{ "quiet", 0, NULL, 'q' },
+		{ "gamescope", 0, NULL, 'G' },
+		{ "help", 0, NULL, 'h' },
+		{ NULL, 0, NULL, 0   }   
+    };
     struct draw_options options = {
         .title = NULL,
         .subtitle = NULL,
@@ -58,7 +81,7 @@ int main(int argc, char *argv[])
     bool daemonize = false;
 
     int opt;
-    while ((opt = getopt(argc, argv, "Gh?vqbwdilp:t:m:f:s:c:H:V:x:y:")) != -1) {
+    while ((opt = getopt_long(argc, argv, "Gh?vqbwdilp:t:m:f:s:c:H:V:x:y:",long_options,&option_index)) != -1) {
         switch (opt) {
         case 'v':
             inc_verbose();
@@ -129,20 +152,20 @@ int main(int argc, char *argv[])
 #define END() fprintf(stderr, "\n")
 #define STYLE(x) "\033[" # x "m"
 #define COLOR(x, y) "\033[" # x ";" # y "m"
-            SECTION("Usage", "%s [-biwdvq] [-p preset] [-c color] [-f font] [-m message] [-s scale] [-t title] ...", argv[0]);
+            SECTION("Usage", "%s [-b/--text-bold,-i/--text-italic,-w/--skip-compositior,-d/--daemonize,-v/--verbose,-q/--quiet] [-p, --text-preset preset] [-c, --text-color color] [-f, --text-font font] [-m, --text-message message] [-s, --scale scale] [-t, --text-title title] ...", argv[0]);
             END();
 
             SECTION("Text", "");
-            HELP("-t title\tSet  title  text (string)");
-            HELP("-m message\tSet message text (string)");
-            HELP("-p preset\tSelect predefined preset (conflicts -t/-m)");
+            HELP("-t, --text-title title\tSet  title  text (string)");
+            HELP("-m, --text-message message\tSet message text (string)");
+            HELP("-p, --text-preset preset\tSelect predefined preset (conflicts -t/-m)");
             END();
 
             SECTION("Appearance", "");
-            HELP("-f font\tSet the text font (string)");
-            HELP("-b\t\tShow " STYLE(1) "bold" STYLE(0) " text");
-            HELP("-i\t\tShow " STYLE(3) "italic/slanted" STYLE(0) " text");
-            HELP("-c color\tSpecify color in " COLOR(1, 31) "r" STYLE(0)
+            HELP("-f, --text-font font\tSet the text font (string)");
+            HELP("-b, --text-bold \t\tShow " STYLE(1) "bold" STYLE(0) " text");
+            HELP("-i, --text-italic \t\tShow " STYLE(3) "italic/slanted" STYLE(0) " text");
+            HELP("-c, --text-color color\tSpecify color in " COLOR(1, 31) "r" STYLE(0)
                  "-" COLOR(1, 32) "g" STYLE(0) "-" COLOR(1,34) "b" STYLE(0)
                  "-" COLOR(1, 33) "a" STYLE(0)  " notation");
             HELP("\t\twhere " COLOR(1, 31) "r" STYLE(0) "/" COLOR(1,32)
@@ -152,20 +175,20 @@ int main(int argc, char *argv[])
             END();
 
             SECTION("Geometry", "");
-            HELP("-x width\tSet overlay width  before scaling (integer)");
-            HELP("-y height\tSet overlay height before scaling (integer)");
-            HELP("-s scale\tScale ratio (float)");
-            HELP("-H offset\tMove overlay horizontally (integer)");
-            HELP("-V offset\tMove overlay  vertically  (integer)");
+            HELP("-x, --overlay-width width\tSet overlay width  before scaling (integer)");
+            HELP("-y, --overlay-height height\tSet overlay height before scaling (integer)");
+            HELP("-s, --scale scale\tScale ratio (float)");
+            HELP("-H, --overlay-offset-left offset\tMove overlay horizontally (integer)");
+            HELP("-V, --overlay-offset-top offset\tMove overlay  vertically  (integer)");
             END();
 
             SECTION("Other", "");
-            HELP("-w\t\tSet EWMH bypass_compositor hint");
-            HELP("-l\t\tList predefined presets");
-            HELP("-d\t\tFork to background on startup");
-            HELP("-v\t\tBe verbose and spam console");
-            HELP("-q\t\tBe completely silent");
-            HELP("-G\t\tRun as external gamescope overlay (EXPERIMENTAL)");
+            HELP("-w, --skip-compositior \t\tSet EWMH bypass_compositor hint");
+            HELP("-l, --text-preset-list \t\tList predefined presets");
+            HELP("-d, --daemonize \t\tFork to background on startup");
+            HELP("-v, --verbose \t\tBe verbose and spam console");
+            HELP("-q, --quiet \t\tBe completely silent");
+            HELP("-G, --gamescope \t\tRun as an external gamescope overlay (EXPERIMENTAL)");
             END();
 #undef HELP
 #undef SECTION
