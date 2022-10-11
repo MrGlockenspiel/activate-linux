@@ -151,11 +151,10 @@ int x11_backend_start(struct draw_options *options)
             // https://github.com/trigg/Discover/blob/de83063f3452b1cdee89b4c3779103eae2c90cbb/discover_overlay/overlay.py#L107
             
             __debug__("Setting GAMESCOPE_EXTERNAL_OVERLAY");
-            static const char *GamescopeOverlayProperty = "GAMESCOPE_EXTERNAL_OVERLAY";
 
-            Atom overlay_atom = XInternAtom(d, GamescopeOverlayProperty, 0);
-            u_int32_t value = 1;
-            XChangeProperty(d, overlay[i], overlay_atom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&value, 1);
+            Atom overlay_atom = XInternAtom(d, "GAMESCOPE_EXTERNAL_OVERLAY", 0);
+            unsigned char value = 1;
+            XChangeProperty(d, overlay[i], overlay_atom, XA_CARDINAL, 32, PropModeReplace, &value, 1);
         }
 
         __debug__("Creating cairo context\n");
