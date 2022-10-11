@@ -136,11 +136,11 @@ int x11_backend_start(struct draw_options *options)
         // https://specifications.freedesktop.org/wm-spec/wm-spec-latest.html#idm45446104333040
         if (options->bypass_compositor) {
             __debug__("Bypassing compositor\n");
-            unsigned char data = 1;
+            unsigned long data = 1;
             XChangeProperty(
                 d, overlay[i],
                 XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
-                XA_CARDINAL, 32, PropModeReplace, &data, 1
+                XA_CARDINAL, 32, PropModeReplace, (unsigned char*) &data, 1
             );
         }
 
@@ -152,9 +152,9 @@ int x11_backend_start(struct draw_options *options)
             
             __debug__("Setting GAMESCOPE_EXTERNAL_OVERLAY");
 
-            Atom overlay_atom = XInternAtom(d, "GAMESCOPE_EXTERNAL_OVERLAY", 0);
-            unsigned char value = 1;
-            XChangeProperty(d, overlay[i], overlay_atom, XA_CARDINAL, 32, PropModeReplace, &value, 1);
+            Atom overlay_atom = XInternAtom(d, "GAMESCOPE_EXTERNAL_OVERLAY", False);
+            unsigned long value = 1;
+            XChangeProperty(d, overlay[i], overlay_atom, XA_CARDINAL, 32, PropModeReplace, (unsigned char*) &value, 1);
         }
 
         __debug__("Creating cairo context\n");
