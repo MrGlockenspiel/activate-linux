@@ -16,5 +16,6 @@ LDADD+=		-lX11
 LDADD+=		-lXfixes
 LDADD+=		-lXinerama
 LDADD+=		-lcairo
+LDADD+=		-lrt
 
 .include <bsd.prog.mk>

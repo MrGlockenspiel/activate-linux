@@ -3,6 +3,7 @@ CFLAGS ?= -Og -Wall -Wpedantic -Wextra -Isrc
 PREFIX ?= /usr/local
 BINDIR ?= bin
 DESTDIR ?=
+LDFLAGS ?= -lrt
 backends ?= wayland x11
 
 << := @echo
@@ -104,3 +105,4 @@ obj/.enabled: .REBUILD
 
 .PHONY: all clean install uninstall test .REBUILD
 .INTERMEDIATE: $(<<hgenerators>>:%.hgen=%.h) $(<<generators>>:%.cgen=%.c)
+
