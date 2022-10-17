@@ -1,6 +1,6 @@
 CC       = rustc
 SOURCES  = $(wildcard *.rs)
-TARGETS  = activate-linux
+BINARY  = activate-linux
 
 << := @echo
 PKGS := cairo
@@ -8,7 +8,7 @@ PKGS := cairo
 .PHONY: all clean test
 
 activate-linux: 
-	$(CC) main.rs -o $(BINARY) $(RFLAGS)
+	$(CC) -A dead_code main.rs -o $(BINARY) $(RFLAGS)
 
 install: $(BINARY)
 	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
