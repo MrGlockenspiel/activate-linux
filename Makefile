@@ -1,30 +1,16 @@
-CC       = clang
-SOURCES  = $(wildcard *.c)
+CC       = rustc
+SOURCES  = $(wildcard *.rs)
 TARGETS  = activate-linux
 
 RM = rm
 name := $(shell uname -s)
-
-# Linux specific flags
-ifeq ($(name),Linux)
-    BINARY  = activate-linux
-	CFLAGS  = -lX11 -lXfixes -lXinerama -lcairo -I/usr/include/cairo
-endif
-
-# OSX specific flags
-ifeq ($(name),Darwin)
-    BINARY  = activate-macos
-	CFLAGS  = -lX11 -lXfixes -lXinerama -lcairo -I/opt/local/include/cairo -I/opt/X11/include
-endif
 
 .PHONY: all clean test
 
 all: $(TARGETS)
 
 activate-linux: 
-	rm -f -r bin
-	mkdir bin
-	$(CC) src/activate_linux.c -o bin/$(BINARY) $(CFLAGS)
+	$(CC) main.rs -o $(BINARY) $(RFLAGS)
 
 # install to /usr/local/bin
 # the chmod is needed because the Makefile is run as root and clean wont work as a user without it
@@ -34,7 +20,7 @@ install: $(TARGETS)
 
 # uninstall binary
 uninstall:
-	rm /usr/local/bin/$(BINARY)
+	$(RM) /usr/local/bin/$(BINARY)
 
 # clean
 clean:
@@ -42,4 +28,4 @@ clean:
 	
 # build and run
 test: test $(TARGETS)
-	./bin/$(BINARY)
+	./(BINARY)
