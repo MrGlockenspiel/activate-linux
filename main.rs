@@ -1,235 +1,342 @@
 #![allow(dead_code, unused_variables)]
 
 fn main() {
-    a(true);
-    c(false);
-    t(false);
-    i(false);
-    v(false);
-    a(false);
-    t(false);
-    e(false);
-    space(false);
-    l(true);
-    i(false);
-    n(false);
-    u(false);
-    x(false);
-    print!("\n");
+    a(true, false);
+    c(false, false);
+    t(false, false);
+    i(false, false);
+    v(false, false);
+    a(false, false);
+    t(false, false);
+    e(false, false);
+    space(false, false);
+    l(true, false);
+    i(false, false);
+    n(false, false);
+    u(false, false);
+    x(false, true);
 }
 
-fn a(caps: bool) {
-    if caps == true {
+fn a(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("A\n");
+    } else if caps == true && endwnewline == false {
         print!("A");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("a\n");
+    } else if caps == false && endwnewline == false {
         print!("a");
     }
 }
 
-fn b(caps: bool) {
-    if caps == true {
+fn b(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("B\n");
+    } else if caps == true && endwnewline == false {
         print!("B");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("b\n");
+    } else if caps == false && endwnewline == false {
         print!("b");
     }
 }
 
-fn c(caps: bool) {
-    if caps == true {
+fn c(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("C\n");
+    } else if caps == true && endwnewline == false {
         print!("C");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("c\n");
+    } else if caps == false && endwnewline == false {
         print!("c");
     }
 }
 
-fn d(caps: bool) {
-    if caps == true {
+fn d(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("D\n");
+    } else if caps == true && endwnewline == false {
         print!("D");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("d\n");
+    } else if caps == false && endwnewline == false {
         print!("d");
     }
 }
 
-fn e(caps: bool) {
-    if caps == true {
+fn e(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("E\n");
+    } else if caps == true && endwnewline == false {
         print!("E");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("e\n");
+    } else if caps == false && endwnewline == false {
         print!("e");
     }
 }
 
-fn f(caps: bool) {
-    if caps == true {
+fn f(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("F\n");
+    } else if caps == true && endwnewline == false {
         print!("F");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("f\n");
+    } else if caps == false && endwnewline == false {
         print!("f");
     }
 }
 
-fn g(caps: bool) {
-    if caps == true {
+fn g(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("G\n");
+    } else if caps == true && endwnewline == false {
         print!("G");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("g\n");
+    } else if caps == false && endwnewline == false {
         print!("g");
     }
 }
 
-fn h(caps: bool) {
-    if caps == true {
+fn h(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("H\n");
+    } else if caps == true && endwnewline == false {
         print!("H");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("h\n");
+    } else if caps == false && endwnewline == false {
         print!("h");
     }
 }
 
-fn i(caps: bool) {
-    if caps == true {
+fn i(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("I\n");
+    } else if caps == true && endwnewline == false {
         print!("I");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("i\n");
+    } else if caps == false && endwnewline == false {
         print!("i");
     }
 }
 
-fn j(caps: bool) {
-    if caps == true {
+fn j(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("J\n");
+    } else if caps == true && endwnewline == false {
         print!("J");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("j\n");
+    } else if caps == false && endwnewline == false {
         print!("j");
     }
 }
 
-fn k(caps: bool) {
-    if caps == true {
+fn k(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("K\n");
+    } else if caps == true && endwnewline == false {
         print!("K");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("k\n");
+    } else if caps == false && endwnewline == false {
         print!("k");
     }
 }
 
-fn l(caps: bool) {
-    if caps == true {
+fn l(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("L\n");
+    } else if caps == true && endwnewline == false {
         print!("L");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("l\n");
+    } else if caps == false && endwnewline == false {
         print!("l");
     }
 }
 
-fn m(caps: bool) {
-    if caps == true {
+fn m(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("M\n");
+    } else if caps == true && endwnewline == false {
         print!("M");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("m\n");
+    } else if caps == false && endwnewline == false {
         print!("m");
     }
 }
 
-fn n(caps: bool) {
-    if caps == true {
+fn n(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("N\n");
+    } else if caps == true && endwnewline == false {
         print!("N");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("n\n");
+    } else if caps == false && endwnewline == false {
         print!("n");
     }
 }
 
-fn o(caps: bool) {
-    if caps == true {
+fn o(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("O\n");
+    } else if caps == true && endwnewline == false {
         print!("O");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("o\n");
+    } else if caps == false && endwnewline == false {
         print!("o");
     }
 }
 
-fn p(caps: bool) {
-    if caps == true {
+fn p(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("P\n");
+    } else if caps == true && endwnewline == false {
         print!("P");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("p\n");
+    } else if caps == false && endwnewline == false {
         print!("p");
     }
 }
 
-fn q(caps: bool) {
-    if caps == true {
+fn q(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("Q\n");
+    } else if caps == true && endwnewline == false {
         print!("Q");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("q\n");
+    } else if caps == false && endwnewline == false {
         print!("q");
     }
 }
 
-fn r(caps: bool) {
-    if caps == true {
+fn r(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("R\n");
+    } else if caps == true && endwnewline == false {
         print!("R");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("r\n");
+    } else if caps == false && endwnewline == false {
         print!("r");
     }
 }
 
-fn s(caps: bool) {
-    if caps == true {
+fn s(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("S\n");
+    } else if caps == true && endwnewline == false {
         print!("S");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("s\n");
+    } else if caps == false && endwnewline == false {
         print!("s");
     }
 }
 
-fn t(caps: bool) {
-    if caps == true {
+fn t(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("T\n");
+    } else if caps == true && endwnewline == false {
         print!("T");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("t\n");
+    } else if caps == false && endwnewline == false {
         print!("t");
     }
 }
 
-fn u(caps: bool) {
-    if caps == true {
+fn u(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("U\n");
+    } else if caps == true && endwnewline == false {
         print!("U");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("u\n");
+    } else if caps == false && endwnewline == false {
         print!("u");
     }
 }
 
-fn v(caps: bool) {
-    if caps == true {
+fn v(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("V\n");
+    } else if caps == true && endwnewline == false {
         print!("V");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("v\n");
+    } else if caps == false && endwnewline == false {
         print!("v");
     }
 }
 
-fn w(caps: bool) {
-    if caps == true {
+fn w(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("W\n");
+    } else if caps == true && endwnewline == false {
         print!("W");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("w\n");
+    } else if caps == false && endwnewline == false {
         print!("w");
     }
 }
 
-fn x(caps: bool) {
-    if caps == true {
+fn x(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("X\n");
+    } else if caps == true && endwnewline == false {
         print!("X");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("x\n");
+    } else if caps == false && endwnewline == false {
         print!("x");
     }
 }
 
-fn y(caps: bool) {
-    if caps == true {
+fn y(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("Y\n");
+    } else if caps == true && endwnewline == false {
         print!("Y");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("y\n");
+    } else if caps == false && endwnewline == false {
         print!("y");
     }
 }
 
-fn z(caps: bool) {
-    if caps == true {
+fn z(caps: bool, endwnewline: bool) {
+    if caps == true && endwnewline == true {
+        print!("Z\n");
+    } else if caps == true && endwnewline == false {
         print!("Z");
-    } else {
+    } else if caps == false && endwnewline == true {
+        print!("z\n");
+    } else if caps == false && endwnewline == false {
         print!("z");
     }
 }
 
-fn space(tab: bool) {
-    if tab == true {
-        print!("    ");
-    } else {
+fn space(tab: bool, endwnewline: bool) {
+    if tab == true && endwnewline == true {
+        print!("    \n");
+    } else if tab == true && endwnewline == false {
+        print!("     ");
+    } else if tab == false && endwnewline == true {
+        print!(" \n");
+    } else if  tab == false && endwnewline == false {
         print!(" ");
     }
 }
