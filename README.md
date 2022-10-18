@@ -63,7 +63,7 @@ Use MacPorts to install the following, then build normally.
 - `xorg-libXinerama`
 
 ### Wayland
-This works out of the box through XWayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
+This works out of the box, with native support for Wayland, or alternatively you can use [this port of the project by Kljunas2](https://github.com/Kljunas2/activate-linux).
 
 ## Example:
 
