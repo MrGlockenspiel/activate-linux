@@ -1,20 +1,7 @@
 #![allow(dead_code, unused_variables)]
 
 fn main() {
-    a(true, false);
-    c(false, false);
-    t(false, false);
-    i(false, false);
-    v(false, false);
-    a(false, false);
-    t(false, false);
-    e(false, false);
-    space(false, false);
-    l(true, false);
-    i(false, false);
-    n(false, false);
-    u(false, false);
-    x(false, true);
+    a(true, false); c(false, false); t(false, false); i(false, false);v(false, false); a(false, false); t(false, false); e(false, false); space(false, false); l(true, false); i(false, false); n(false, false); u(false, false); x(false, true);
 }
 
 fn a(caps: bool, endwnewline: bool) {
