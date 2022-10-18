@@ -2,8 +2,8 @@ CC       = rustc
 SOURCES  = $(wildcard *.rs)
 BINARY  = activate-linux
 
-<< := @echo
-PKGS := cairo
+RM = rm
+name := $(shell uname -s)
 
 .PHONY: all clean test
 
