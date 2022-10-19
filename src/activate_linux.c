@@ -43,8 +43,7 @@ struct draw_options load_conf(char *file, struct draw_options options) {
   config_init(cf);
 
   if (!config_read_file(cf, file)) {
-    fprintf(stderr, "%s:%d - %s\n", config_error_file(cf),
-            config_error_line(cf), config_error_text(cf));
+    __error__("%s:%d - %s\n", config_error_file(cf), config_error_line(cf), config_error_text(cf));
     config_destroy(cf);
   }
 
