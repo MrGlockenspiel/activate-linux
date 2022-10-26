@@ -36,7 +36,8 @@ This project depends on:
 
 Those packages may be installed (in Debian-based distros) like this:
 ```console
-sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev
+sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev \
+libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
 ```
 
 
