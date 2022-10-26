@@ -102,3 +102,8 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ```console
 ./activate-linux -l
 ```
+
+### Use a configuration file
+```console
+./activate-linux --config-file ~/config.cfg
+```

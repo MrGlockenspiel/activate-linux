@@ -7,7 +7,7 @@ LDFLAGS ?= -lrt
 backends ?= wayland x11
 
 << := @echo
-PKGS := cairo
+PKGS := libconfig cairo
 
 ifneq ($(shell eval 'echo -e'),-e)
 	<< += -e

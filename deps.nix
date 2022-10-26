@@ -10,4 +10,5 @@ with pkgs; [
 	xorg.libXrandr
 	wayland
 	wayland-protocols
+	libconfig
 ]
