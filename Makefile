@@ -1,4 +1,4 @@
-CC ?= clang
+CC ?= $(CC)
 CFLAGS ?= -Og -Wall -Wpedantic -Wextra -Isrc
 PREFIX ?= /usr/local
 BINDIR ?= bin
