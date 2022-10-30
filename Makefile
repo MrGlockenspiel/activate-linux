@@ -4,8 +4,7 @@ PREFIX ?= /usr/local
 BINDIR ?= bin
 DESTDIR ?=
 LDFLAGS ?= -lrt
-# backends ?= wayland x11
-backends ?= x11
+backends ?= wayland x11
 
 # Echo function
 << := @echo
