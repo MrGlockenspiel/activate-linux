@@ -19,9 +19,12 @@
 #define DEFAULT_PRESET 3
 #define SYSTEM_NAME "GNU/Hurd"
 
+#elif defined(_WIN32) || defined(_WIN64) || defined(__MSYS__)
+#define DEFAULT_PRESET 4
+#define SYSTEM_NAME "Windows"
 
 #elif defined(__unix__)
-#define DEFAULT_PRESET 4
+#define DEFAULT_PRESET 5
 #define SYSTEM_NAME "*nix"
 
 #endif
@@ -31,7 +34,7 @@ typedef struct {
 	char *name, *info;
 } preset_map ;
 
-typedef char* lang_map;
+typedef char *lang_map;
 
 /****************************************************************
  * match_str(match, with)
@@ -65,17 +68,6 @@ typedef char* lang_map;
  * @return preset struct
  ****************************************************************/
 #define map_preset(name, description) {name, description},
-
-/****************************************************************
- * _LANG(id, country)
- *
- * Define a language code
- *
- * @param id      Language code
- * @param country Country code
- * @return "(id)_(country)"
- ****************************************************************/
-#define _LANG(id, country) id "_" country,
 
 /****************************************************************
  * untranslated(lang)

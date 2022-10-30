@@ -8,31 +8,36 @@ The "Activate Windows" watermark ported to Linux with cairo in C
 > Read [ARGS.md](ARGS.md) for information about command line arguments.
 
 ## Building
+> Note that the executable's name depends on the target platform
 
+*nix:
 ```console
 make
 ```
 
-> Note that the executable's name depends on the target platform
-
+Windows (using [MSYS2](https://msys2.org)):
+```console
+export backends=gdi
+make
+```
 
 ## Linux
 
 ### Dependencies
-
 This project depends on:
-- `libcairo2-dev`
-- `libconfig-dev`
-- `libxi-dev`
-- `libx11-dev`
+- [`libcairo2-dev`](https://cairographics.org)
+- [`libxi-dev`](https://gitlab.freedesktop.org/xorg/lib/libxi)
+- [`libx11-dev`](https://gitlab.freedesktop.org/xorg/lib/libx11)
 - `x11proto-core-dev`
-- `x11proto-dev`
-- `libxt-dev`
-- `libxfixes-dev`
-- `libxinerama-dev`
-- `libxrandr-dev`
-- `libwayland-dev`
-- `wayland-protocols`
+- [`x11proto-dev`](https://gitlab.freedesktop.org/xorg/proto/x11proto)
+- [`libxt-dev`](https://gitlab.freedesktop.org/xorg/lib/libxt)
+- [`libxfixes-dev`](https://gitlab.freedesktop.org/xorg/lib/libxfixes)
+- [`libxinerama-dev`](https://gitlab.freedesktop.org/xorg/lib/libxinerama)
+- [`libxrandr-dev`](https://gitlab.freedesktop.org/xorg/lib/libxrandr)
+- [`libwayland-dev`](https://gitlab.freedesktop.org/wayland/wayland)
+- [`wayland-protocols`](https://gitlab.freedesktop.org/wayland/wayland-protocols)
+Optional dependencies:
+- [`libconfig-dev`](https://hyperrealm.github.io/libconfig)
 
 Those packages may be installed (in Debian-based distros) like this:
 ```console
@@ -108,7 +113,7 @@ Use MacPorts to install the following, then build normally.
 - `cairo`
 - `xorg-libXinerama`
 
-Alternatively, you can use [this](https://github.com/Lakr233/ActivateMac) project instead because it actually works properly
+Alternatively, you can use [this](https://github.com/Lakr233/ActivateMac) project instead because it actually works properly.
 
 ## Example:
 

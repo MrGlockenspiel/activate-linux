@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <unistd.h>
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
@@ -16,21 +15,20 @@
 #include <cairo-xlib.h>
 
 #include "log.h"
-#include "draw.h"
+#include "options.h"
+#include "cairo_draw_text.h"
 
 // generated function: returns XEvent name
-const char* XEventName(int type);
+const char *XEventName(int type);
 // check if compositor is running
-static bool compositor_check(Display *d, int screen)
-{
+static bool compositor_check(Display *d, int screen) {
     char prop_name[16];
     snprintf(prop_name, 16, "_NET_WM_CM_S%d", screen);
     Atom prop_atom = XInternAtom(d, prop_name, False);
     return XGetSelectionOwner(d, prop_atom) != None;
 }
 
-int x11_backend_start(struct draw_options *options)
-{
+int x11_backend_start() {
     __debug__("Opening display\n");
     Display *d = XOpenDisplay(NULL);
     __debug__("Finding root window\n");
@@ -40,7 +38,7 @@ int x11_backend_start(struct draw_options *options)
 
     __debug__("Checking compositor\n");
     if (!compositor_check(d, XDefaultScreen(d))) {
-        __info__("No running compositor detected. Program may not work as intended. \n");
+        __info__("No running compositor detected. Program may not work as intended\n");
     }
 
     // https://x.org/releases/current/doc/man/man3/Xinerama.3.xhtml
@@ -95,9 +93,9 @@ int x11_backend_start(struct draw_options *options)
     cairo_surface_t *surface[num_entries];
     cairo_t *cairo_ctx[num_entries];
 
-    int overlay_height = options->overlay_height * options->scale;
+    int overlay_height = options.overlay_height * options.scale;
     __debug__("Scaled height: %d px\n", overlay_height);
-    int overlay_width = options->overlay_width * options->scale;
+    int overlay_width = options.overlay_width * options.scale;
     __debug__("Scaled width:  %d px\n", overlay_width);
 
     for (int i = 0; i < num_entries; i++) {
@@ -105,8 +103,8 @@ int x11_backend_start(struct draw_options *options)
         overlay[i] = XCreateWindow(
                          d,                                                                     // display
                          root,                                                                  // parent
-                         si[i].x_org + si[i].width + options->offset_left - overlay_width,               // x position
-                         si[i].y_org + si[i].height + options->offset_top - overlay_height,              // y position
+                         si[i].x_org + si[i].width  + options.offset_left - overlay_width,      // x position
+                         si[i].y_org + si[i].height + options.offset_top  - overlay_height,     // y position
                          overlay_width,                                                         // width
                          overlay_height,                                                        // height
                          0,                                                                     // border width
@@ -116,7 +114,7 @@ int x11_backend_start(struct draw_options *options)
                          CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,         // value mask
                          &attrs                                                                 // attributes
                      );
-        // Subscribe to Exposure Events, required for redrawing after DPMS blanking
+        // subscribe to Exposure Events, required for redrawing after DPMS blanking
         XSelectInput(d, overlay[i], ExposureMask);
         XMapWindow(d, overlay[i]);
 
@@ -132,29 +130,31 @@ int x11_backend_start(struct draw_options *options)
         xch->res_class = "activate-linux";
         XSetClassHint(d, overlay[i], xch);
 
-        // Set _NET_WM_BYPASS_COMPOSITOR
+        // set _NET_WM_BYPASS_COMPOSITOR
         // https://specifications.freedesktop.org/wm-spec/wm-spec-latest.html#idm45446104333040
-        if (options->bypass_compositor) {
+        if (options.bypass_compositor) {
             __debug__("Bypassing compositor\n");
-            unsigned long data = 1;
+            unsigned char data = 1;
             XChangeProperty(
                 d, overlay[i],
                 XInternAtom(d, "_NET_WM_BYPASS_COMPOSITOR", False),
-                XA_CARDINAL, 32, PropModeReplace, (unsigned char*) &data, 1
+                XA_CARDINAL, 32, PropModeReplace, &data, 1
             );
         }
 
-        if (options->gamescope_overlay) {
+        if (options.gamescope_overlay) {
             // https://github.com/Plagman/gamescope/issues/288
             // https://github.com/flightlessmango/MangoHud/blob/9a6809daca63cf6860ac9d92ae4b2dde36239b0e/src/app/main.cpp#L47
             // https://github.com/flightlessmango/MangoHud/blob/9a6809daca63cf6860ac9d92ae4b2dde36239b0e/src/app/main.cpp#L189
             // https://github.com/trigg/Discover/blob/de83063f3452b1cdee89b4c3779103eae2c90cbb/discover_overlay/overlay.py#L107
-            
-            __debug__("Setting GAMESCOPE_EXTERNAL_OVERLAY");
 
-            Atom overlay_atom = XInternAtom(d, "GAMESCOPE_EXTERNAL_OVERLAY", False);
-            unsigned long value = 1;
-            XChangeProperty(d, overlay[i], overlay_atom, XA_CARDINAL, 32, PropModeReplace, (unsigned char*) &value, 1);
+            __debug__("Setting GAMESCOPE_EXTERNAL_OVERLAY\n");
+            unsigned char data = 1;
+            XChangeProperty(
+                d, overlay[i],
+                XInternAtom(d, "GAMESCOPE_EXTERNAL_OVERLAY", False),
+                XA_CARDINAL, 32, PropModeReplace, &data, 1
+            );
         }
 
         __debug__("Creating cairo context\n");
@@ -162,7 +162,7 @@ int x11_backend_start(struct draw_options *options)
         cairo_ctx[i] = cairo_create(surface[i]);
     }
 
-    __debug__("All done. Going into X windows event endless loop\n\n");
+    __info__("All done. Going into X windows event endless loop\n\n");
     XEvent event;
     while(1) {
         XNextEvent(d, &event);
@@ -177,8 +177,8 @@ int x11_backend_start(struct draw_options *options)
                     XMoveWindow(
                         d,                                                        // display
                         overlay[i],                                               // window
-                        si[i].x_org + si[i].width + options->offset_left - overlay_width,  // x position
-                        si[i].y_org + si[i].height + options->offset_top - overlay_height  // y position
+                        si[i].x_org + si[i].width + options.offset_left - overlay_width,  // x position
+                        si[i].y_org + si[i].height + options.offset_top - overlay_height  // y position
                     );
                 }
             } else {
@@ -194,8 +194,8 @@ int x11_backend_start(struct draw_options *options)
             __debug__("! Got X event, type: %s (0x%X)\n", XEventName(event.type), event.type);
             for (int i = 0; i < num_entries && event.xexpose.count == 0; i++) {
                 if (overlay[i] == event.xexpose.window) {
-                    __debug__("\tRedrawing overlay: %d\n", i);
-                    draw_text(cairo_ctx[i], options);
+                    __debug__("  Redrawing overlay: %d\n", i);
+                    draw_text(cairo_ctx[i]);
                     break;
                 }
             }
@@ -215,4 +215,9 @@ int x11_backend_start(struct draw_options *options)
     XCloseDisplay(d);
 
     return 0;
+}
+
+int x11_backend_kill_running() {
+    __error__("x11_backend_kill_running currently is not implemented\n");
+    return 1;
 }

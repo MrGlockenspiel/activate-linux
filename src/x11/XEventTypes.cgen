@@ -1,11 +1,11 @@
 #!/bin/sh
 exec 1> "${1:-/dev/stdout}"
 cat << EOF
-const char* XEventName(int type) {
+const char *XEventName(int type) {
 	switch(type) {
 EOF
 DIR="$(pkg-config x11 --variable=includedir)/X11"
-if [ -f "$DIR/X.h" ] && command -v gawk > /dev/null 2>&1; then
+if [ -f "$DIR/X.h" ]; then
 	gawk '
 		/Event names\./,/must be bigger than any event/ {
 			if ($1 == "#define") {

@@ -1,5 +1,7 @@
-#ifndef NO_X11
-#include "draw.h"
+#ifndef INCLUDE_X11_H
+#define INCLUDE_X11_H
 
-int x11_backend_start(struct draw_options *options);
+int x11_backend_start();
+int x11_backend_kill_running();
+
 #endif
