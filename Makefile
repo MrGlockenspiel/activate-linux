@@ -6,24 +6,43 @@ DESTDIR ?=
 LDFLAGS ?= -lrt
 backends ?= wayland x11
 
+# Echo function
 << := @echo
-PKGS := libconfig cairo
-
 ifneq ($(shell eval 'echo -e'),-e)
 	<< += -e
 endif
 
-<<backends>> = $(sort $(filter x11 wayland,$(backends)))
+# Mess with backends
+<<backends>> = $(sort $(filter x11 wayland gdi,$(backends)))
 ifeq ($(filter x11,$(<<backends>>)),x11)
 	PKGS += x11 xfixes xinerama xrandr
-else
-	CFLAGS += -DNO_X11
+	CFLAGS += -DX11
 endif
-
 ifeq ($(filter wayland,$(<<backends>>)),wayland)
 	PKGS += wayland-client
-else
-	CFLAGS += -DNO_WAYLAND
+	CFLAGS += -DWAYLAND
+endif
+ifneq ($(filter wayland x11,$(<<backends>>)),)
+	PKGS += cairo
+	CFLAGS += -DCOLOR_HELP -DCAIRO
+endif
+ifeq ($(filter gdi,$(<<backends>>)),gdi)
+# Current toolchain architecture variable from MSYS2 project
+	ifeq ($(MSYSTEM_CARCH),i686)
+		CFLAGS += -m32
+	endif
+	CFLAGS += -DGDI
+	LDFLAGS += -lgdi32
+endif
+
+ifeq ($(shell pkg-config --exists libconfig && echo exists),exists)
+	PKGS += libconfig
+	CFLAGS += -DLIBCONFIG
+endif
+
+ifneq ($(PKGS),)
+	CFLAGS += $(shell pkg-config --cflags $(PKGS))
+	LDFLAGS += $(shell pkg-config --libs $(PKGS))
 endif
 
 <<sources>> := \
@@ -41,21 +60,16 @@ endif
 <<objects>> := $(<<sources>>:src/%.c=obj/%.o)
 <<objects>> += $(<<generators>>:src/%.cgen=obj/%.o)
 
+# Output file name
 NAME := $(shell uname -s)
-CFLAGS := \
-	$(CFLAGS) \
-	$(shell pkg-config --cflags $(PKGS))
-
-LDFLAGS := \
-	$(LDFLAGS) \
-	$(shell pkg-config --libs $(PKGS))
-
 ifeq ($(NAME),Linux)
 	BINARY := activate-linux
 endif
-
 ifeq ($(NAME),Darwin)
 	BINARY := activate-macos
+endif
+ifeq ($(shell uname -o),Msys)
+	BINARY := activate-windows.exe
 endif
 
 all: $(BINARY)

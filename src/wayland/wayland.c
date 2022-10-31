@@ -21,7 +21,6 @@
 
 struct state {
     struct wl_display *display;
-    struct draw_options *options;
 
     struct wl_compositor *compositor;
     struct wl_shm *shm;
@@ -87,8 +86,8 @@ static void frame_commit(struct output *output)
 
     __debug__("Rendering a wayland frame\n");
 
-    int width = output->width * output->state->options->scale * output->scale;
-    int height = output->height * output->state->options->scale * output->scale;
+    int width = output->width * options.scale * output->scale;
+    int height = output->height * options.scale * output->scale;
 
     int32_t stride = width * 4;
     size_t size = stride * height;
@@ -96,19 +95,19 @@ static void frame_commit(struct output *output)
     int fd = anonymous_shm_open();
     switch(ftruncate(fd, size)) {
     case EINTR:
-        __error__("! Signal caught during frame rendering.");
+        __error__("! Signal caught during frame rendering.\n");
         break;
     case EINVAL:
-        __error__("! Can't truncate to negative length.");
+        __error__("! Can't truncate to negative length.\n");
         break;
     case EFBIG:
-        __error__("! Length is bigger than the allowed value.");
+        __error__("! Length is bigger than the allowed value.\n");
         break;
     case EIO:
-        __error__("! I/O error during frame rendering.");
+        __error__("! I/O error during frame rendering.\n");
         break;
     case EBADF:
-        __error__("! ftruncate called with bad FD.");
+        __error__("! ftruncate called with bad FD.\n");
         break;
     }
     void *data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -122,9 +121,10 @@ static void frame_commit(struct output *output)
                                CAIRO_FORMAT_ARGB32, width, height, stride);
     cairo_t *cairo = cairo_create(surface);
 
-    struct draw_options options = *output->state->options;
+    float orig_scale = options.scale;
     options.scale *= output->scale;
-    draw_text(cairo, &options);
+    draw_text(cairo);
+    options.scale = orig_scale;
 
     wl_surface_set_buffer_scale(output->surface, output->scale);
     wl_surface_attach(output->surface, buffer, 0, 0);
@@ -234,17 +234,16 @@ static void output_done(void *data, struct wl_output *wl_output)
                                     output->state->layer_shell, output->surface, output->wl_output,
                                     ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, "activate notification");
 
-        struct draw_options *options = output->state->options;
         zwlr_layer_surface_v1_set_size(output->layer_surface,
-                                       options->overlay_width * options->scale,
-                                       options->overlay_height * options->scale);
+                                       options.overlay_width * options.scale,
+                                       options.overlay_height * options.scale);
         zwlr_layer_surface_v1_set_anchor(output->layer_surface,
                                          ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM |
                                          ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
         zwlr_layer_surface_v1_set_exclusive_zone(output->layer_surface, -1);
         zwlr_layer_surface_v1_set_margin(output->layer_surface,
-                                         0, options->offset_top,
-                                         0, options->offset_left);
+                                         0, options.offset_top,
+                                         0, options.offset_left);
         zwlr_layer_surface_v1_add_listener(output->layer_surface,
                                            &layer_surface_listener, output);
         wl_surface_commit(output->surface);
@@ -314,10 +313,9 @@ static const struct wl_registry_listener registry_listener = {
     .global_remove = handle_global_remove,
 };
 
-int wayland_backend_start(struct draw_options *options)
+int wayland_backend_start()
 {
-    struct state state =
-    {   .options = options, };
+    struct state state;
 
     wl_list_init(&state.outputs);
 
@@ -343,4 +341,9 @@ int wayland_backend_start(struct draw_options *options)
     }
 
     return 0;
+}
+
+int wayland_backend_kill_running() {
+    __error__("wayland_backend_kill_running currently is not implemented\n");
+    return 1;
 }
