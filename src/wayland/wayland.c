@@ -15,6 +15,8 @@
 #include "wlr-layer-shell-unstable-v1.h"
 
 #include "wayland.h"
+#include "cairo_draw_text.h"
+#include "options.h"
 #include "log.h"
 
 #define UNUSED(expr) do { (void)(expr); } while (0)

@@ -1,10 +1,17 @@
-CC ?= $(CC)
-CFLAGS ?= -Og -Wall -Wpedantic -Wextra -Isrc
+# compile options
+CFLAGS ?= -Os -Wall -Wpedantic -Wextra
+# link options
+LDFLAGS ?= -s
+
+# install path is: $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+DESTDIR ?=
 PREFIX ?= /usr/local
 BINDIR ?= bin
-DESTDIR ?=
-LDFLAGS ?= -lrt
+
+# implemented backends: wayland x11 gdi
 backends ?= wayland x11
+
+CFLAGS += -Isrc
 
 # Echo function
 << := @echo
@@ -21,6 +28,7 @@ endif
 ifeq ($(filter wayland,$(<<backends>>)),wayland)
 	PKGS += wayland-client
 	CFLAGS += -DWAYLAND
+	LDFLAGS += -lrt
 endif
 ifneq ($(filter wayland x11,$(<<backends>>)),)
 	PKGS += cairo
@@ -69,7 +77,11 @@ ifeq ($(NAME),Darwin)
 	BINARY := activate-macos
 endif
 ifeq ($(shell uname -o),Msys)
-	BINARY := activate-windows.exe
+	ifeq ($(MSYSTEM_CARCH),i686)
+		BINARY := activate-windows.exe
+	else
+		BINARY := activate-windows64.exe
+	endif
 endif
 
 all: $(BINARY)

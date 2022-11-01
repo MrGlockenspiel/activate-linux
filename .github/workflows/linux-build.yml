@@ -1,0 +1,18 @@
+name: Linux build
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: speedup dpkg
+        run: sudo sh -c "echo 'force-unsafe-io' > /etc/dpkg/dpkg.cfg.d/force-unsafe-io"
+      - name: speedup installing dependencies
+        run: sudo apt remove man-db
+
+      - name: install dependencies
+        run: sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
+      - name: build
+        run: make

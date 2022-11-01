@@ -53,7 +53,7 @@ int main(int argc, char *const argv[]) {
       bool daemon_started = !CreateProcessW(NULL, GetCommandLineW(), NULL, NULL,
                             FALSE, DETACHED_PROCESS, NULL, NULL, &si, &pi);
       if (!daemon_started) {
-        __error__("Cannot start daemon process, error 0x%08X. Continuing as non-daemon\n", GetLastError());
+        __error__("Cannot start daemon process, error 0x%08lX. Continuing as non-daemon\n", GetLastError());
       } else {
         exit(daemon_started);
       }
