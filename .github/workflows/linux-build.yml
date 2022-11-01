@@ -14,5 +14,12 @@ jobs:
 
       - name: install dependencies
         run: sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
-      - name: build
+
+      - name: build (GCC)
         run: make
+
+      - name: build (clang)
+        run: |
+          export CC=clang
+          make clean
+          make
