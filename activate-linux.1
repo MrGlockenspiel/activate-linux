@@ -1,0 +1,143 @@
+.Dd 1 Nov 22
+.Dt activate-linux 1
+.Os Linux
+.Sh NAME
+.Nm activate-linux
+.Nd the "Activate Windows" watermark ported to Linux with cairo in C
+.Sh SYNOPSIS
+.Nm
+.Op Fl bdGhiKlqvw
+.Op Fl t Ar message
+.Op Fl m Ar submessage
+.Op Fl p Ar preset_name
+.Op Fl f Ar font_name
+.Op Fl c Ar r-g-b-a
+.Op Fl x Ar pixels
+.Op Fl y Ar pixels
+.Op Fl s Ar scale
+.Op Fl H Ar pixels
+.Op Fl V Ar pixels
+.Op Fl C Ar config_file
+.Sh DESCRIPTION
+The "Activate Windows" watermark ported to Linux with cairo in C.
+.Bd -filled -offset right
+"Science isn't about WHY. It's about WHY NOT. Why is so much of our science
+dangerous? Why not marry safe science if you love it so much. In fact, why not
+invent a special safety door that won't hit you on the butt on the way out,
+because you are fired."
+.Ed
+.Bd -centered -offset right
+.Sy - Cave Johnson (Portal 2)
+.Ed
+
+.Sh OPTIONS
+.Ss Text content
+.Bl -tag -width -indent
+.It Fl t, Fl Fl text-title Ar message
+Main message
+.It Fl m, Fl Fl text-message Ar message
+Secondary message
+.It Fl p, Fl Fl text-preset Ar preset_name
+Text preset. Presets may be listed using
+.Fl l No option
+.El
+
+.Ss Text appearance
+.Bl -tag -width -indent
+.It Fl f, Fl Fl text-font Ar font_name
+.It Fl b, Fl Fl text-bold
+.It Fl i, Fl Fl text-italic
+.It Fl c, Fl Fl text-color Ar r-g-b-a
+Text color (r-g-b-a, red-green-blue-alpha). Each component may be 0.0-1.0.
+Default value is
+.Em 1-1-1-0.35
+(dimmed white)
+.El
+
+.Ss Overlay size and position
+.Bl -tag -width -indent
+.It Fl x, Fl Fl overlay-width Ar 340
+.It Fl y, Fl Fl overlay-height Ar 120
+.It Fl s, Fl Fl scale Ar 1.5
+Wayland backend supports HiDPI screens, other backends may be fixed with this option
+.It Fl H, Fl Fl overlay-offset-left Ar 0
+Move overlay horizontally: positive values to the left, negative values to the right
+.It Fl V, Fl Fl overlay-offset-top Ar 0
+Move overlay vertically: positive values lower, negative values upper
+.El
+
+.Ss Other options
+.Bl -tag -width -indent
+.It Fl w, Fl Fl bypass-compositor
+Works only for compliant compositors
+.It Fl d, Fl Fl daemonize
+Run as daemon in background. Daemon may be killed with
+.Fl K No option
+\" .It Fl K, Fl Fl kill-running
+\" Kill running activate-linux instance (currently Windows-only)
+\" Useful to kill running background daemon (started with Fl d option)
+.It Fl v, Fl Fl verbose
+Each
+.Fl v No increases verbosity level:
+.Em ERROR
+(default) ->
+.Em WARN No ->
+.Em INFO No ->
+.Em DEBUG
+.It Fl q, Fl Fl quiet
+Be quiet, don't spam console
+.It Fl l, Fl Fl text-preset-list
+List predefined text presets to use with
+.Fl p No option
+.It Fl G, Fl Fl gamescope
+Run as an external Gamescope overlay
+.It Fl C, Fl Fl config-file Ar ~/config.cfg
+Use the configuration file
+.It Fl ?, Fl h, Fl Fl help
+Show colorful embedded help
+.El
+.Sh ENVIRONMENT
+.Nm
+doesn't use variables
+.Sh FILES
+.Nm
+may use config file with
+.Fl C No option. Here is an example of such config:
+.Bd -literal -offset indent
+text-title = "Example";
+text-message = "This is an example configuration file.";
+text-font = "Noto Sans";
+text-bold = true;
+text-italic = true;
+bypass-compositor = false;
+gamescope = false;
+text-color-r = 0.3;
+text-color-g = 0.7;
+text-color-b = 0.1;
+text-color-a = 1;
+scale = 1;
+overlay-width = 340;
+overlay-height = 120;
+overlay-offset-top = 0;
+overlay-offset-left = 0;
+daemonize = false;
+verbose = false;
+quiet = false;
+#text-preset = "unix";
+.Ed
+.Sh SEE ALSO
+.Lk https://github.com/MrGlockenspiel/activate-linux
+.Pp
+.Xr Xorg 1 ,
+.Xr Xrandr 3 ,
+.Xr Xinerama 3 ,
+.Xr Cairo 3pm
+.Sh AUTHORS
+.An -split
+.Nm
+was started by
+.An MrGlockenspiel Aq Mt mrglockenspiel@protonmail.com
+
+This manual page is written by
+.An AHOHNMYC Aq Mt https://github.com/AHOHNMYC
+.

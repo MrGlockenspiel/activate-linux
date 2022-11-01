@@ -8,6 +8,8 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 BINDIR ?= bin
 
+MANDIR ?= $(PREFIX)/share/man
+
 # implemented backends: wayland x11 gdi
 backends ?= wayland x11
 
@@ -106,6 +108,7 @@ $(BINARY): $(<<objects>>)
 
 install: $(BINARY)
 	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	install -Dm0644 activate-linux.1 $(MANDIR)/man1/activate-linux.1
 
 uninstall:
 	$(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)

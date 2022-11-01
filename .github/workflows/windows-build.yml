@@ -7,12 +7,18 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
+    strategy:
+      matrix:
+        sys:
+          - mingw64
+          - mingw32
     steps:
       - uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
-          install: make pkgconf mingw-w64-x86_64-gcc
+          msystem: ${{matrix.sys}}
+          install: make pkgconf
+          pacboy: gcc:p
       - name: Compile .exe
         run: |
           export backends=gdi

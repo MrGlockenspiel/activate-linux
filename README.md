@@ -36,6 +36,7 @@ This project depends on:
 - [`libxrandr-dev`](https://gitlab.freedesktop.org/xorg/lib/libxrandr)
 - [`libwayland-dev`](https://gitlab.freedesktop.org/wayland/wayland)
 - [`wayland-protocols`](https://gitlab.freedesktop.org/wayland/wayland-protocols)
+
 Optional dependencies:
 - [`libconfig-dev`](https://hyperrealm.github.io/libconfig)
 
