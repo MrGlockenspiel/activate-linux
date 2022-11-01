@@ -6,7 +6,7 @@
 #include <windows.h>
 
 // Le classique https://stackoverflow.com/a/17387176
-void PrintLastError() {
+void PrintLastError(void) {
     LPSTR messageBuffer = "";
     FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                     NULL, GetLastError(), MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), messageBuffer, 0, NULL);
@@ -41,7 +41,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 	}
 }
 
-int gdi_backend_start() {
+int gdi_backend_start(void) {
     __info__("GDI backend starting\n");
     SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 
@@ -84,7 +84,7 @@ int gdi_backend_start() {
     return 0;
 }
 
-int gdi_backend_kill_running() {
+int gdi_backend_kill_running(void) {
     HWND hwnd = FindWindow(WINDOW_CLASS, NULL);
     if (hwnd != NULL) {
         __debug__("Sent WM_CLOSE to window with HWND %p\n", (void*)hwnd);

@@ -82,13 +82,13 @@ int main(int argc, char *const argv[]) {
   int try_next = 1;
   __info__("Starting backend\n");
 #ifdef WAYLAND
-  if (try_next) try_next = wayland_backend_start(&options);
+  if (try_next) try_next = wayland_backend_start();
 #endif
 #ifdef X11
-  if (try_next) try_next = x11_backend_start(&options);
+  if (try_next) try_next = x11_backend_start();
 #endif
 #ifdef GDI
-  if (try_next) try_next = gdi_backend_start(&options);
+  if (try_next) try_next = gdi_backend_start();
 #endif
 
   return try_next;

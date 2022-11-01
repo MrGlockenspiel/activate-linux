@@ -28,7 +28,7 @@ static bool compositor_check(Display *d, int screen) {
     return XGetSelectionOwner(d, prop_atom) != None;
 }
 
-int x11_backend_start() {
+int x11_backend_start(void) {
     __debug__("Opening display\n");
     Display *d = XOpenDisplay(NULL);
     __debug__("Finding root window\n");
@@ -217,7 +217,7 @@ int x11_backend_start() {
     return 0;
 }
 
-int x11_backend_kill_running() {
+int x11_backend_kill_running(void) {
     __error__("x11_backend_kill_running currently is not implemented\n");
     return 1;
 }

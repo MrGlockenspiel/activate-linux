@@ -46,7 +46,7 @@ typedef char *lang_map;
  * @param with  Match with this param
  * @return true if both arg matches
  ****************************************************************/
-#define match_str(match, with) strncmp(match, with, 5) == 0
+#define match_str(match, with) (strncmp(match, with, 5) == 0)
 
 /****************************************************************
  * length(array)

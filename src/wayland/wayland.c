@@ -315,7 +315,7 @@ static const struct wl_registry_listener registry_listener = {
     .global_remove = handle_global_remove,
 };
 
-int wayland_backend_start()
+int wayland_backend_start(void)
 {
     struct state state;
 
@@ -345,7 +345,7 @@ int wayland_backend_start()
     return 0;
 }
 
-int wayland_backend_kill_running() {
+int wayland_backend_kill_running(void) {
     __error__("wayland_backend_kill_running currently is not implemented\n");
     return 1;
 }

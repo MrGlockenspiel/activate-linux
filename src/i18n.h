@@ -6,6 +6,6 @@ typedef struct {
 } i18n_info;
 
 void i18n_set_info(const char *const preset);
-void i18n_list_presets();
+void i18n_list_presets(void);
 
 #endif

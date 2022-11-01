@@ -30,7 +30,6 @@ typedef struct options_t {
 
 extern Options options;
 
-void init_options();
 void parse_options(int argc, char *const argv[]);
 
 #endif

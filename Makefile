@@ -1,3 +1,5 @@
+# if $CC is not set, guess default `cc'. It has to be in system
+CC ?= cc
 # compile options
 CFLAGS ?= -Os -Wall -Wpedantic -Wextra
 # link options
@@ -12,6 +14,12 @@ MANDIR ?= $(PREFIX)/share/man
 
 # implemented backends: wayland x11 gdi
 backends ?= wayland x11
+
+IS_CLANG = $(shell $(CC) -v 2> >(grep -q clang && echo true))
+ifeq ($(IS_CLANG),true)
+	CFLAGS += -Wno-gnu-zero-variadic-macro-arguments
+	CFLAGS += -Wno-empty-translation-unit
+endif
 
 CFLAGS += -Isrc
 

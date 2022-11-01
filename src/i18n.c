@@ -104,12 +104,12 @@ void i18n_set_info(const char *const preset) {
 #else
     char *lang = getenv("LANG");
 #endif
-    while(--ilang && ! match_str(langs[ilang], lang));
+    while(--ilang && !match_str(langs[ilang], lang));
   }
 
   if (preset != NULL) {
     ipreset = length(presets);
-    while (--ipreset && ! match_str(presets[ipreset].name, preset));
+    while (--ipreset && !match_str(presets[ipreset].name, preset));
     if (!match_str(presets[ipreset].name, preset)) {
       __warn__("Undefined preset: %s\n", preset);
       ipreset = DEFAULT_PRESET;
@@ -124,16 +124,16 @@ void i18n_set_info(const char *const preset) {
   options.subtitle = PRESET.subtitle;
 }
 
-#define HELP(fmtstr, ...) fprintf(stderr, "  " fmtstr "\n", ## __VA_ARGS__)
-#define STYLE(x) "\033[" # x "m"
-#define END() fprintf(stderr, "\n")
-void i18n_list_presets() {
+void i18n_list_presets(void) {
+  #define HELP(fmtstr, ...) fprintf(stderr, "  " fmtstr "\n", ## __VA_ARGS__)
+  #define STYLE(x) "\033[" # x "m"
+  #define END() fprintf(stderr, "\n")
   fprintf(stderr, "Built-in Presets:\n\n");
 
   HELP(STYLE(1) "Name\t\tDescription" STYLE(0));
   for (size_t len = 0; len < length(presets); len++)
     HELP(STYLE(1) "%s"STYLE(0) "\t\t%s", presets[len].name, presets[len].info);
+  #undef END
+  #undef STYLE
+  #undef HELP
 }
-#undef END
-#undef STYLE
-#undef HELP
