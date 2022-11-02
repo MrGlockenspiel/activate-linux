@@ -20,6 +20,12 @@ jobs:
       - name: build (GCC w/o libconfig)
         run: make clean && make
 
+      - name: build (clang w/o libconfig)
+        run: |
+          export CC=clang
+          make clean && make
+          unset CC
+
       - name: install libconfig
         run: sudo apt-get install libconfig-dev
 
@@ -30,3 +36,4 @@ jobs:
         run: |
           export CC=clang
           make clean && make
+          unset CC
