@@ -115,11 +115,14 @@ $(BINARY): $(<<objects>>)
 	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
 install: $(BINARY)
-	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
-	install -Dm0644 activate-linux.1 $(MANDIR)/man1/activate-linux.1
+	sudo install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	sudo install -Dm0644 activate-linux.1 $(MANDIR)/man1/activate-linux.1
+	sudo mandb -q
 
 uninstall:
-	$(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	sudo $(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	sudo $(RM) -f $(MANDIR)/man1/activate-linux.1
+	sudo mandb -q
 
 appimage: $(BINARY)
 	curl -#L -O https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
