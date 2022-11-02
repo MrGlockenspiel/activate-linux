@@ -15,6 +15,8 @@
 #include "wlr-layer-shell-unstable-v1.h"
 
 #include "wayland.h"
+#include "cairo_draw_text.h"
+#include "options.h"
 #include "log.h"
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
@@ -313,7 +315,7 @@ static const struct wl_registry_listener registry_listener = {
     .global_remove = handle_global_remove,
 };
 
-int wayland_backend_start()
+int wayland_backend_start(void)
 {
     struct state state;
 
@@ -343,7 +345,7 @@ int wayland_backend_start()
     return 0;
 }
 
-int wayland_backend_kill_running() {
+int wayland_backend_kill_running(void) {
     __error__("wayland_backend_kill_running currently is not implemented\n");
     return 1;
 }

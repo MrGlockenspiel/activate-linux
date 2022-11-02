@@ -6,7 +6,7 @@
 #include <windows.h>
 
 // Le classique https://stackoverflow.com/a/17387176
-void PrintLastError() {
+void PrintLastError(void) {
     LPSTR messageBuffer = "";
     FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                     NULL, GetLastError(), MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), messageBuffer, 0, NULL);
@@ -41,14 +41,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 	}
 }
 
-int gdi_backend_start() {
+int gdi_backend_start(void) {
     __info__("GDI backend starting\n");
     SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 
     __debug__("Registering window class\n");
     WNDCLASS wc = {0, WndProc, 0, 0, NULL, NULL, NULL, NULL, "", WINDOW_CLASS};
 	if (!RegisterClass(&wc)) {
-        __error__("Failed to register class \"%s\"\n", WINDOW_CLASS);
+        __error__("Failed to register class \"" WINDOW_CLASS "\"\n");
         PrintLastError();
         exit(EXIT_FAILURE);
     }
@@ -56,8 +56,8 @@ int gdi_backend_start() {
     __debug__("Determining monitor resolution\n");
     MONITORINFO monitorinfo = {sizeof(monitorinfo), {0, 0, 0, 0}, {0, 0, 0, 0}, 0};
 	GetMonitorInfo(MonitorFromWindow(NULL, MONITOR_DEFAULTTOPRIMARY), &monitorinfo);
-    __debug__("Full resolution: %dx%d\n", monitorinfo.rcMonitor.right, monitorinfo.rcMonitor.bottom);
-    __debug__("Work resolution: %dx%d\n", monitorinfo.rcWork.right, monitorinfo.rcWork.bottom);
+    __debug__("Full resolution: %ldx%ld\n", monitorinfo.rcMonitor.right, monitorinfo.rcMonitor.bottom);
+    __debug__("Work resolution: %ldx%ld\n", monitorinfo.rcWork.right, monitorinfo.rcWork.bottom);
 
     __debug__("Creating window\n");
     HWND hwnd = CreateWindowEx(WS_EX_LAYERED|WS_EX_TOPMOST|WS_EX_NOACTIVATE, WINDOW_CLASS, WINDOW_CLASS, WS_VISIBLE,
@@ -84,7 +84,7 @@ int gdi_backend_start() {
     return 0;
 }
 
-int gdi_backend_kill_running() {
+int gdi_backend_kill_running(void) {
     HWND hwnd = FindWindow(WINDOW_CLASS, NULL);
     if (hwnd != NULL) {
         __debug__("Sent WM_CLOSE to window with HWND %p\n", (void*)hwnd);

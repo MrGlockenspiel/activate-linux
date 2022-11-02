@@ -1,10 +1,27 @@
-CC ?= $(CC)
-CFLAGS ?= -Og -Wall -Wpedantic -Wextra -Isrc
+# if $CC is not set, guess default `cc'. It has to be in system
+CC ?= cc
+# compile options
+CFLAGS ?= -Os -Wall -Wpedantic -Wextra
+# link options
+LDFLAGS ?= -s
+
+# install path is: $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+DESTDIR ?=
 PREFIX ?= /usr/local
 BINDIR ?= bin
-DESTDIR ?=
-LDFLAGS ?= -lrt
+
+MANDIR ?= $(PREFIX)/share/man
+
+# implemented backends: wayland x11 gdi
 backends ?= wayland x11
+
+IS_CLANG = $(shell $(CC) -v 2>&1 | grep -q clang && echo true)
+ifeq ($(IS_CLANG),true)
+	CFLAGS += -Wno-gnu-zero-variadic-macro-arguments
+	CFLAGS += -Wno-empty-translation-unit
+endif
+
+CFLAGS += -Isrc
 
 # Echo function
 << := @echo
@@ -21,6 +38,7 @@ endif
 ifeq ($(filter wayland,$(<<backends>>)),wayland)
 	PKGS += wayland-client
 	CFLAGS += -DWAYLAND
+	LDFLAGS += -lrt
 endif
 ifneq ($(filter wayland x11,$(<<backends>>)),)
 	PKGS += cairo
@@ -69,7 +87,11 @@ ifeq ($(NAME),Darwin)
 	BINARY := activate-macos
 endif
 ifeq ($(shell uname -o),Msys)
-	BINARY := activate-windows.exe
+	ifeq ($(MSYSTEM_CARCH),i686)
+		BINARY := activate-windows.exe
+	else
+		BINARY := activate-windows64.exe
+	endif
 endif
 
 all: $(BINARY)
@@ -93,10 +115,14 @@ $(BINARY): $(<<objects>>)
 	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
 install: $(BINARY)
-	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	sudo install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	sudo install -Dm0644 activate-linux.1 $(MANDIR)/man1/activate-linux.1
+	sudo mandb -q
 
 uninstall:
-	$(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	sudo $(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	sudo $(RM) -f $(MANDIR)/man1/activate-linux.1
+	sudo mandb -q
 
 appimage: $(BINARY)
 	curl -#L -O https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage

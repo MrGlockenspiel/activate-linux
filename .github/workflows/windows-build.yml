@@ -1,0 +1,32 @@
+name: Windows build
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    strategy:
+      matrix:
+        sys:
+          - mingw64
+          - mingw32
+    steps:
+      - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{matrix.sys}}
+          install: make pkgconf
+          pacboy: gcc:p
+      - name: Compile .exe
+        run: |
+          export backends=gdi
+          make
+      - name: Upload .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: activate-windows.exe
+          path: |
+            activate-windows.exe
+            activate-windows64.exe

@@ -13,10 +13,10 @@ enum Verbosity {
 };
 
 
-void inc_verbose();
-void set_silent();
+void inc_verbose(void);
+void set_silent(void);
 bool is_verbose_level(enum Verbosity level);
-void print_verbose_level();
+void print_verbose_level(void);
 
 #define __debug__(FMTSTR, ...) if (is_verbose_level(DEBUG)) fprintf(stderr, "DEBUG: " FMTSTR, ## __VA_ARGS__)
 #define __info__(FMTSTR, ...)  if (is_verbose_level(INFO))  fprintf(stderr, "INFO:  " FMTSTR, ## __VA_ARGS__)

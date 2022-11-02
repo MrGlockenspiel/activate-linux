@@ -53,7 +53,7 @@ int main(int argc, char *const argv[]) {
       bool daemon_started = !CreateProcessW(NULL, GetCommandLineW(), NULL, NULL,
                             FALSE, DETACHED_PROCESS, NULL, NULL, &si, &pi);
       if (!daemon_started) {
-        __error__("Cannot start daemon process, error 0x%08X. Continuing as non-daemon\n", GetLastError());
+        __error__("Cannot start daemon process, error 0x%08lX. Continuing as non-daemon\n", GetLastError());
       } else {
         exit(daemon_started);
       }
@@ -82,13 +82,13 @@ int main(int argc, char *const argv[]) {
   int try_next = 1;
   __info__("Starting backend\n");
 #ifdef WAYLAND
-  if (try_next) try_next = wayland_backend_start(&options);
+  if (try_next) try_next = wayland_backend_start();
 #endif
 #ifdef X11
-  if (try_next) try_next = x11_backend_start(&options);
+  if (try_next) try_next = x11_backend_start();
 #endif
 #ifdef GDI
-  if (try_next) try_next = gdi_backend_start(&options);
+  if (try_next) try_next = gdi_backend_start();
 #endif
 
   return try_next;

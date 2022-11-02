@@ -8,15 +8,21 @@ The "Activate Windows" watermark ported to Linux with cairo in C
 > Read [ARGS.md](ARGS.md) for information about command line arguments.
 
 ## Building
-> Note that the executable's name depends on the target platform
+Note that the executable's name depends on the target platform.
+You can use `make install` to install and `make uninstall` to remove it.
 
-*nix:
+### *nix:
 ```console
 make
 ```
 
-Windows (using [MSYS2](https://msys2.org)):
+### Windows (using [MSYS2](https://msys2.org)):
+Replace `gcc` with `clang`, if you want. But then don't forget to start proper shortcut `MSYS2 CLANG64`.
 ```console
+pacman -S --noconfirm git make pkgconf pactoys
+pacboy -S --noconfirm gcc:p
+git clone https://github.com/MrGlockenspiel/activate-linux
+cd activate-linux
 export backends=gdi
 make
 ```
@@ -36,6 +42,7 @@ This project depends on:
 - [`libxrandr-dev`](https://gitlab.freedesktop.org/xorg/lib/libxrandr)
 - [`libwayland-dev`](https://gitlab.freedesktop.org/wayland/wayland)
 - [`wayland-protocols`](https://gitlab.freedesktop.org/wayland/wayland-protocols)
+
 Optional dependencies:
 - [`libconfig-dev`](https://hyperrealm.github.io/libconfig)
 
@@ -49,7 +56,7 @@ libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-pro
 ### Installing
 
 #### Ubuntu
-@eddelbuettel runs a PPA with activate linux in it, so it can be installed with
+@eddelbuettel runs a PPA with activate linux in it, so it can be installed with:
 ```console
 sudo add-apt-repository ppa:edd/misc
 sudo apt update
@@ -98,10 +105,6 @@ Here are the Fedora Rawhide instructions:
 dnf config-manager --add-repo https://download.opensuse.org/repositories/home:tschmitz:activate-linux/Fedora_Rawhide/home:tschmitz:activate-linux.repo
 dnf install activate-linux
 ```
-
-#### Other
-
-You can use `make install` to install and `make uninstall` to remove it.
 
 ## MacOS (Horrific)
 

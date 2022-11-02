@@ -3,7 +3,7 @@
 
 #define WINDOW_CLASS "ActivateLinux"
 
-int gdi_backend_start();
-int gdi_backend_kill_running();
+int gdi_backend_start(void);
+int gdi_backend_kill_running(void);
 
 #endif

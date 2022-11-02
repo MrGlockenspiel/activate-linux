@@ -1,0 +1,39 @@
+name: Linux build
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: speedup dpkg
+        run: sudo sh -c "echo 'force-unsafe-io' > /etc/dpkg/dpkg.cfg.d/force-unsafe-io"
+
+      - name: install dependencies
+        run: |
+          sudo apt-get install \
+            libcairo2-dev \
+            libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev \
+            libwayland-dev wayland-protocols
+
+      - name: build (GCC w/o libconfig)
+        run: make clean && make
+
+      - name: build (clang w/o libconfig)
+        run: |
+          export CC=clang
+          make clean && make
+          unset CC
+
+      - name: install libconfig
+        run: sudo apt-get install libconfig-dev
+
+      - name: build (GCC)
+        run: make clean && make
+
+      - name: build (clang)
+        run: |
+          export CC=clang
+          make clean && make
+          unset CC

@@ -3,13 +3,13 @@
 
 static enum Verbosity __verbose__ = ERROR;
 
-void inc_verbose() {
+void inc_verbose(void) {
   if (__verbose__ < DEBUG) __verbose__++;
   // Print only high levels
   if (is_verbose_level(WARN)) print_verbose_level();
 }
 
-void set_silent() {
+void set_silent(void) {
   __verbose__ = SILENT;
 }
 
@@ -17,7 +17,7 @@ bool is_verbose_level(enum Verbosity level) {
   return level <= __verbose__;
 }
 
-void print_verbose_level() {
+void print_verbose_level(void) {
   char *level_str = "UNKNOWN?!";
   switch (__verbose__) {
     case SILENT: level_str = "SILENT"; break;
