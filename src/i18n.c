@@ -48,19 +48,19 @@ i18n_info_soup langs[] = {
 
 
 #if defined(__APPLE__) || defined(__MACH__)
-	#define DEFAULT_PRESET 0
+  #define DEFAULT_PRESET 0
 #elif defined(__FreeBSD__) || defined(__NetBSD__) \
-		|| defined(__OpenBSD__) || defined(__DragonFly__) \
-		|| defined(__bsdi__)
-	#define DEFAULT_PRESET 1
+    || defined(__OpenBSD__) || defined(__DragonFly__) \
+    || defined(__bsdi__)
+  #define DEFAULT_PRESET 1
 #elif defined(__linux__)
-	#define DEFAULT_PRESET 2
+  #define DEFAULT_PRESET 2
 #elif defined(__gnu_hurd__) || defined(__GNU__)
-	#define DEFAULT_PRESET 3
+  #define DEFAULT_PRESET 3
 #elif defined(_WIN32) || defined(_WIN64) || defined(__MSYS__)
-	#define DEFAULT_PRESET 4
+  #define DEFAULT_PRESET 4
 #elif defined(__unix__)
-	#define DEFAULT_PRESET 5
+  #define DEFAULT_PRESET 5
 #endif
 
 #define MS_DISS_PRESET_NAME "m$"

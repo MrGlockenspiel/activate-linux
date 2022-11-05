@@ -23,7 +23,7 @@ typedef struct {
 
 // preset-specific structs
 typedef struct {
-	char *name;
+  char *name;
   char *text;
 } preset_t;
 

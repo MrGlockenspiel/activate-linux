@@ -21,24 +21,24 @@ BOOL WINAPI HandlerRoutine(DWORD dwCtrlType) {
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
-	switch(Message) {
+    switch(Message) {
         case WM_PAINT: {
             __info__("Got WM_PAINT message. Starting (re)drawing text\n");
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
             draw_text_gdi(hwnd, hdc);
             EndPaint(hwnd, &ps);
-        	return 0;
+            return 0;
         }
         // would be nice to implement https://learn.microsoft.com/en-us/windows/win32/hidpi/wm-dpichanged
-		case WM_DESTROY:
+        case WM_DESTROY:
             __info__("Got WM_DESTROY message. Shutting down\n");
             exit(EXIT_SUCCESS);
-		default:
+        default:
             // https://wiki.winehq.org/List_Of_Windows_Messages
             __debug__("Got message 0x%04X (%4d) wParam 0x%08lX (hi: %d lo: %d), lParam 0x%08llX\n", Message, Message, (long unsigned int)wParam, HIWORD(wParam), LOWORD(wParam), lParam);
-			return DefWindowProc(hwnd, Message, wParam, lParam);
-	}
+            return DefWindowProc(hwnd, Message, wParam, lParam);
+    }
 }
 
 int gdi_backend_start(void) {
@@ -47,7 +47,7 @@ int gdi_backend_start(void) {
 
     __debug__("Registering window class\n");
     WNDCLASS wc = {0, WndProc, 0, 0, NULL, NULL, NULL, NULL, "", WINDOW_CLASS};
-	if (!RegisterClass(&wc)) {
+    if (!RegisterClass(&wc)) {
         __error__("Failed to register class \"" WINDOW_CLASS "\"\n");
         PrintLastError();
         exit(EXIT_FAILURE);
@@ -55,7 +55,7 @@ int gdi_backend_start(void) {
 
     __debug__("Determining monitor resolution\n");
     MONITORINFO monitorinfo = {sizeof(monitorinfo), {0, 0, 0, 0}, {0, 0, 0, 0}, 0};
-	GetMonitorInfo(MonitorFromWindow(NULL, MONITOR_DEFAULTTOPRIMARY), &monitorinfo);
+    GetMonitorInfo(MonitorFromWindow(NULL, MONITOR_DEFAULTTOPRIMARY), &monitorinfo);
     __debug__("Full resolution: %ldx%ld\n", monitorinfo.rcMonitor.right, monitorinfo.rcMonitor.bottom);
     __debug__("Work resolution: %ldx%ld\n", monitorinfo.rcWork.right, monitorinfo.rcWork.bottom);
 
@@ -66,7 +66,7 @@ int gdi_backend_start(void) {
         options.overlay_width,
         options.overlay_height,
         NULL, NULL, NULL, NULL);
-	if (hwnd == NULL) {
+    if (hwnd == NULL) {
         __error__("Failed to CreateWindowEx\n");
         PrintLastError();
         exit(EXIT_FAILURE);
