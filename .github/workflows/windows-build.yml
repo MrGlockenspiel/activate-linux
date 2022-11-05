@@ -9,24 +9,25 @@ jobs:
         shell: msys2 {0}
     strategy:
       matrix:
-        sys:
-          - mingw64
-          - mingw32
+        include:
+          - {chain: mingw32, cc: gcc}
+          - {chain: mingw64, cc: gcc}
+          - {chain: clang64, cc: clang}
     steps:
       - uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
         with:
-          msystem: ${{matrix.sys}}
+          msystem: ${{matrix.chain}}
           install: make pkgconf
-          pacboy: gcc:p
+          pacboy: ${{matrix.cc}}:p
       - name: Compile .exe
         run: |
           export backends=gdi
+          export BINARY=activate-windows-${{matrix.chain}}.exe
           make
       - name: Upload .exe
         uses: actions/upload-artifact@v3
         with:
           name: activate-windows.exe
           path: |
-            activate-windows.exe
-            activate-windows64.exe
+            activate-windows-*.exe
