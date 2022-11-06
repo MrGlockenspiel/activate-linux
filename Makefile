@@ -81,16 +81,16 @@ endif
 # Output file name
 NAME := $(shell uname -s)
 ifeq ($(NAME),Linux)
-	BINARY := activate-linux
+	BINARY ?= activate-linux
 endif
 ifeq ($(NAME),Darwin)
-	BINARY := activate-macos
+	BINARY ?= activate-macos
 endif
 ifeq ($(shell uname -o),Msys)
 	ifeq ($(MSYSTEM_CARCH),i686)
-		BINARY := activate-windows.exe
+		BINARY ?= activate-windows.exe
 	else
-		BINARY := activate-windows64.exe
+		BINARY ?= activate-windows64.exe
 	endif
 endif
 
