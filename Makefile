@@ -86,7 +86,7 @@ endif
 ifeq ($(NAME),Darwin)
 	BINARY ?= activate-macos
 endif
-ifeq ($(shell uname -o),Msys)
+ifneq (, filter($(shell uname -o),Msys Cygwin))
 	ifeq ($(MSYSTEM_CARCH),i686)
 		BINARY ?= activate-windows.exe
 	else
