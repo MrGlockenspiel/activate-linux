@@ -29,7 +29,7 @@ i18n_info_soup langs[] = {
   {"en_US", {"Activate ", "", "Go to Settings to activate ", "."},
     {"No need to activate ", "", "We're not as annoying as Microsoft"}},
   {"fr_FR", {"Activer ", "", "Aller en les paramètres pour activer ", "."},
-    {NULL, NULL, NULL}},
+    {"Pas besoin d'activer", "", "Nous ne sommes pas aussi agaçants que Microsoft"}},
   {"it_IT", {"Attiva ", "", "Passa a Impostazioni per attivare ", "."},
     {NULL, NULL, NULL}},
   {"ja_JP", {"", "のライセンス認証", "設定を開き、", "のライセンス認証を行ってください"},
