@@ -28,7 +28,7 @@ i18n_info_soup langs[] = {
 // English is default language, so it has to be first in the list
   {"en_US", {"Activate ", "", "Go to Settings to activate ", "."},
     {"No need to activate ", "", "We're not as annoying as Microsoft"}},
-  {"fr_FR", {"Activer ", "", "Aller en les paramètres pour activer ", "."},
+  {"fr_FR", {"Activer ", "", "Accédez aux paramètres pour activer ", "."},
     {NULL, NULL, NULL}},
   {"it_IT", {"Attiva ", "", "Passa a Impostazioni per attivare ", "."},
     {NULL, NULL, NULL}},
