@@ -80,6 +80,36 @@ preset_t presets[] = {
 int lang_id = -1;
 int preset_id = DEFAULT_PRESET;
 
+bool match_lang_code(const char *lang_code, const char *lang) {
+  int i = 0;
+  while (lang_code[i]) {
+    int ii = 0;
+    bool failed = false;
+
+    while (lang_code[i] != 0) {
+      if (lang_code[i] == ',') {
+        i++;
+        break;
+      }
+
+      if (failed) {
+        i++;
+        continue;
+      }
+
+      if (lang_code[i++] != lang[ii++]) {
+        failed = true;
+      }
+    }
+
+    if (!failed) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void i18n_set_lang_id(void) {
   if (lang_id != -1)
     return;
@@ -103,7 +133,7 @@ void i18n_set_lang_id(void) {
 
   __info__("Got user language %s\n", lang);
   for (lang_id = length(langs) - 1; lang_id >= 0; lang_id--)
-    if (match_str(langs[lang_id].code, lang))
+    if (match_lang_code(langs[lang_id].code, lang))
       return;
 
   lang_id = 0;
