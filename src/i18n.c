@@ -26,7 +26,7 @@ i18n_info_soup langs[] = {
 //   {"Diss title prefix", "Diss title suffix", "Subtitle with Microsoft diss"}},
 
 // English is default language, so it has to be first in the list
-  {"en_US", {"Activate ", "", "Go to Settings to activate ", "."},
+  {"en_US,en_GB", {"Activate ", "", "Go to Settings to activate ", "."},
     {"No need to activate ", "", "We're not as annoying as Microsoft"}},
   {"fr_FR", {"Activer ", "", "Aller en les paramètres pour activer ", "."},
     {"Pas besoin d'activer", "", "Nous ne sommes pas aussi agaçants que Microsoft"}},
@@ -80,6 +80,36 @@ preset_t presets[] = {
 int lang_id = -1;
 int preset_id = DEFAULT_PRESET;
 
+bool match_lang_code(const char *lang_code, const char *lang) {
+  int i = 0;
+  while (lang_code[i]) {
+    int ii = 0;
+    bool failed = false;
+
+    while (lang_code[i] != 0) {
+      if (lang_code[i] == ',') {
+        i++;
+        break;
+      }
+
+      if (failed) {
+        i++;
+        continue;
+      }
+
+      if (lang_code[i++] != lang[ii++]) {
+        failed = true;
+      }
+    }
+
+    if (!failed) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void i18n_set_lang_id(void) {
   if (lang_id != -1)
     return;
@@ -102,13 +132,13 @@ void i18n_set_lang_id(void) {
 #endif
 
   __info__("Got user language %s\n", lang);
-  for (lang_id = length(langs); lang_id; lang_id--)
-    if (match_str(langs[lang_id].code, lang))
+  for (lang_id = length(langs) - 1; lang_id >= 0; lang_id--)
+    if (match_lang_code(langs[lang_id].code, lang))
       return;
-  if (!match_str(langs[lang_id].code, lang)) {
-    __error__("activate-linux lacks translation for `%s' language. You are welcome to fix this :3\n", lang);
-    __error__("Using English translation\n");
-  }
+
+  lang_id = 0;
+  __error__("activate-linux lacks translation for `%s' language. You are welcome to fix this :3\n", lang);
+  __error__("Using English translation\n");
 }
 
 void i18n_set_preset(const char *const preset) {

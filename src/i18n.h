@@ -16,7 +16,7 @@ typedef struct {
 } i18n_info_diss_text;
 
 typedef struct {
-  char code[5];
+  const char *code;
   i18n_info_text windows_like;
   i18n_info_diss_text diss;
 } i18n_info_soup;
