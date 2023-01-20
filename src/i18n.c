@@ -26,7 +26,7 @@ i18n_info_soup langs[] = {
 //   {"Diss title prefix", "Diss title suffix", "Subtitle with Microsoft diss"}},
 
 // English is default language, so it has to be first in the list
-  {"en_US", {"Activate ", "", "Go to Settings to activate ", "."},
+  {"en_US,en_GB", {"Activate ", "", "Go to Settings to activate ", "."},
     {"No need to activate ", "", "We're not as annoying as Microsoft"}},
   {"fr_FR", {"Activer ", "", "Aller en les paramètres pour activer ", "."},
     {"Pas besoin d'activer", "", "Nous ne sommes pas aussi agaçants que Microsoft"}},
