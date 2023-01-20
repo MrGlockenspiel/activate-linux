@@ -102,13 +102,13 @@ void i18n_set_lang_id(void) {
 #endif
 
   __info__("Got user language %s\n", lang);
-  for (lang_id = length(langs); lang_id; lang_id--)
+  for (lang_id = length(langs) - 1; lang_id >= 0; lang_id--)
     if (match_str(langs[lang_id].code, lang))
       return;
-  if (!match_str(langs[lang_id].code, lang)) {
-    __error__("activate-linux lacks translation for `%s' language. You are welcome to fix this :3\n", lang);
-    __error__("Using English translation\n");
-  }
+
+  lang_id = 0;
+  __error__("activate-linux lacks translation for `%s' language. You are welcome to fix this :3\n", lang);
+  __error__("Using English translation\n");
 }
 
 void i18n_set_preset(const char *const preset) {
