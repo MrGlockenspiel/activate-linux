@@ -32,6 +32,18 @@
           gawk
           pkg-config
         ] ++ (import ./deps.nix {inherit pkgs;});
+
+        installPhase = ''
+          runHook preInstall
+
+          mkdir -p $out/bin
+          mkdir -p $out/share/man/man1
+
+          cp activate-linux $out/bin
+          cp activate-linux.1 $out/share/man/man1
+
+          runHook postInstall
+        '';
       };
 
       packages.default = self.packages.${system}.activate-linux;
