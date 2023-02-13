@@ -106,6 +106,17 @@ dnf config-manager --add-repo https://download.opensuse.org/repositories/home:ts
 dnf install activate-linux
 ```
 
+## Windows
+
+### Scoop
+
+You can install it on the [Extras](https://github.com/ScoopInstaller/Extras) bucket:
+```powershell
+scoop bucket add extras # Ensure bucket is added first
+scoop install activate-linux
+```
+
+
 ## MacOS (Horrific)
 
 ### Dependencies
