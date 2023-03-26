@@ -125,7 +125,7 @@ static void frame_commit(struct output *output)
 
     float orig_scale = options.scale;
     options.scale *= output->scale;
-    draw_text(cairo);
+    draw_text(cairo, 0);
     options.scale = orig_scale;
 
     wl_surface_set_buffer_scale(output->surface, output->scale);
