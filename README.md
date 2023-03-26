@@ -37,6 +37,7 @@ This project depends on:
 - `x11proto-core-dev`
 - [`x11proto-dev`](https://gitlab.freedesktop.org/xorg/proto/x11proto)
 - [`libxt-dev`](https://gitlab.freedesktop.org/xorg/lib/libxt)
+- [`libxext-dev`](https://gitlab.freedesktop.org/xorg/lib/libxext)
 - [`libxfixes-dev`](https://gitlab.freedesktop.org/xorg/lib/libxfixes)
 - [`libxinerama-dev`](https://gitlab.freedesktop.org/xorg/lib/libxinerama)
 - [`libxrandr-dev`](https://gitlab.freedesktop.org/xorg/lib/libxrandr)
@@ -49,7 +50,7 @@ Optional dependencies:
 Those packages may be installed (in Debian-based distros) like this:
 ```console
 sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev \
-libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
+libxt-dev libxext-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
 ```
 
 
