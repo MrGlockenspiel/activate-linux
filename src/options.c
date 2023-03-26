@@ -43,6 +43,9 @@ Options options = {
 
   // kill running instance of activate-linux
   .kill_running = false,
+#ifdef X11
+      .force_xshape = false,
+#endif
 };
 
 
@@ -74,6 +77,9 @@ void parse_options(int argc, char *const argv[]) {
     {"text-preset-list",    no_argument,       NULL, 'l'},
     {"quiet",               no_argument,       NULL, 'q'},
     {"gamescope",           no_argument,       NULL, 'G'},
+#ifdef X11
+    {"force-xshape",           no_argument,       NULL, 'S'},
+#endif
 #ifdef LIBCONFIG
     {"config-file",         required_argument, NULL, 'C'},
 #endif
@@ -83,6 +89,9 @@ void parse_options(int argc, char *const argv[]) {
 
   int opt;
   while ((opt = getopt_long(argc, argv, "t:m:p:f:bic:x:y:s:H:V:wdKvlqGh"
+#ifdef X11
+      "S"
+#endif
 #ifdef LIBCONFIG
       "C:"
 #endif
@@ -112,7 +121,9 @@ void parse_options(int argc, char *const argv[]) {
 #ifdef LIBCONFIG
       case 'C': load_config(optarg); break;
 #endif
-
+#ifdef X11
+      case 'S': options.force_xshape = true; break;
+#endif
       case 's':
         options.scale = atof(optarg);
         if (options.scale < 0.0f) {
@@ -196,9 +207,13 @@ void print_help(const char *const file_name) {
   HELP("-v, --verbose \t\tIncrease console spam level");
   HELP("-q, --quiet \t\t\tBecome completely silent");
   HELP("-G, --gamescope \t\tRun as an external gamescope overlay (EXPERIMENTAL)");
+#ifdef X11
+  HELP("-S, --force-xshape \t\tUse the X11 shaping extention for rendering fake transparency.");
+#endif
 #ifdef LIBCONFIG
   HELP("-C, --config-file \t\tLoad options from an external configuration file");
 #endif
+
   END();
 #undef HELP
 #undef SECTION
