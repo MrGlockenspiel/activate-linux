@@ -227,7 +227,6 @@ int x11_backend_start(void)
                 {
                     __debug__("  Redrawing overlay: %d\n", i);
 
-                    draw_text(cairo_ctx[i], 0);
                     if (!compositor_running)
                     {
                         __debug__("Shaping window %d using XShape\n", i);
@@ -235,7 +234,9 @@ int x11_backend_start(void)
                         draw_text(xshape_ctx[i], 1);
                         XShapeCombineMask(d, overlay[i], ShapeBounding, 0, 0,
                                           cairo_xlib_surface_get_drawable(xshape_surface[i]), ShapeSet);
-                    }
+                    } else {
+			 draw_text(cairo_ctx[i], 0);
+		    }
                     break;
                 }
             }
