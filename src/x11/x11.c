@@ -254,7 +254,17 @@ int x11_backend_start(void)
         cairo_destroy(cairo_ctx[i]);
         cairo_surface_destroy(surface[i]);
     }
-
+	
+    if (!compositor_running)
+    {
+  	  for (int i = 0; i < num_entries; i++)
+   	  {
+    	    XFreePixmap(d, xshape_mask[i]);
+            cairo_destroy(xshape_ctx[i]);                                
+        	cairo_surface_destroy(xshape_surface[i]);
+	  }                  
+    }
+	
     XFree(si);
     XCloseDisplay(d);
 
