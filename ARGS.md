@@ -148,6 +148,12 @@ Useful to kill running background daemon (started with `-d` option)
 ./activate-linux --gamescope
 ```
 
+### Force fake transparency rendering using the shaping extension on X11
+```console
+./activate-linux -S
+./activate-linux --force-xshape
+```
+
 ### Use a configuration file
 [Config example](example.cfg)
 ```console

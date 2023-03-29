@@ -32,7 +32,7 @@ endif
 # Mess with backends
 <<backends>> = $(sort $(filter x11 wayland gdi,$(backends)))
 ifeq ($(filter x11,$(<<backends>>)),x11)
-	PKGS += x11 xfixes xinerama xrandr
+	PKGS += x11 xfixes xinerama xrandr xext x11 
 	CFLAGS += -DX11
 endif
 ifeq ($(filter wayland,$(<<backends>>)),wayland)

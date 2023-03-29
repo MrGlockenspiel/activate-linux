@@ -6,7 +6,7 @@ MAN=
 SRCS=		activate_linux.c color.c i18n.c
 
 CFLAGS+=	-I/usr/local/include
-CFLAGS!=	pkg-config --cflags --libs x11 xfixes xinerama xrandr
+CFLAGS!=	pkg-config --cflags --libs x11 xfixes xinerama xrandr xext
 CFLAGS!=	pkg-config --cflags --libs wayland-client
 CFLAGS!=	pkg-config --cflags --libs cairo
 CFLAGS!=	pkg-config --cflags --libs libconfig

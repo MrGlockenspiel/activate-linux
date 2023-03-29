@@ -26,6 +26,9 @@ typedef struct options_t {
   bool gamescope_overlay;
   bool daemonize;
   bool kill_running;
+#ifdef X11
+  bool force_xshape;
+#endif
 } Options;
 
 extern Options options;

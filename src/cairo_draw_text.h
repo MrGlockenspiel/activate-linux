@@ -2,6 +2,6 @@
 #define INCLUDE_DRAW_H
 
 #include <cairo.h>
-void draw_text(cairo_t *const cr);
+void draw_text(cairo_t *const cr, int xshape_mask);
 
 #endif

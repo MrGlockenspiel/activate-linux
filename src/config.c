@@ -99,7 +99,11 @@ void load_config(const char *const file) {
   if (config_lookup_bool(cf, "daemonize", &itmp) != CONFIG_FALSE) {
     options.daemonize = (bool)itmp;
   }
-
+#ifdef X11
+  if (config_lookup_bool(cf, "force-xshape", &itmp) != CONFIG_FALSE) {
+    options.force_xshape = (bool)itmp;
+  }
+#endif
   if (config_lookup_bool(cf, "verbose", &itmp) != CONFIG_FALSE) {
     if (itmp) {
       inc_verbose();
