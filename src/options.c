@@ -29,8 +29,9 @@ Options options = {
   .offset_left = 0,
   .offset_top = 0,
 
-  // default color is light grey
-  .text_color = {.r=1, .g=1, .b=1, .a=0.35},
+  // default color is light grey, which has enough contrast to be noticed
+  // on both light and dark background.
+  .text_color = {.r=0.7686275, .g=0.7686275, .b=0.7686275, .a=0.4},
 
   // bypass compositor hint
   .bypass_compositor = false,

@@ -94,6 +94,13 @@ ifneq (, filter($(shell uname -o),Msys Cygwin))
 	endif
 endif
 
+# Use .$(BINARY).d file to track backend change
+ifneq ($(sort $(file < .$(BINARY).d)),$(<<backends>>))
+	<<null>> := $(file  > .$(BINARY).d,$(<<backends>>))
+endif
+undefine <<null>>
+# using some makefile sorcery
+
 all: $(BINARY)
 
 obj/%.o: src/%.c
@@ -131,18 +138,13 @@ appimage: $(BINARY)
 
 clean:
 	$(<<) "  RM\t" $(<<objects>>:obj/%=%) $(BINARY)
-	@$(RM) -f $(<<objects>>) $(BINARY) obj/.enabled
+	@$(RM) -f $(<<objects>>) $(BINARY) .$(BINARY).d
 
 test: $(BINARY)
 	./$(BINARY)
 
-obj/activate_linux.o: obj/.enabled
+obj/activate_linux.o: .$(BINARY).d
 obj/wayland/wayland.o: src/wayland/wlr-layer-shell-unstable-v1.h
 
-obj/.enabled: .REBUILD
-	@test -f $(@) || touch $(@)
-	@grep -Fqx "$(<<backends>>)" $(@) || echo "$(<<backends>>)" > $(@)
-
-.PHONY: all clean install uninstall test .REBUILD
+.PHONY: all clean install uninstall test
 .INTERMEDIATE: $(<<hgenerators>>:%.hgen=%.h) $(<<generators>>:%.cgen=%.c)
-
