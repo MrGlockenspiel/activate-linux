@@ -44,6 +44,8 @@ i18n_info_soup langs[] = {
     {NULL, NULL, NULL}},
   {"zh_HK", {"啟用 ", "", "移至[設定]以啟用 ", "。"},
     {NULL, NULL, NULL}},
+  {"pl_PL", {"Aktywuj system ", "", "Przejdź do ustawień, aby aktywować system ", ". "},
+    {"Nie trzeba aktywować systemu ", NULL, "Nie jesteśmy tak denerwujący jak Microsoft."}},
   {"pt_BR", {"Ativar o ", "", "Acesse Configurações para ativar o ", "."},
     {"Não precisa ativar o ", "", "Não somos tão irritantes como a Microsoft"}},
 };
