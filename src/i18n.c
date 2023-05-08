@@ -29,7 +29,7 @@ i18n_info_soup langs[] = {
   {"en_US,en_GB", {"Activate ", "", "Go to Settings to activate ", "."},
     {"No need to activate ", "", "We're not as annoying as Microsoft."}},
   {"de_DE", {"", " aktivieren", "Wechseln Sie zu den Einstellungen, um ", " zu aktivieren."},
-    {"", " muss nicht aktiviert werden", "Wir sind nicht so lästig wie Microsoft."},
+    {"", " muss nicht aktiviert werden", "Wir sind nicht so lästig wie Microsoft."}},
   {"fr_FR", {"Activer ", "", "Aller en les paramètres pour activer ", "."},
     {"Pas besoin d'activer", "", "Nous ne sommes pas aussi agaçants que Microsoft."}},
   {"it_IT", {"Attiva ", "", "Passa a Impostazioni per attivare ", "."},
