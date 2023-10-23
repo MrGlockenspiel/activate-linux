@@ -11,12 +11,12 @@
 #include <X11/extensions/Xrandr.h>
 #include <X11/extensions/shape.h>
 
-#include <cairo-xlib.h>
-#include <cairo.h>
+#include <cairo/cairo-xlib.h>
+#include <cairo/cairo.h>
 
-#include "cairo_draw_text.h"
-#include "log.h"
-#include "options.h"
+#include "../cairo_draw_text.h"
+#include "../log.h"
+#include "../options.h"
 
 // generated function: returns XEvent name
 const char *XEventName(int type);

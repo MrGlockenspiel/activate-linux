@@ -1,5 +1,5 @@
-#include "options.h"
-#include "log.h"
+#include "../options.h"
+#include "../log.h"
 #include "gdi.h"
 #include "gdi_draw.h"
 #include <stdio.h>

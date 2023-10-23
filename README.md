@@ -11,6 +11,13 @@ The "Activate Windows" watermark ported to Linux with cairo in C
 Note that the executable's name depends on the target platform.
 You can use `make install` to install and `make uninstall` to remove it.
 
+### Xmake
+I've been experimenting with using [Xmake](https://xmake.io/#/) for building instead of make, you can test this by installing it and running
+```console
+xmake
+```
+Please leave feedback to improve this if you want
+
 ### *nix:
 ```console
 make

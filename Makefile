@@ -21,8 +21,6 @@ ifeq ($(IS_CLANG),true)
 	CFLAGS += -Wno-empty-translation-unit
 endif
 
-CFLAGS += -Isrc
-
 # Echo function
 << := @echo
 ifneq ($(shell eval 'echo -e'),-e)

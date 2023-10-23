@@ -58,3 +58,5 @@ dkms.conf
 AppDir
 .vscode/
 result
+.xmake
+build

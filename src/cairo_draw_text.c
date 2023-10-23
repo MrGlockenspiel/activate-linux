@@ -2,7 +2,7 @@
 
 #include "cairo_draw_text.h"
 #include "options.h"
-#include <cairo.h>
+#include <cairo/cairo.h>
 #include <stdlib.h>
 
 void draw_text(cairo_t *const cr, int xshape_mask)
