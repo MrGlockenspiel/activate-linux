@@ -1,4 +1,4 @@
-#include "options.h"
+#include "../options.h"
 #include <windows.h>
 
 void draw_text_gdi(HWND hwnd, HDC windowDC) {
