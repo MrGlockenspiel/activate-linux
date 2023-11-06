@@ -1,5 +1,3 @@
-#ifdef LIBCONFIG
-
 #include <libconfig.h>
 #include "log.h"
 #include "options.h"
@@ -122,5 +120,3 @@ void load_config(const char *const file) {
 
   config_destroy(cf);
 }
-
-#endif

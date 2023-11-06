@@ -15,6 +15,14 @@ MANDIR ?= $(PREFIX)/share/man
 # implemented backends: wayland x11 gdi
 backends ?= wayland x11
 
+# addons
+with     ?= libconfig
+
+# needs rebuild on dependency change (object name, w/o obj/ prefix)
+<<needs-rebuild>> = \
+	activate_linux.o \
+	options.o
+
 IS_CLANG = $(shell $(CC) -v 2>&1 | grep -q clang && echo true)
 ifeq ($(IS_CLANG),true)
 	CFLAGS += -Wno-gnu-zero-variadic-macro-arguments
@@ -22,15 +30,20 @@ ifeq ($(IS_CLANG),true)
 endif
 
 # Echo function
-<< := @echo
+<< := echo
 ifneq ($(shell eval 'echo -e'),-e)
 	<< += -e
 endif
 
 # Mess with backends
 <<backends>> = $(sort $(filter x11 wayland gdi,$(backends)))
+# optional addons
+<<with>>       = $(sort $(filter libconfig,$(with)))
+<<addons>>     =
+<<addon-srcs>> = src/config.c
+
 ifeq ($(filter x11,$(<<backends>>)),x11)
-	PKGS += x11 xfixes xinerama xrandr xext x11 
+	PKGS += x11 xfixes xinerama xrandr xext x11
 	CFLAGS += -DX11
 endif
 ifeq ($(filter wayland,$(<<backends>>)),wayland)
@@ -50,10 +63,13 @@ ifeq ($(filter gdi,$(<<backends>>)),gdi)
 	CFLAGS += -DGDI
 	LDFLAGS += -lgdi32
 endif
-
-ifeq ($(shell pkg-config --exists libconfig && echo exists),exists)
-	PKGS += libconfig
-	CFLAGS += -DLIBCONFIG
+# rebuild on optional deps change
+ifneq ($(filter libconfig,$(<<with>>)),)
+	ifneq ($(shell pkg-config --exists libconfig && echo exists),)
+		PKGS += libconfig
+		CFLAGS += -DLIBCONFIG
+		<<addons>> += libconfig
+	endif
 endif
 
 ifneq ($(PKGS),)
@@ -62,16 +78,23 @@ ifneq ($(PKGS),)
 endif
 
 <<sources>> := \
+	$(filter-out $(<<addon-srcs>>), \
 	$(wildcard src/*.c) \
-	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.c))
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.c)))
 
 <<generators>> := \
+	$(filter-out $(<<addon-srcs>>), \
 	$(wildcard src/*.cgen) \
-	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.cgen))
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.cgen)))
 
 <<hgenerators>> := \
+	$(filter-out $(<<addon-srcs>>), \
 	$(wildcard src/*.hgen) \
-	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.hgen))
+	$(foreach <<backend>>,$(<<backends>>),$(wildcard src/$(<<backend>>)/*.hgen)))
+
+ifneq ($(filter libconfig,$(<<addons>>)),)
+	<<sources>> += src/config.c
+endif
 
 <<objects>> := $(<<sources>>:src/%.c=obj/%.o)
 <<objects>> += $(<<generators>>:src/%.cgen=obj/%.o)
@@ -93,36 +116,37 @@ ifneq (, filter($(shell uname -o),Msys Cygwin))
 endif
 
 # Use .$(BINARY).d file to track backend change
-ifneq ($(sort $(file < .$(BINARY).d)),$(<<backends>>))
-	<<null>> := $(file  > .$(BINARY).d,$(<<backends>>))
+<<depends>> = $(sort $(<<backends>>) $(<<addons>>))
+ifneq ($(sort $(file < .$(BINARY).d)),$(<<depends>>))
+	<<null>> := $(file  > .$(BINARY).d,$(<<depends>>))
 endif
-undefine <<null>>
+undefine <<depends>> <<null>>
 # using some makefile sorcery
 
 all: $(BINARY)
 
 obj/%.o: src/%.c
-	$(<<) "  CC\t" $(<:src/%=%)
+	@$(<<) "  CC\t" $(<:src/%=%)
 	@mkdir -p $(shell dirname $(@))
 	@$(CC) -c $(<) -o $(@) $(CFLAGS)
 
 
 %.h: %.hgen
-	$(<<) " GEN\t" $(@:src/%=%)
+	@$(<<) " GEN\t" $(@:src/%=%)
 	@sh -- $(<) $(@)
 
 %.c: %.cgen
-	$(<<) " GEN\t" $(@:src/%=%)
+	@$(<<) " GEN\t" $(@:src/%=%)
 	@sh -- $(<) $(@)
 
 $(BINARY): $(<<objects>>)
-	$(<<) "LINK\t" $(^:obj/%=%)
+	@if test -n "$(<<addons>>)"; then $(<<) "WITH\t" $(<<addons>>);fi
+	@$(<<) "LINK\t" "$(BINARY)$(^:obj/%=\\n\\t + %)"
 	@$(CC) $(^) -o $(@) $(LDFLAGS)
 
 install: $(BINARY)
-	sudo install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
-	sudo install -Dm0644 activate-linux.1 $(MANDIR)/man1/activate-linux.1
-	sudo mandb -q
+	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
+	install -Dm0644 activate-linux.1 $(MANDIR)/man1/activate-linux.1
 
 uninstall:
 	sudo $(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
@@ -135,13 +159,13 @@ appimage: $(BINARY)
 	./linuxdeploy-x86_64.AppImage --appdir AppDir --executable ./$(BINARY) --desktop-file res/activate-linux.desktop --icon-file res/icon.png --output appimage
 
 clean:
-	$(<<) "  RM\t" $(<<objects>>:obj/%=%) $(BINARY)
+	@$(<<) "  RM\t" "$(BINARY)$(<<objects>>:obj/%=\\n\\t + %)"
 	@$(RM) -f $(<<objects>>) $(BINARY) .$(BINARY).d
 
 test: $(BINARY)
 	./$(BINARY)
 
-obj/activate_linux.o: .$(BINARY).d
+$(<<needs-rebuild>>:%=obj/%): .$(BINARY).d
 obj/wayland/wayland.o: src/wayland/wlr-layer-shell-unstable-v1.h
 
 .PHONY: all clean install uninstall test
