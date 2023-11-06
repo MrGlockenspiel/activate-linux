@@ -4,39 +4,39 @@ set_languages("gnu99")
 add_cflags("-Os", "-Wall", "-Wextra", "-Wpedantic")
 
 option("X11")
-	if not is_plat("windows") then
-		set_default(true)
-	else
-		set_default(false)
-	end
-	set_showmenu(true)
-	set_description("X11 Backend")
+if not is_plat("windows") then
+	set_default(true)
+else
+	set_default(false)
+end
+set_showmenu(true)
+set_description("X11 Backend")
 option_end()
 
 option("Wayland")
-	if not is_plat("windows") then
-		set_default(true)
-	else
-		set_default(false)
-	end
-	set_showmenu(true)
-	set_description("Wayland backend")
+if not is_plat("windows") then
+	set_default(true)
+else
+	set_default(false)
+end
+set_showmenu(true)
+set_description("Wayland backend")
 option_end()
 
 option("GDI")
-	if is_plat("windows") then
-		set_default(true)
-	else
-		set_default(false)
-	end
-	set_showmenu(true)
-	set_description("GDI Backed (win32)")
+if is_plat("windows") then
+	set_default(true)
+else
+	set_default(false)
+end
+set_showmenu(true)
+set_description("GDI Backed (win32)")
 option_end()
 
 option("libconfig")
-	set_default(true)
-	set_showmenu(true)
-	set_description("libconfig support")
+set_default(true)
+set_showmenu(true)
+set_description("libconfig support")
 option_end()
 
 if has_config("X11") then
@@ -68,40 +68,44 @@ if has_config("GDI") then
 	add_files("src/gdi/*.c")
 end
 
+if has_config("libconfig") then
+	add_syslinks("config")
+end
+
 rule("hgen")
-	set_extensions(".hgen")
-	after_load(function(target)
-		local rule = target:rule("c.build"):clone()
-		rule:add("deps", "hgen", { order = true })
-		target:rule_add(rule)
-	end)
-	on_build_file(function(target, sourcefile, opt)
-		import("utils.progress")
-		local targetfile = string.gsub(sourcefile, ".hgen", ".h")
-		local cmd = "sh -- " .. sourcefile .. " " .. targetfile
-		os.vrunv(cmd)
-		progress.show(opt.progress, "${color.build.object} GEN\t%s", sourcefile)
-	end)
+set_extensions(".hgen")
+after_load(function(target)
+	local rule = target:rule("c.build"):clone()
+	rule:add("deps", "hgen", { order = true })
+	target:rule_add(rule)
+end)
+on_build_file(function(target, sourcefile, opt)
+	import("utils.progress")
+	local targetfile = string.gsub(sourcefile, ".hgen", ".h")
+	local cmd = "sh -- " .. sourcefile .. " " .. targetfile
+	os.vrunv(cmd)
+	progress.show(opt.progress, "${color.build.object} GEN\t%s", sourcefile)
+end)
 rule_end()
 
 rule("cgen")
-	set_extensions(".cgen")
-	after_load(function(target)
-		local rule = target:rule("c.build"):clone()
-		rule:add("deps", "cgen", { order = true })
-		target:rule_add(rule)
-	end)
-	on_build_file(function(target, sourcefile, opt)
-		import("utils.progress")
-		local targetfile = string.gsub(sourcefile, ".cgen", ".c")
-		local cmd = "sh -- " .. sourcefile .. " " .. targetfile
-		os.vrunv(cmd)
-		progress.show(opt.progress, "${color.build.object} GEN\t%s", sourcefile)
-	end)
+set_extensions(".cgen")
+after_load(function(target)
+	local rule = target:rule("c.build"):clone()
+	rule:add("deps", "cgen", { order = true })
+	target:rule_add(rule)
+end)
+on_build_file(function(target, sourcefile, opt)
+	import("utils.progress")
+	local targetfile = string.gsub(sourcefile, ".cgen", ".c")
+	local cmd = "sh -- " .. sourcefile .. " " .. targetfile
+	os.vrunv(cmd)
+	progress.show(opt.progress, "${color.build.object} GEN\t%s", sourcefile)
+end)
 rule_end()
 
 target("activate-linux")
-	set_kind("binary")
-	add_rules("cgen", "hgen")
-	add_files("src/*.c", { always_added = true })
+set_kind("binary")
+add_rules("cgen", "hgen")
+add_files("src/*.c", { always_added = true })
 target_end()
