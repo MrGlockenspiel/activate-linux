@@ -50,6 +50,8 @@ i18n_info_soup langs[] = {
     {NULL, NULL, NULL}},
   {"zh_HK", {"啟用 ", "", "移至[設定]以啟用 ", "。"},
     {NULL, NULL, NULL}},
+  {"tr_TR", {"", "'u Etkinleştir", "", "'u etkinleştirmek için Ayarlar'a gidin."},
+    {"", "'u etkinleştirmeye gerek yok", "Microsoft kadar gıcık değiliz."}},
 };
 
 
