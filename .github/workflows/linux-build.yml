@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: speedup dpkg
         run: sudo sh -c "echo 'force-unsafe-io' > /etc/dpkg/dpkg.cfg.d/force-unsafe-io"

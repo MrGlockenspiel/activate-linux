@@ -14,7 +14,7 @@ jobs:
           - {chain: mingw64, cc: gcc}
           - {chain: clang64, cc: clang}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: msys2/setup-msys2@v2
         with:
           msystem: ${{matrix.chain}}
@@ -26,8 +26,18 @@ jobs:
           export BINARY=activate-windows-${{matrix.chain}}.exe
           make
       - name: Upload .exe
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        with:
+          name: activate-windows-${{matrix.chain}}
+          path: activate-windows-${{matrix.chain}}.exe
+  merge:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Merge *.exe
+        uses: actions/upload-artifact/merge@v4
         with:
           name: activate-windows.exe
-          path: |
-            activate-windows-*.exe
+          pattern: activate-windows-*
+          delete-merged: true
+          compression-level: 9
