@@ -47,6 +47,8 @@ i18n_info_soup langs[] = {
     {"Não precisa ativar o ", "", "Não somos tão irritantes como a Microsoft."}},
   {"ru_RU", {"Активация ", "", "Чтобы активировать ", ",\nперейдите в раздел \"Параметры\"."},
     {"Активировать ", " не надо", "Мы не так назойливы, как Microsoft."}},
+  {"tr_TR", {"", "'u Etkinleştir", "", "'u etkinleştirmek için Ayarlar'a gidin."},
+    {"", "'u etkinleştirmeye gerek yok", "Microsoft kadar gıcık değiliz."}},
   {"zh_CN", {"激活 ", "", "转到“设置”以激活 ", "。"},
     {NULL, NULL, NULL}},
   {"zh_TW", {"啟用 ", "", "移至[設定]以啟用 ", "。"},
