@@ -141,7 +141,7 @@ void i18n_set_lang_id(void) {
 #else
   char *lang = getenv("LANG");
   if (!lang) {
-    printf("LANG env variable unset, defaulting to en_US\n");
+    __info__("LANG env variable unset, defaulting to en_US\n");
     lang = "en_US";
   }
 #endif
