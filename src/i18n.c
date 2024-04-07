@@ -50,11 +50,11 @@ i18n_info_soup langs[] = {
   {"tr_TR", {"", "'u Etkinleştir", "", "'u etkinleştirmek için Ayarlar'a gidin."},
     {"", "'u etkinleştirmeye gerek yok", "Microsoft kadar gıcık değiliz."}},
   {"zh_CN", {"激活 ", "", "转到“设置”以激活 ", "。"},
-    {NULL, NULL, NULL}},
+    {"无需激活 ", "", "我们不像 Microsoft 那样烦人。"}},
   {"zh_TW", {"啟用 ", "", "移至[設定]以啟用 ", "。"},
-    {NULL, NULL, NULL}},
+    {"無需啟用 ", "", "我們不像 Microsoft 那樣煩人。"}},
   {"zh_HK", {"啟用 ", "", "移至[設定]以啟用 ", "。"},
-    {NULL, NULL, NULL}},
+    {"無需啟用 ", "", "我們不像 Microsoft 那樣煩人。"}},
 };
 
 
