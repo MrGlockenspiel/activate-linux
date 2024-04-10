@@ -13,7 +13,7 @@
 #endif
 
 
-// Compare 5 fist chars from strings
+// Compare 5 first chars from strings
 #define match_str(match, with) (match && with && (strncmp(match, with, 5) == 0))
 // Length of array
 #define length(array) (sizeof(array) / sizeof(array[0]))
@@ -33,7 +33,9 @@ i18n_info_soup langs[] = {
     {"No hay necesidad de activar ", "", "No somos tan molestos como Microsoft."}},
   {"de_DE", {"", " aktivieren", "Wechseln Sie zu den Einstellungen, um ", " zu aktivieren."},
     {"", " muss nicht aktiviert werden", "Wir sind nicht so lästig wie Microsoft."}},
-  {"fr_FR", {"Activer ", "", "Aller en les paramètres pour activer ", "."},
+  {"fr_CA", {"Activez ", "", "Accédez aux paramètres pour activer ", "."},
+    {"Pas besoin d'activer", "", "Nous ne sommes pas aussi gossants que Microsoft."}},
+  {"fr_FR", {"Activez ", "", "Accédez aux paramètres pour activer ", "."},
     {"Pas besoin d'activer", "", "Nous ne sommes pas aussi agaçants que Microsoft."}},
   {"it_IT", {"Attiva ", "", "Passa a Impostazioni per attivare ", "."},
     {NULL, NULL, NULL}},
