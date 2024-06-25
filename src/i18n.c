@@ -28,6 +28,8 @@ i18n_info_soup langs[] = {
 // English is default language, so it has to be first in the list
   {"en_US,en_GB", {"Activate ", "", "Go to Settings to activate ", "."},
     {"No need to activate ", "", "We're not as annoying as Microsoft."}},
+  {"cs_CZ", {"Aktivujte ", "", "Přejděte do nastavení a aktivujte systém ", "."},
+    {"Není potřeba aktivovat systém ", "", "Nejsme tak otravní jako Microsoft."}},
   {"es_ES,es_AR,es_BO,es_CL,es_CO,es_CR,es_DO,es_EC,es_SV,es_GT,es_HN,es_NI,es_PA,es_PY,es_PE,es_PR,es_UY,es_VE", 
     {"Activar ", "", "Ve a Configuración para activar ", "."},
     {"No hay necesidad de activar ", "", "No somos tan molestos como Microsoft."}},
@@ -49,6 +51,8 @@ i18n_info_soup langs[] = {
     {"Não precisa ativar o ", "", "Não somos tão irritantes como a Microsoft."}},
   {"ru_RU", {"Активация ", "", "Чтобы активировать ", ",\nперейдите в раздел \"Параметры\"."},
     {"Активировать ", " не надо", "Мы не так назойливы, как Microsoft."}},
+  {"sk-SK", {"Aktivujte ", "", "Prejdite do nastavenia a aktivujte systém ", "."},
+    {"Nie je potreba aktivovat systém", "", "Nie sme tak otravní jako Microsoft."}},
   {"tr_TR", {"", "'u Etkinleştir", "", "'u etkinleştirmek için Ayarlar'a gidin."},
     {"", "'u etkinleştirmeye gerek yok", "Microsoft kadar gıcık değiliz."}},
   {"zh_CN", {"激活 ", "", "转到“设置”以激活 ", "。"},
@@ -58,7 +62,7 @@ i18n_info_soup langs[] = {
   {"zh_HK", {"啟用 ", "", "移至[設定]以啟用 ", "。"},
     {"無需啟用 ", "", "我們不像 Microsoft 那樣煩人。"}},
   {"hu_HU", {"A(z) ", " aktiválása", "Aktiválja a(z) ", " rendszert a Gépházban."},
-    {"Nem kell aktiválni a(z) ", "-t", "Nem vagyunk olyan idegesítőek,\nmint a Microsoft."}},
+    {"Nem kell aktiválni a(z) ", "-t", "Nem vagyunk olyan idegesítőek,\nmint a Microsoft."}}
 };
 
 
