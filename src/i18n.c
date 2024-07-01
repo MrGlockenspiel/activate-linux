@@ -62,7 +62,7 @@ i18n_info_soup langs[] = {
   {"zh_HK", {"啟用 ", "", "移至[設定]以啟用 ", "。"},
     {"無需啟用 ", "", "我們不像 Microsoft 那樣煩人。"}},
   {"hu_HU", {"A(z) ", " aktiválása", "Aktiválja a(z) ", " rendszert a Gépházban."},
-    {"Nem kell aktiválni a(z) ", "-t", "Nem vagyunk olyan idegesítőek,\nmint a Microsoft."}}
+    {"Nem kell aktiválni a(z) ", "-t", "Nem vagyunk olyan idegesítőek,\nmint a Microsoft."}},
   {"sv_SE", {"Aktivera ", "", "Gå till Inställningar för att aktivera ", "."},
     {"Du behöver inte aktivera ", "", "Vi är inte lika jobbiga som Microsoft."}},
 };
