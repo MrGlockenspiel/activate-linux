@@ -15,6 +15,7 @@
 
 // Compare 5 first chars from strings
 #define match_str(match, with) (match && with && (strncmp(match, with, 5) == 0))
+
 // Length of array
 #define length(array) (sizeof(array) / sizeof(array[0]))
 
@@ -131,6 +132,40 @@ bool match_lang_code(const char *lang_code, const char *lang) {
   return false;
 }
 
+bool match_lang_two_letter_code(const char *lang_code, const char *lang) {
+  int i = 0;
+  while (lang_code[i]) {
+    int ii = 0;
+    bool failed = false;
+
+    while (lang_code[i] != 0) {
+      if (lang_code[i] == '_') {
+        i +=4;
+        break;
+      }
+      if (lang_code[i] == ',') {
+        i++;
+        break;
+      }
+
+      if (failed) {
+        i++;
+        continue;
+      }
+
+      if (lang_code[i++] != lang[ii++]) {
+        failed = true;
+      }
+    }
+
+    if (!failed) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void i18n_set_lang_id(void) {
   if (lang_id != -1)
     return;
@@ -159,6 +194,11 @@ void i18n_set_lang_id(void) {
   __info__("Got user language %s\n", lang);
   for (lang_id = length(langs) - 1; lang_id >= 0; lang_id--)
     if (match_lang_code(langs[lang_id].code, lang))
+      return;
+
+  __info__("Attempting to use two-letter code as fallback\n");
+  for (lang_id = length(langs) - 1; lang_id >= 0; lang_id--)
+    if (match_lang_two_letter_code(langs[lang_id].code, lang))
       return;
 
   lang_id = 0;
