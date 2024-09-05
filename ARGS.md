@@ -58,6 +58,8 @@ Default color is `1-1-1-0.35` (dimmed white)
 
 ## Size and position
 
+Note that message always appears in the top left corner of the overlay.
+
 ### Custom overlay width
 ```console
 # Default width = 340px
@@ -76,24 +78,6 @@ Default color is `1-1-1-0.35` (dimmed white)
 ```console
 ./activate-linux -s 1.5
 ./activate-linux --scale 1.5
-```
-
-### Move overlay horizontally
-```console
-# 42 pixels left
-./activate-linux -H 42
-# 42 pixels right
-./activate-linux -H -42
-./activate-linux --overlay-offset-left -42
-```
-
-### Move overlay vertically
-```console
-# 42 pixels bottom
-./activate-linux -V 42
-# 42 pixels up
-./activate-linux -V -42
-./activate-linux --overlay-offset-top -42
 ```
 
 ## Other
