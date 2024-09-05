@@ -26,8 +26,6 @@ Options options = {
   // overlay position
   .overlay_width = 340,
   .overlay_height = 120,
-  .offset_left = 0,
-  .offset_top = 0,
 
   // default color is light grey, which has enough contrast to be noticed
   // on both light and dark background.
