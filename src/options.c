@@ -68,8 +68,6 @@ void parse_options(int argc, char *const argv[]) {
     {"overlay-width",       required_argument, NULL, 'x'},
     {"overlay-height",      required_argument, NULL, 'y'},
     {"scale",               required_argument, NULL, 's'},
-    {"overlay-offset-left", required_argument, NULL, 'H'},
-    {"overlay-offset-top",  required_argument, NULL, 'V'},
     // other
     {"bypass-compositor",   no_argument,       NULL, 'w'},
     {"daemonize",           no_argument,       NULL, 'd'},
@@ -89,7 +87,7 @@ void parse_options(int argc, char *const argv[]) {
   };
 
   int opt;
-  while ((opt = getopt_long(argc, argv, "t:m:p:f:bic:x:y:s:H:V:wdKvlqGh"
+  while ((opt = getopt_long(argc, argv, "t:m:p:f:bic:x:y:s:wdKvlqGh"
 #ifdef X11
       "S"
 #endif
@@ -110,8 +108,6 @@ void parse_options(int argc, char *const argv[]) {
       // size and position
       case 'x': options.overlay_width = atoi(optarg); break;
       case 'y': options.overlay_height = atoi(optarg); break;
-      case 'H': options.offset_left = atoi(optarg); break;
-      case 'V': options.offset_top = atoi(optarg); break;
       // other
       case 'w': options.bypass_compositor = true; break;
       case 'd': options.daemonize = true; break;
@@ -128,7 +124,7 @@ void parse_options(int argc, char *const argv[]) {
       case 's':
         options.scale = atof(optarg);
         if (options.scale < 0.0f) {
-          __error__("Cannot parse custom scale value. It must be number from 0.0 to 1.0\n");
+          __error__("Cannot parse custom scale value. It must be number greater than 0.0.\n");
           exit(EXIT_FAILURE);
         }
         break;
@@ -196,8 +192,6 @@ void print_help(const char *const file_name) {
   HELP("-x, --overlay-width width \tSet overlay width  before scaling (integer)");
   HELP("-y, --overlay-height height \tSet overlay height before scaling (integer)");
   HELP("-s, --scale scale \t\tScale ratio (float)");
-  HELP("-H, --overlay-offset-left offset \tMove overlay horizontally (integer)");
-  HELP("-V, --overlay-offset-top offset \tMove overlay  vertically  (integer)");
   END();
 
   SECTION("Other", "");
