@@ -244,8 +244,8 @@ static void output_done(void *data, struct wl_output *wl_output)
                                          ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
         zwlr_layer_surface_v1_set_exclusive_zone(output->layer_surface, -1);
         zwlr_layer_surface_v1_set_margin(output->layer_surface,
-                                         0, options.offset_top,
-                                         0, options.offset_left);
+                                         0, 0,
+                                         0, 0);
         zwlr_layer_surface_v1_add_listener(output->layer_surface,
                                            &layer_surface_listener, output);
         wl_surface_commit(output->surface);

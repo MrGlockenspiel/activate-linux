@@ -17,8 +17,6 @@ typedef struct options_t {
 
   int overlay_width;
   int overlay_height;
-  int offset_left;
-  int offset_top;
 
   rgba_color text_color;
 

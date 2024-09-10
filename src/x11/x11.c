@@ -119,8 +119,8 @@ int x11_backend_start(void)
         __debug__("Creating overlay on %d screen\n", i);
         overlay[i] = XCreateWindow(d,                                                                // display
                                    root,                                                             // parent
-                                   si[i].x_org + si[i].width + options.offset_left - overlay_width,  // x position
-                                   si[i].y_org + si[i].height + options.offset_top - overlay_height, // y position
+                                   si[i].x_org + si[i].width - overlay_width,  // x position
+                                   si[i].y_org + si[i].height - overlay_height, // y position
                                    overlay_width,                                                    // width
                                    overlay_height,                                                   // height
                                    0,                                                                // border width
@@ -201,8 +201,8 @@ int x11_backend_start(void)
                     __debug__("  Moving window on screen %d according new position\n", i);
                     XMoveWindow(d,                                                               // display
                                 overlay[i],                                                      // window
-                                si[i].x_org + si[i].width + options.offset_left - overlay_width, // x position
-                                si[i].y_org + si[i].height + options.offset_top - overlay_height // y position
+                                si[i].x_org + si[i].width - overlay_width, // x position
+                                si[i].y_org + si[i].height - overlay_height // y position
                     );
                 }
             }
