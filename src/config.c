@@ -86,14 +86,6 @@ void load_config(const char *const file) {
     options.overlay_height = itmp;
   }
 
-  if (config_lookup_int(cf, "overlay-offset-top", &itmp) != CONFIG_FALSE) {
-    options.offset_top = itmp;
-  }
-
-  if (config_lookup_int(cf, "overlay-offset-left", &itmp) != CONFIG_FALSE) {
-    options.offset_left = itmp;
-  }
-
   if (config_lookup_bool(cf, "daemonize", &itmp) != CONFIG_FALSE) {
     options.daemonize = (bool)itmp;
   }
