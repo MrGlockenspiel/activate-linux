@@ -44,7 +44,7 @@ i18n_info_soup langs[] = {
     {NULL, NULL, NULL}},
   {"ja_JP", {"", "のライセンス認証", "設定を開き、", "のライセンス認証を行ってください。"},
     {NULL, NULL, NULL}},
-  {"nl_NL", {"Activeren ", "", "Gaan naar instellingen om te activeren ", "."},
+  {"nl_NL", {"Activeer ", "", "Ga naar instellingen om te activeren ", "."},
     {NULL, NULL, NULL}},
   {"pl_PL", {"Aktywuj system ", "", "Przejdź do ustawień, aby aktywować system ", "."},
     {"Nie trzeba aktywować systemu ", "", "Nie jesteśmy tak denerwujący jak Microsoft."}},
