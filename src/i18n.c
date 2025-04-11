@@ -30,7 +30,7 @@ i18n_info_soup langs[] = {
   {"en_US,en_GB", {"Activate ", "", "Go to Settings to activate ", "."},
     {"No need to activate ", "", "We're not as annoying as Microsoft."}},
   {"ca_ES,ca_AD,ca_FR,ca_IT", 
-    {"Activeu ", "", "Aneu a configuració per activar-ho ", "."},
+    {"Activeu ", "", "Aneu a configuració per activar ", "."},
     {"No calia activar ", "", "No som tan molestos com Microsoft."}},
   {"cs_CZ", {"Aktivujte ", "", "Přejděte do nastavení a aktivujte systém ", "."},
     {"Není potřeba aktivovat systém ", "", "Nejsme tak otravní jako Microsoft."}},
