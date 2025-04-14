@@ -317,7 +317,7 @@ static const struct wl_registry_listener registry_listener = {
 
 int wayland_backend_start(void)
 {
-    struct state state;
+    struct state state = {0};
 
     wl_list_init(&state.outputs);
 
