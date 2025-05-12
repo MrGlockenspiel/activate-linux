@@ -52,7 +52,7 @@ ifeq ($(filter wayland,$(<<backends>>)),wayland)
 	LDFLAGS += -lrt
 endif
 ifneq ($(filter wayland x11,$(<<backends>>)),)
-	PKGS += cairo
+	PKGS += cairo pango pangocairo
 	CFLAGS += -DCOLOR_HELP -DCAIRO
 endif
 ifeq ($(filter gdi,$(<<backends>>)),gdi)
