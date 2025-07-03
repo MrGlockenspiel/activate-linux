@@ -15,7 +15,7 @@ jobs:
           sudo apt-get install \
             libcairo2-dev \
             libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxfixes-dev libxinerama-dev libxrandr-dev \
-            libwayland-dev wayland-protocols
+            libwayland-dev wayland-protocols libpango1.0-dev libpangocairo-1.0-dev
 
       - name: build (GCC w/o libconfig)
         run: make clean && make
