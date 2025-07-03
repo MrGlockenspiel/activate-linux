@@ -232,6 +232,53 @@ void i18n_set_preset(const char *const preset) {
   exit(EXIT_FAILURE);
 }
 
+void set_linux_distribution(char *text, char *fallback_text) {
+  FILE *os_release = fopen("/etc/os-release", "r");
+  const char *name_field = "NAME";
+  
+  if (os_release == NULL) {
+    strncat(text, fallback_text, strlen(fallback_text));
+    return;
+  }
+
+  char *line = NULL;
+  size_t size = 0;
+  ssize_t ssize;
+  bool use_distro_name = false;
+  while ((ssize = getline(&line, &size, os_release)) != -1) {
+    if (strncmp(line, name_field, strnlen(name_field, ssize)) == 0) {
+      char *name = malloc(ssize);
+      char terminate = '\n';
+      char *name_val;
+
+      if (*(line + strnlen(name_field, ssize) + 1) == '"') { // NAME="val"
+        terminate = '"';
+        name_val = line + strnlen(name_field, ssize) + 2;
+      } else { // NAME=val
+        name_val = line + strnlen(name_field, ssize) + 1;
+      }
+
+      u_int8_t pos = 0;
+      while (*name_val != terminate) {
+        name[pos] = *name_val;
+        name_val++;
+        pos++;
+      }
+      name[pos] = '\0';
+      strncat(text, name, strnlen(name, ssize));
+      use_distro_name = true;
+      free(name);
+      break;
+    }
+  }
+
+  free(line);
+  fclose(os_release);
+  if (!use_distro_name) {
+    strncat(text, fallback_text, strlen(fallback_text));
+  }
+}
+
 void *allocated[] = {NULL, NULL};
 void i18n_set_info(const char *const preset) {
   i18n_set_lang_id();
@@ -246,6 +293,14 @@ void i18n_set_info(const char *const preset) {
   memset(options.title, 0, 666);
   memset(options.subtitle, 0, 666);
 
+  char* text = malloc(100);
+  memset(text, 0, 100);
+#if defined(__linux__)
+  set_linux_distribution(text, presets[preset_id].text);
+#else
+  strcat(text, presets[preset_id].text);
+#endif
+
   if (match_str(MS_DISS_PRESET_NAME, preset)) {
     strcat(options.title, langs[lang_id].diss.pre_title);
     strcat(options.title, presets[preset_id].text);
@@ -254,13 +309,15 @@ void i18n_set_info(const char *const preset) {
     strcat(options.subtitle, langs[lang_id].diss.subtitle);
   } else {
     strcat(options.title, langs[lang_id].windows_like.pre_title);
-    strcat(options.title, presets[preset_id].text);
+    strcat(options.title, text);
     strcat(options.title, langs[lang_id].windows_like.post_title);
 
     strcat(options.subtitle, langs[lang_id].windows_like.pre_subtitle);
-    strcat(options.subtitle, presets[preset_id].text);
+    strcat(options.subtitle, text);
     strcat(options.subtitle, langs[lang_id].windows_like.post_subtitle);
   }
+
+  free(text);
 }
 
 void i18n_list_presets(void) {
