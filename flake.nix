@@ -33,6 +33,10 @@
           pkg-config
         ] ++ (import ./deps.nix {inherit pkgs;});
 
+        nativeBuildInputs = with pkgs; [
+          wayland-scanner
+        ];
+
         installPhase = ''
           runHook preInstall
 
