@@ -22,6 +22,8 @@
         name = "activate-linux";
         src = pkgs.lib.cleanSource ./.;
 
+        meta.mainProgram = "activate-linux";
+
         makeFlags = [
           "PREFIX=/"
           "DESTDIR=${placeholder "out"}"
