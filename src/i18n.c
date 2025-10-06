@@ -150,7 +150,10 @@ bool match_lang_two_letter_code(const char *lang_code, const char *lang) {
         i++;
         break;
       }
-
+      if (lang_code[i] == '.') {
+        break;
+      }
+      
       if (failed) {
         i++;
         continue;
