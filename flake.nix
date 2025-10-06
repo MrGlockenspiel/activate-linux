@@ -22,6 +22,8 @@
         name = "activate-linux";
         src = pkgs.lib.cleanSource ./.;
 
+        meta.mainProgram = "activate-linux";
+
         makeFlags = [
           "PREFIX=/"
           "DESTDIR=${placeholder "out"}"
@@ -32,6 +34,10 @@
           gawk
           pkg-config
         ] ++ (import ./deps.nix {inherit pkgs;});
+
+        nativeBuildInputs = with pkgs; [
+          wayland-scanner
+        ];
 
         installPhase = ''
           runHook preInstall
