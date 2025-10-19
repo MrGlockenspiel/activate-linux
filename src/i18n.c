@@ -69,6 +69,8 @@ i18n_info_soup langs[] = {
     {"Nem kell aktiválni a(z) ", "-t", "Nem vagyunk olyan idegesítőek,\nmint a Microsoft."}},
   {"sv_SE", {"Aktivera ", "", "Gå till Inställningar för att aktivera ", "."},
     {"Du behöver inte aktivera ", "", "Vi är inte lika jobbiga som Microsoft."}},
+  {"vi_VN", {"Kích hoạt ", "", "Vào phần Cài đặt để kích hoạt ", "."},
+    {"Không cần kích hoạt ", "", "Chúng tôi không có khó chịu như Microsoft đâu."}},
 };
 
 
