@@ -71,6 +71,8 @@ i18n_info_soup langs[] = {
     {"Du behöver inte aktivera ", "", "Vi är inte lika jobbiga som Microsoft."}},
   {"vi_VN", {"Kích hoạt ", "", "Vào phần Cài đặt để kích hoạt ", "."},
     {"Không cần kích hoạt ", "", "Chúng tôi không có khó chịu như Microsoft đâu."}},
+  {"uk_UA", {"Активація ", "", "Перейдіть до розділу \"Настройки\", щоб активувати ", "."},
+    {"Нема потреби активувати ", "", "Ми не такі набридливі, як Microsoft."}},
 };
 
 
