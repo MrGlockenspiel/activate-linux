@@ -39,6 +39,7 @@ make
 ### Dependencies
 This project depends on:
 - [`libcairo2-dev`](https://cairographics.org)
+- [`libpango1.0-dev`](https://www.gtk.org/docs/architecture/pango)
 - [`libxi-dev`](https://gitlab.freedesktop.org/xorg/lib/libxi)
 - [`libx11-dev`](https://gitlab.freedesktop.org/xorg/lib/libx11)
 - `x11proto-core-dev`
@@ -57,7 +58,7 @@ Optional dependencies:
 Those packages may be installed (in Debian-based distros) like this:
 ```console
 sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev \
-libxt-dev libxext-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
+libxt-dev libxext-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols libpango1.0-dev
 ```
 
 
