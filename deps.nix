@@ -2,14 +2,14 @@
 with pkgs; [
 	cairo
 	pango
-	xorg.libXi
-	xorg.libX11
-	xorg.xorgproto
-	xorg.libXt
-	xorg.libXfixes
-	xorg.libXinerama
-	xorg.libXext
-	xorg.libXrandr
+	libXi
+	libX11
+	xorgproto
+	libXt
+	libXfixes
+	libXinerama
+	libXext
+	libXrandr
 	wayland
 	wayland-protocols
 	libconfig
