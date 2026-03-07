@@ -1,6 +1,7 @@
 { pkgs }:
 with pkgs; [
 	cairo
+	pango
 	xorg.libXi
 	xorg.libX11
 	xorg.xorgproto
