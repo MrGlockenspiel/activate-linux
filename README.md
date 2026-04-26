@@ -125,41 +125,62 @@ gmake
 ```
 
 
-### Installing
+### Source Installation
 
-#### Ubuntu
-@eddelbuettel runs a PPA with activate linux in it, so it can be installed with:
+#### Ubuntu / Debian
 ```console
-sudo add-apt-repository ppa:edd/misc
 sudo apt update
-sudo apt install activate-linux
+sudo apt install git make pkg-config libconfig-dev libcairo2-dev libpango1.0-dev \
+libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxext-dev \
+libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
+git clone https://github.com/MrGlockenspiel/activate-linux
+cd activate-linux
+make
+sudo make install
 ```
 
 #### Arch Linux
-This project is in the AUR under [activate-linux-git](https://aur.archlinux.org/packages/activate-linux-git).
+```console
+sudo pacman -S --needed git make pkgconf cairo pango libxi libx11 libxt libxext \
+libxfixes libxinerama libxrandr wayland wayland-protocols libconfig
+git clone https://github.com/MrGlockenspiel/activate-linux
+cd activate-linux
+make
+sudo make install
+```
 
-Install/uninstall it using your favorite AUR helper.
-
-#### Nix (NixOS)
-This repository is a flake. Run it using `nix run "github:MrGlockenspiel/activate-linux"`.
+#### NixOS / Nix
+Use the flake development shell to compile from source:
+```console
+git clone https://github.com/MrGlockenspiel/activate-linux
+cd activate-linux
+nix develop -c make
+sudo nix develop -c make install
+```
 
 #### Gentoo
-@Plexvola maintains an ebuild for activate-linux and can be installed with the following
+Install required development libraries, then build directly from source:
 ```console
-eselect repository enable vaacus
-emerge --sync vaacus
-emerge -av activate-linux
+git clone https://github.com/MrGlockenspiel/activate-linux
+cd activate-linux
+make
+sudo make install
 ```
 
 ## Windows
 
-### Scoop
+### Source Installation (MSYS2)
 
-You can install it on the [Extras](https://github.com/ScoopInstaller/Extras) bucket:
-```powershell
-scoop bucket add extras # Ensure bucket is added first
-scoop install activate-linux
+```console
+pacman -S --noconfirm git make pkgconf pactoys
+pacboy -S --noconfirm gcc:p
+git clone https://github.com/MrGlockenspiel/activate-linux
+cd activate-linux
+export backends=gdi
+make
 ```
+
+The resulting executable is generated in the repository root (for example `activate-windows64.exe`).
 
 
 ## MacOS (Horrific)
@@ -173,7 +194,3 @@ Use MacPorts to install the following, then build normally.
 - `xorg-libXinerama`
 
 Alternatively, you can use [this](https://github.com/Lakr233/ActivateMac) project instead because it actually works properly.
-
-## Example:
-
-![screenshot](screenshot.png)
