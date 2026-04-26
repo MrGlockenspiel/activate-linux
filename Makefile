@@ -101,13 +101,17 @@ endif
 
 # Output file name
 NAME := $(shell uname -s)
+OS_NAME := $(shell uname -o 2>/dev/null)
 ifeq ($(NAME),Linux)
 	BINARY ?= activate-linux
 endif
 ifeq ($(NAME),Darwin)
 	BINARY ?= activate-macos
 endif
-ifneq (, filter($(shell uname -o),Msys Cygwin))
+ifneq ($(filter $(NAME),FreeBSD OpenBSD),)
+	BINARY ?= activate-bsd
+endif
+ifneq ($(filter $(OS_NAME),Msys Cygwin),)
 	ifeq ($(MSYSTEM_CARCH),i686)
 		BINARY ?= activate-windows.exe
 	else
