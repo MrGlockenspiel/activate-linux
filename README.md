@@ -66,11 +66,6 @@ This project depends on:
 Optional dependencies:
 - [`libconfig-dev`](https://hyperrealm.github.io/libconfig)
 
-Those packages may be installed (in Debian-based distros) like this:
-```console
-sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-dev x11proto-dev \
-libxt-dev libxext-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
-```
 
 ## FreeBSD
 
