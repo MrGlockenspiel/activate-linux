@@ -8,6 +8,7 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <linux/input-event-codes.h>
 #include <wayland-client.h>
 
 #include <cairo/cairo.h>
@@ -18,6 +19,9 @@
 #include "../cairo_draw_text.h"
 #include "../options.h"
 #include "../log.h"
+#ifdef LIBCONFIG
+  #include "../config.h"
+#endif
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
@@ -27,8 +31,15 @@ struct state {
     struct wl_compositor *compositor;
     struct wl_shm *shm;
     struct zwlr_layer_shell_v1 *layer_shell;
+    struct wl_seat *seat;
+    struct wl_pointer *pointer;
 
     struct wl_list outputs;
+    struct output *pointer_output;
+    struct output *drag_output;
+    wl_fixed_t pointer_x;
+    wl_fixed_t pointer_y;
+    bool drag_active;
 };
 
 struct output {
@@ -44,7 +55,38 @@ struct output {
 
     // dimensions of the layer_surface, not the output
     uint32_t width, height;
+
+    int32_t margin_top;
+    int32_t margin_right;
+    int32_t margin_bottom;
+    int32_t margin_left;
 };
+
+static struct output *output_find_by_surface(struct state *state, struct wl_surface *surface)
+{
+    struct output *output = NULL;
+    wl_list_for_each(output, &state->outputs, link) {
+        if (output->surface == surface) {
+            return output;
+        }
+    }
+
+    return NULL;
+}
+
+static void output_apply_margin(struct output *output)
+{
+    if (output == NULL || output->layer_surface == NULL) {
+        return;
+    }
+
+    zwlr_layer_surface_v1_set_margin(output->layer_surface,
+                                     output->margin_top,
+                                     output->margin_right,
+                                     output->margin_bottom,
+                                     output->margin_left);
+    wl_surface_commit(output->surface);
+}
 
 static void randname(char *buf)
 {
@@ -143,6 +185,14 @@ static void output_destroy(struct output *output)
 {
     __debug__("Destroying output\n");
 
+    if (output->state->pointer_output == output) {
+        output->state->pointer_output = NULL;
+    }
+    if (output->state->drag_output == output) {
+        output->state->drag_output = NULL;
+        output->state->drag_active = false;
+    }
+
     if (output->layer_surface) {
         zwlr_layer_surface_v1_destroy(output->layer_surface);
     }
@@ -226,11 +276,13 @@ static void output_done(void *data, struct wl_output *wl_output)
     if (!output->layer_surface) {
         output->surface = wl_compositor_create_surface(output->state->compositor);
 
-        // Empty input region
-        struct wl_region *input_region =
-            wl_compositor_create_region(output->state->compositor);
-        wl_surface_set_input_region(output->surface, input_region);
-        wl_region_destroy(input_region);
+        if (!options.wayland_draggable) {
+            // Empty input region for click-through behavior.
+            struct wl_region *input_region =
+                wl_compositor_create_region(output->state->compositor);
+            wl_surface_set_input_region(output->surface, input_region);
+            wl_region_destroy(input_region);
+        }
 
         output->layer_surface = zwlr_layer_shell_v1_get_layer_surface(
                                     output->state->layer_shell, output->surface, output->wl_output,
@@ -243,9 +295,11 @@ static void output_done(void *data, struct wl_output *wl_output)
                                          ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM |
                                          ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
         zwlr_layer_surface_v1_set_exclusive_zone(output->layer_surface, -1);
-        zwlr_layer_surface_v1_set_margin(output->layer_surface,
-                                         0, 0,
-                                         0, 0);
+        output->margin_top = 0;
+        output->margin_right = -options.overlay_offset_left;
+        output->margin_bottom = -options.overlay_offset_top;
+        output->margin_left = 0;
+        output_apply_margin(output);
         zwlr_layer_surface_v1_add_listener(output->layer_surface,
                                            &layer_surface_listener, output);
         wl_surface_commit(output->surface);
@@ -270,6 +324,136 @@ static const struct wl_output_listener output_listener = {
     .scale = output_scale,
 };
 
+static void pointer_handle_enter(void *data, struct wl_pointer *pointer, uint32_t serial,
+                                 struct wl_surface *surface, wl_fixed_t surface_x, wl_fixed_t surface_y)
+{
+    UNUSED(pointer);
+    UNUSED(serial);
+
+    struct state *state = data;
+    state->pointer_output = output_find_by_surface(state, surface);
+    state->pointer_x = surface_x;
+    state->pointer_y = surface_y;
+}
+
+static void pointer_handle_leave(void *data, struct wl_pointer *pointer, uint32_t serial,
+                                 struct wl_surface *surface)
+{
+    UNUSED(pointer);
+    UNUSED(serial);
+
+    struct state *state = data;
+    if (state->pointer_output != NULL && state->pointer_output->surface == surface) {
+        state->pointer_output = NULL;
+    }
+}
+
+static void pointer_handle_motion(void *data, struct wl_pointer *pointer, uint32_t time,
+                                  wl_fixed_t surface_x, wl_fixed_t surface_y)
+{
+    UNUSED(pointer);
+    UNUSED(time);
+
+    struct state *state = data;
+    int32_t prev_x = wl_fixed_to_int(state->pointer_x);
+    int32_t prev_y = wl_fixed_to_int(state->pointer_y);
+    int32_t curr_x = wl_fixed_to_int(surface_x);
+    int32_t curr_y = wl_fixed_to_int(surface_y);
+    state->pointer_x = surface_x;
+    state->pointer_y = surface_y;
+
+    if (!state->drag_active || state->drag_output == NULL) {
+        return;
+    }
+
+    int32_t dx = curr_x - prev_x;
+    int32_t dy = curr_y - prev_y;
+    if (dx == 0 && dy == 0) {
+        return;
+    }
+
+    state->drag_output->margin_right -= dx;
+    state->drag_output->margin_bottom -= dy;
+    options.overlay_offset_left = -state->drag_output->margin_right;
+    options.overlay_offset_top = -state->drag_output->margin_bottom;
+    output_apply_margin(state->drag_output);
+}
+
+static void pointer_handle_button(void *data, struct wl_pointer *pointer, uint32_t serial,
+                                  uint32_t time, uint32_t button, uint32_t button_state)
+{
+    UNUSED(pointer);
+    UNUSED(serial);
+    UNUSED(time);
+
+    struct state *state = data;
+    if (button != BTN_LEFT) {
+        return;
+    }
+
+    if (button_state == WL_POINTER_BUTTON_STATE_PRESSED) {
+        if (state->pointer_output != NULL) {
+            state->drag_active = true;
+            state->drag_output = state->pointer_output;
+        }
+    } else if (button_state == WL_POINTER_BUTTON_STATE_RELEASED) {
+#ifdef LIBCONFIG
+        if (state->drag_output != NULL) {
+            save_overlay_offsets(options.overlay_offset_left, options.overlay_offset_top);
+        }
+#endif
+        state->drag_active = false;
+        state->drag_output = NULL;
+    }
+}
+
+static void pointer_handle_axis(void *data, struct wl_pointer *pointer, uint32_t time,
+                                uint32_t axis, wl_fixed_t value)
+{
+    UNUSED(data);
+    UNUSED(pointer);
+    UNUSED(time);
+    UNUSED(axis);
+    UNUSED(value);
+}
+
+static const struct wl_pointer_listener pointer_listener = {
+    .enter = pointer_handle_enter,
+    .leave = pointer_handle_leave,
+    .motion = pointer_handle_motion,
+    .button = pointer_handle_button,
+    .axis = pointer_handle_axis,
+};
+
+static void seat_handle_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities)
+{
+    struct state *state = data;
+    bool has_pointer = (capabilities & WL_SEAT_CAPABILITY_POINTER) != 0;
+
+    if (has_pointer && state->pointer == NULL && options.wayland_draggable) {
+        state->pointer = wl_seat_get_pointer(seat);
+        wl_pointer_add_listener(state->pointer, &pointer_listener, state);
+    } else if (!has_pointer && state->pointer != NULL) {
+        wl_pointer_destroy(state->pointer);
+        state->pointer = NULL;
+        state->pointer_output = NULL;
+        state->drag_output = NULL;
+        state->drag_active = false;
+    }
+}
+
+static void seat_handle_name(void *data, struct wl_seat *seat, const char *name)
+{
+    UNUSED(data);
+    UNUSED(seat);
+    UNUSED(name);
+}
+
+static const struct wl_seat_listener seat_listener = {
+    .capabilities = seat_handle_capabilities,
+    .name = seat_handle_name,
+};
+
 static void handle_global(void *data, struct wl_registry *registry,
                           uint32_t name, const char *interface, uint32_t version)
 {
@@ -289,6 +473,9 @@ static void handle_global(void *data, struct wl_registry *registry,
         output->wl_output = wl_registry_bind(registry, name, &wl_output_interface, 2);
         wl_output_add_listener(output->wl_output, &output_listener, output);
         wl_list_insert(&state->outputs, &output->link);
+    } else if (strcmp(interface, wl_seat_interface.name) == 0) {
+        state->seat = wl_registry_bind(registry, name, &wl_seat_interface, 1);
+        wl_seat_add_listener(state->seat, &seat_listener, state);
     } else if (strcmp(interface, zwlr_layer_shell_v1_interface.name) == 0) {
         state->layer_shell =
             wl_registry_bind(registry, name, &zwlr_layer_shell_v1_interface, 1);
@@ -341,6 +528,14 @@ int wayland_backend_start(void)
     while (wl_display_dispatch(state.display) != -1) {
 
     }
+
+    if (state.pointer != NULL) {
+        wl_pointer_destroy(state.pointer);
+    }
+    if (state.seat != NULL) {
+        wl_seat_destroy(state.seat);
+    }
+    wl_display_disconnect(state.display);
 
     return 0;
 }

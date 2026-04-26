@@ -132,11 +132,27 @@ Useful to kill running background daemon (started with `-d` option)
 ./activate-linux --gamescope
 ```
 
+### Enable dragging Wayland overlay window with left mouse button
+```console
+./activate-linux -Y
+./activate-linux --wayland-draggable
+```
+On drag release, offsets are persisted to `~/.config/activate-linux.cfg` by default.
+Use `-C/--config-file` to override the save target.
+
 ### Force fake transparency rendering using the shaping extension on X11
 ```console
 ./activate-linux -S
 ./activate-linux --force-xshape
 ```
+
+### Enable dragging X11 overlay window with left mouse button
+```console
+./activate-linux -M
+./activate-linux --x11-draggable
+```
+On drag release, offsets are persisted to `~/.config/activate-linux.cfg` by default.
+Use `-C/--config-file` to override the save target.
 
 ### Use a configuration file
 [Config example](example.cfg)
@@ -144,6 +160,8 @@ Useful to kill running background daemon (started with `-d` option)
 ./activate-linux -C ~/config.cfg
 ./activate-linux --config-file ~/config.cfg
 ```
+
+By default, if `~/.config/activate-linux.cfg` exists, it is loaded automatically on startup.
 
 ### Show embedded help
 ```console

@@ -17,6 +17,9 @@
 #include "../cairo_draw_text.h"
 #include "../log.h"
 #include "../options.h"
+#ifdef LIBCONFIG
+  #include "../config.h"
+#endif
 
 // generated function: returns XEvent name
 const char *XEventName(int type);
@@ -104,6 +107,8 @@ int x11_backend_start(void)
     Window overlay[num_entries];
     cairo_surface_t *surface[num_entries];
     cairo_t *cairo_ctx[num_entries];
+    int overlay_pos_x[num_entries];
+    int overlay_pos_y[num_entries];
 
     Pixmap xshape_mask[num_entries];
     cairo_surface_t *xshape_surface[num_entries];
@@ -113,14 +118,19 @@ int x11_backend_start(void)
     __debug__("Scaled height: %d px\n", overlay_height);
     int overlay_width = options.overlay_width * options.scale;
     __debug__("Scaled width:  %d px\n", overlay_width);
+    int drag_window = -1;
+    int drag_offset_x = 0;
+    int drag_offset_y = 0;
 
     for (int i = 0; i < num_entries; i++)
     {
+        overlay_pos_x[i] = si[i].x_org + si[i].width - overlay_width + options.overlay_offset_left;
+        overlay_pos_y[i] = si[i].y_org + si[i].height - overlay_height + options.overlay_offset_top;
         __debug__("Creating overlay on %d screen\n", i);
         overlay[i] = XCreateWindow(d,                                                                // display
                                    root,                                                             // parent
-                                   si[i].x_org + si[i].width - overlay_width,  // x position
-                                   si[i].y_org + si[i].height - overlay_height, // y position
+                                   overlay_pos_x[i], // x position
+                                   overlay_pos_y[i], // y position
                                    overlay_width,                                                    // width
                                    overlay_height,                                                   // height
                                    0,                                                                // border width
@@ -130,15 +140,22 @@ int x11_backend_start(void)
                                    CWOverrideRedirect | CWColormap | CWBackPixel | CWBorderPixel,    // value mask
                                    &attrs                                                            // attributes
         );
-        // subscribe to Exposure Events, required for redrawing after DPMS blanking
-        XSelectInput(d, overlay[i], ExposureMask);
+        // subscribe to redraw and (optional) dragging events
+        long event_mask = ExposureMask;
+        if (options.x11_draggable)
+        {
+            event_mask |= ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
+        }
+        XSelectInput(d, overlay[i], event_mask);
         XMapWindow(d, overlay[i]);
 
-        // allows the mouse to click through the overlay
-        XRectangle rect;
-        XserverRegion region = XFixesCreateRegion(d, &rect, 1);
-        XFixesSetWindowShapeRegion(d, overlay[i], ShapeInput, 0, 0, region);
-        XFixesDestroyRegion(d, region);
+        // allows the mouse to click through the overlay unless dragging is enabled
+        if (!options.x11_draggable)
+        {
+            XserverRegion region = XFixesCreateRegion(d, NULL, 0);
+            XFixesSetWindowShapeRegion(d, overlay[i], ShapeInput, 0, 0, region);
+            XFixesDestroyRegion(d, region);
+        }
 
         // sets a WM_CLASS to allow the user to blacklist some effect from compositor
         XClassHint *xch = XAllocClassHint();
@@ -199,10 +216,12 @@ int x11_backend_start(void)
                 for (int i = 0; i < num_entries; i++)
                 {
                     __debug__("  Moving window on screen %d according new position\n", i);
+                    overlay_pos_x[i] = si[i].x_org + si[i].width - overlay_width + options.overlay_offset_left;
+                    overlay_pos_y[i] = si[i].y_org + si[i].height - overlay_height + options.overlay_offset_top;
                     XMoveWindow(d,                                                               // display
                                 overlay[i],                                                      // window
-                                si[i].x_org + si[i].width - overlay_width, // x position
-                                si[i].y_org + si[i].height - overlay_height // y position
+                                overlay_pos_x[i], // x position
+                                overlay_pos_y[i]  // y position
                     );
                 }
             }
@@ -239,6 +258,47 @@ int x11_backend_start(void)
 		    }
                     break;
                 }
+            }
+        }
+        else if (event.type == ButtonPress && options.x11_draggable)
+        {
+            if (event.xbutton.button == Button1)
+            {
+                for (int i = 0; i < num_entries; i++)
+                {
+                    if (overlay[i] == event.xbutton.window)
+                    {
+                        drag_window = i;
+                        drag_offset_x = event.xbutton.x_root - overlay_pos_x[i];
+                        drag_offset_y = event.xbutton.y_root - overlay_pos_y[i];
+                        __debug__("  Begin dragging overlay %d\n", i);
+                        break;
+                    }
+                }
+            }
+        }
+        else if (event.type == MotionNotify && options.x11_draggable && drag_window >= 0)
+        {
+            if (overlay[drag_window] == event.xmotion.window)
+            {
+                overlay_pos_x[drag_window] = event.xmotion.x_root - drag_offset_x;
+                overlay_pos_y[drag_window] = event.xmotion.y_root - drag_offset_y;
+                XMoveWindow(d, overlay[drag_window], overlay_pos_x[drag_window], overlay_pos_y[drag_window]);
+            }
+        }
+        else if (event.type == ButtonRelease && options.x11_draggable)
+        {
+            if (event.xbutton.button == Button1 && drag_window >= 0)
+            {
+                options.overlay_offset_left = overlay_pos_x[drag_window] -
+                    (si[drag_window].x_org + si[drag_window].width - overlay_width);
+                options.overlay_offset_top = overlay_pos_y[drag_window] -
+                    (si[drag_window].y_org + si[drag_window].height - overlay_height);
+#ifdef LIBCONFIG
+                save_overlay_offsets(options.overlay_offset_left, options.overlay_offset_top);
+#endif
+                __debug__("  Stop dragging overlay %d\n", drag_window);
+                drag_window = -1;
             }
         }
         else

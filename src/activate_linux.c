@@ -81,6 +81,22 @@ int main(int argc, char *const argv[]) {
   // if one backend fails, we'll try next one
   int try_next = 1;
   __info__("Starting backend\n");
+
+#if defined(X11) && defined(WAYLAND)
+  if (options.x11_draggable) {
+    __info__("X11 drag mode requested, trying X11 backend first\n");
+    if (try_next) try_next = x11_backend_start();
+    if (try_next) try_next = wayland_backend_start();
+    return try_next;
+  }
+  if (options.wayland_draggable) {
+    __info__("Wayland drag mode requested, trying Wayland backend first\n");
+    if (try_next) try_next = wayland_backend_start();
+    if (try_next) try_next = x11_backend_start();
+    return try_next;
+  }
+#endif
+
 #ifdef WAYLAND
   if (try_next) try_next = wayland_backend_start();
 #endif

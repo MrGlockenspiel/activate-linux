@@ -17,6 +17,8 @@ typedef struct options_t {
 
   int overlay_width;
   int overlay_height;
+  int overlay_offset_left;
+  int overlay_offset_top;
 
   rgba_color text_color;
 
@@ -26,6 +28,13 @@ typedef struct options_t {
   bool kill_running;
 #ifdef X11
   bool force_xshape;
+  bool x11_draggable;
+#endif
+#ifdef WAYLAND
+  bool wayland_draggable;
+#endif
+#ifdef LIBCONFIG
+  char *config_file;
 #endif
 } Options;
 

@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <getopt.h>
+#include <limits.h>
+#include <unistd.h>
 #include "log.h"
 #include "options.h"
 #include "i18n.h"
@@ -10,6 +12,31 @@
 #endif
 
 void print_help(const char* file_name);
+
+#ifdef LIBCONFIG
+static void load_default_config_if_exists(void) {
+  const char *home = getenv("HOME");
+  char default_cfg_path[PATH_MAX];
+
+  if (home == NULL) {
+    __debug__("HOME is not set, skip default config loading\n");
+    return;
+  }
+
+  snprintf(default_cfg_path, sizeof(default_cfg_path), "%s/.config/activate-linux.cfg", home);
+  if (access(default_cfg_path, F_OK) != 0) {
+    return;
+  }
+
+  options.config_file = strdup(default_cfg_path);
+  if (options.config_file == NULL) {
+    __error__("Failed to allocate memory for default config path\n");
+    return;
+  }
+
+  load_config(options.config_file);
+}
+#endif
 
 Options options = {
   // title and subtitle takes from default preset
@@ -26,6 +53,8 @@ Options options = {
   // overlay position
   .overlay_width = 340,
   .overlay_height = 120,
+  .overlay_offset_left = 0,
+  .overlay_offset_top = 0,
 
   // default color is light grey, which has enough contrast to be noticed
   // on both light and dark background.
@@ -44,12 +73,22 @@ Options options = {
   .kill_running = false,
 #ifdef X11
       .force_xshape = false,
+      .x11_draggable = false,
+#endif
+#ifdef WAYLAND
+      .wayland_draggable = false,
+#endif
+#ifdef LIBCONFIG
+      .config_file = NULL,
 #endif
 };
 
 
 void parse_options(int argc, char *const argv[]) {
   __debug__("Start option parsing\n");
+#ifdef LIBCONFIG
+  load_default_config_if_exists();
+#endif
 
   int option_index = 0;
   const struct option long_options[] = {
@@ -74,8 +113,12 @@ void parse_options(int argc, char *const argv[]) {
     {"text-preset-list",    no_argument,       NULL, 'l'},
     {"quiet",               no_argument,       NULL, 'q'},
     {"gamescope",           no_argument,       NULL, 'G'},
+#ifdef WAYLAND
+    {"wayland-draggable",   no_argument,       NULL, 'Y'},
+#endif
 #ifdef X11
     {"force-xshape",           no_argument,       NULL, 'S'},
+    {"x11-draggable",          no_argument,       NULL, 'M'},
 #endif
 #ifdef LIBCONFIG
     {"config-file",         required_argument, NULL, 'C'},
@@ -86,8 +129,12 @@ void parse_options(int argc, char *const argv[]) {
 
   int opt;
   while ((opt = getopt_long(argc, argv, "t:m:p:f:bic:x:y:s:wdKvlqGh"
+#ifdef WAYLAND
+      "Y"
+#endif
 #ifdef X11
       "S"
+      "M"
 #endif
 #ifdef LIBCONFIG
       "C:"
@@ -113,11 +160,18 @@ void parse_options(int argc, char *const argv[]) {
       case 'v': inc_verbose(); break;
       case 'q': set_silent(); break;
       case 'G': options.gamescope_overlay = true; break;
+#ifdef WAYLAND
+      case 'Y': options.wayland_draggable = true; break;
+#endif
 #ifdef LIBCONFIG
-      case 'C': load_config(optarg); break;
+      case 'C':
+        options.config_file = optarg;
+        load_config(optarg);
+        break;
 #endif
 #ifdef X11
       case 'S': options.force_xshape = true; break;
+      case 'M': options.x11_draggable = true; break;
 #endif
       case 's':
         options.scale = atof(optarg);
@@ -200,8 +254,12 @@ void print_help(const char *const file_name) {
   HELP("-v, --verbose \t\tIncrease console spam level");
   HELP("-q, --quiet \t\t\tBecome completely silent");
   HELP("-G, --gamescope \t\tRun as an external gamescope overlay (EXPERIMENTAL)");
+#ifdef WAYLAND
+  HELP("-Y, --wayland-draggable \tEnable left mouse dragging of Wayland overlay windows.");
+#endif
 #ifdef X11
   HELP("-S, --force-xshape \t\tUse the X11 shaping extention for rendering fake transparency.");
+  HELP("-M, --x11-draggable \tEnable left mouse dragging of X11 overlay windows.");
 #endif
 #ifdef LIBCONFIG
   HELP("-C, --config-file \t\tLoad options from an external configuration file");
