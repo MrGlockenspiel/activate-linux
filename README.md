@@ -60,6 +60,70 @@ sudo apt install libconfig-dev libcairo2-dev libxi-dev libx11-dev x11proto-core-
 libxt-dev libxext-dev libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
 ```
 
+## FreeBSD
+
+### Dependencies
+
+Use `pkg` to install build tools and runtime dependencies:
+
+```console
+sudo pkg install gmake pkgconf cairo pango wayland wayland-protocols \
+libX11 libXext libXfixes libXinerama libXrandr libXi libXt libconfig
+```
+
+### Minimal dependencies (X11-only build)
+
+If you only need the X11 backend, install:
+
+```console
+sudo pkg install gmake pkgconf cairo pango \
+libX11 libXext libXfixes libXinerama libXrandr libXi libXt libconfig
+```
+
+Build with X11 only:
+
+```console
+gmake backends=x11
+```
+
+Build with GNU Make:
+
+```console
+gmake
+```
+
+## OpenBSD
+
+### Dependencies
+
+Use `pkg_add` to install build tools and runtime dependencies:
+
+```console
+doas pkg_add gmake pkgconf cairo pango wayland wayland-protocols \
+libX11 libXext libXfixes libXinerama libXrandr libXi libXt libconfig
+```
+
+### Minimal dependencies (X11-only build)
+
+If you only need the X11 backend, install:
+
+```console
+doas pkg_add gmake pkgconf cairo pango \
+libX11 libXext libXfixes libXinerama libXrandr libXi libXt libconfig
+```
+
+Build with X11 only:
+
+```console
+gmake backends=x11
+```
+
+Build with GNU Make:
+
+```console
+gmake
+```
+
 
 ### Installing
 

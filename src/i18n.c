@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/utsname.h>
 
 #ifdef GDI
   #include <windows.h>
@@ -111,6 +112,149 @@ preset_t presets[] = {
 
 int lang_id = -1;
 int preset_id = DEFAULT_PRESET;
+
+static void parse_os_release_value(const char *line, char *dst, size_t dst_size) {
+  const char *value = strchr(line, '=');
+  if (!value || dst_size == 0) {
+    return;
+  }
+
+  value++;
+  while (*value == ' ' || *value == '\t') {
+    value++;
+  }
+
+  size_t len = strlen(value);
+  while (len > 0 && (value[len - 1] == '\n' || value[len - 1] == '\r')) {
+    len--;
+  }
+
+  if (len >= 2 && value[0] == '"' && value[len - 1] == '"') {
+    value++;
+    len -= 2;
+  }
+
+  if (len >= dst_size) {
+    len = dst_size - 1;
+  }
+
+  memcpy(dst, value, len);
+  dst[len] = 0;
+}
+
+static void compact_distro_name(char *dst) {
+  if (dst == NULL || dst[0] == 0) {
+    return;
+  }
+
+  char *linux_word = strstr(dst, " Linux");
+  if (linux_word != NULL) {
+    memmove(linux_word, linux_word + 6, strlen(linux_word + 6) + 1);
+  }
+
+  // collapse double spaces that might appear after removing words
+  char *read_ptr = dst;
+  char *write_ptr = dst;
+  bool prev_space = false;
+  while (*read_ptr != 0) {
+    if (*read_ptr == ' ') {
+      if (!prev_space) {
+        *write_ptr++ = *read_ptr;
+      }
+      prev_space = true;
+    } else {
+      *write_ptr++ = *read_ptr;
+      prev_space = false;
+    }
+    read_ptr++;
+  }
+  *write_ptr = 0;
+}
+
+static const char *get_linux_distro_name(void) {
+  static char distro[256];
+  if (distro[0] != 0) {
+    return distro;
+  }
+
+  FILE *fp = fopen("/etc/os-release", "r");
+  if (!fp) {
+    strcpy(distro, "Linux");
+    return distro;
+  }
+
+  char line[512];
+  char pretty_name[256] = {0};
+  char name[128] = {0};
+  char version_id[128] = {0};
+
+  while (fgets(line, sizeof(line), fp) != NULL) {
+    if (strncmp(line, "PRETTY_NAME=", 12) == 0) {
+      parse_os_release_value(line, pretty_name, sizeof(pretty_name));
+    } else if (strncmp(line, "NAME=", 5) == 0) {
+      parse_os_release_value(line, name, sizeof(name));
+    } else if (strncmp(line, "VERSION_ID=", 11) == 0) {
+      parse_os_release_value(line, version_id, sizeof(version_id));
+    }
+  }
+  fclose(fp);
+
+  if (name[0] != 0 && version_id[0] != 0) {
+    snprintf(distro, sizeof(distro), "%s %s", name, version_id);
+    compact_distro_name(distro);
+    return distro;
+  }
+
+  if (pretty_name[0] != 0) {
+    strncpy(distro, pretty_name, sizeof(distro) - 1);
+    distro[sizeof(distro) - 1] = 0;
+    compact_distro_name(distro);
+    return distro;
+  }
+
+  if (name[0] != 0) {
+    strncpy(distro, name, sizeof(distro) - 1);
+    distro[sizeof(distro) - 1] = 0;
+    compact_distro_name(distro);
+    return distro;
+  }
+
+  strcpy(distro, "Linux");
+  return distro;
+}
+
+static const char *get_bsd_distro_name(void) {
+  static char distro[256];
+  if (distro[0] != 0) {
+    return distro;
+  }
+
+  struct utsname info;
+  if (uname(&info) != 0) {
+    strcpy(distro, "*BSD");
+    return distro;
+  }
+
+  char release[128];
+  strncpy(release, info.release, sizeof(release) - 1);
+  release[sizeof(release) - 1] = 0;
+
+  // Keep a compact version string, e.g. 14.1 from 14.1-RELEASE-p4
+  char *dash = strchr(release, '-');
+  if (dash != NULL) {
+    *dash = 0;
+  }
+
+  if (release[0] != 0) {
+    snprintf(distro, sizeof(distro), "%s %s", info.sysname, release);
+  } else {
+    strncpy(distro, info.sysname, sizeof(distro) - 1);
+    distro[sizeof(distro) - 1] = 0;
+  }
+
+  compact_distro_name(distro);
+  return distro;
+}
 
 bool match_lang_code(const char *lang_code, const char *lang) {
   int i = 0;
@@ -255,20 +399,26 @@ void i18n_set_info(const char *const preset) {
 
   memset(options.title, 0, 666);
   memset(options.subtitle, 0, 666);
+  const char *preset_text = presets[preset_id].text;
+  if (match_str("linux", presets[preset_id].name)) {
+    preset_text = get_linux_distro_name();
+  } else if (match_str("bsd", presets[preset_id].name)) {
+    preset_text = get_bsd_distro_name();
+  }
 
   if (match_str(MS_DISS_PRESET_NAME, preset)) {
     strcat(options.title, langs[lang_id].diss.pre_title);
-    strcat(options.title, presets[preset_id].text);
+    strcat(options.title, preset_text);
     strcat(options.title, langs[lang_id].diss.post_title);
 
     strcat(options.subtitle, langs[lang_id].diss.subtitle);
   } else {
     strcat(options.title, langs[lang_id].windows_like.pre_title);
-    strcat(options.title, presets[preset_id].text);
+    strcat(options.title, preset_text);
     strcat(options.title, langs[lang_id].windows_like.post_title);
 
     strcat(options.subtitle, langs[lang_id].windows_like.pre_subtitle);
-    strcat(options.subtitle, presets[preset_id].text);
+    strcat(options.subtitle, preset_text);
     strcat(options.subtitle, langs[lang_id].windows_like.post_subtitle);
   }
 }
