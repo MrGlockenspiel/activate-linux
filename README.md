@@ -139,6 +139,18 @@ make
 sudo make install
 ```
 
+#### Fedora / RHEL / CentOS
+Use the same package names on all three distributions:
+```console
+sudo dnf install -y git make gcc pkgconf-pkg-config cairo-devel pango-devel \
+libX11-devel libXext-devel libXfixes-devel libXinerama-devel libXrandr-devel \
+libXi-devel libXt-devel wayland-devel wayland-protocols-devel libconfig-devel
+git clone https://github.com/MrGlockenspiel/activate-linux
+cd activate-linux
+make
+sudo make install
+```
+
 #### Arch Linux
 ```console
 sudo pacman -S --needed git make pkgconf cairo pango libxi libx11 libxt libxext \
