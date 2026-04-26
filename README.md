@@ -7,6 +7,18 @@ The "Activate Windows" watermark ported to Linux with cairo in C
 
 > Read [ARGS.md](ARGS.md) for information about command line arguments.
 
+## New Features
+
+- Draggable overlay on X11 with `-M` / `--x11-draggable`.
+- Draggable overlay on Wayland (layer-shell based) with `-Y` / `--wayland-draggable`.
+- Overlay position persistence after drag release.
+  - Auto-saved to `~/.config/activate-linux.cfg`.
+  - Custom config path is supported with `-C` / `--config-file`.
+- Dynamic distro label for Linux and BSD presets.
+  - Linux now shows current distro name/version (for example `Fedora 43`).
+  - BSD preset now shows runtime system/version (for example `FreeBSD 14.1`, `OpenBSD 7.6`).
+- Expanded build-from-source guides for Linux, FreeBSD, OpenBSD, Fedora/RHEL/CentOS, Windows (MSYS2), and more.
+
 ## Building
 Note that the executable's name depends on the target platform.
 You can use `make install` to install and `make uninstall` to remove it.
@@ -28,7 +40,7 @@ Replace `gcc` with `clang`, if you want. But then don't forget to start proper s
 ```console
 pacman -S --noconfirm git make pkgconf pactoys
 pacboy -S --noconfirm gcc:p
-git clone https://github.com/MrGlockenspiel/activate-linux
+git clone https://github.com/wenyinos/activate-linux
 cd activate-linux
 export backends=gdi
 make
@@ -133,7 +145,7 @@ sudo apt update
 sudo apt install git make pkg-config libconfig-dev libcairo2-dev libpango1.0-dev \
 libxi-dev libx11-dev x11proto-core-dev x11proto-dev libxt-dev libxext-dev \
 libxfixes-dev libxinerama-dev libxrandr-dev libwayland-dev wayland-protocols
-git clone https://github.com/MrGlockenspiel/activate-linux
+git clone https://github.com/wenyinos/activate-linux
 cd activate-linux
 make
 sudo make install
@@ -145,7 +157,7 @@ Use the same package names on all three distributions:
 sudo dnf install -y git make gcc pkgconf-pkg-config cairo-devel pango-devel \
 libX11-devel libXext-devel libXfixes-devel libXinerama-devel libXrandr-devel \
 libXi-devel libXt-devel wayland-devel wayland-protocols-devel libconfig-devel
-git clone https://github.com/MrGlockenspiel/activate-linux
+git clone https://github.com/wenyinos/activate-linux
 cd activate-linux
 make
 sudo make install
@@ -155,7 +167,7 @@ sudo make install
 ```console
 sudo pacman -S --needed git make pkgconf cairo pango libxi libx11 libxt libxext \
 libxfixes libxinerama libxrandr wayland wayland-protocols libconfig
-git clone https://github.com/MrGlockenspiel/activate-linux
+git clone https://github.com/wenyinos/activate-linux
 cd activate-linux
 make
 sudo make install
@@ -164,7 +176,7 @@ sudo make install
 #### NixOS / Nix
 Use the flake development shell to compile from source:
 ```console
-git clone https://github.com/MrGlockenspiel/activate-linux
+git clone https://github.com/wenyinos/activate-linux
 cd activate-linux
 nix develop -c make
 sudo nix develop -c make install
@@ -173,7 +185,7 @@ sudo nix develop -c make install
 #### Gentoo
 Install required development libraries, then build directly from source:
 ```console
-git clone https://github.com/MrGlockenspiel/activate-linux
+git clone https://github.com/wenyinos/activate-linux
 cd activate-linux
 make
 sudo make install
@@ -186,7 +198,7 @@ sudo make install
 ```console
 pacman -S --noconfirm git make pkgconf pactoys
 pacboy -S --noconfirm gcc:p
-git clone https://github.com/MrGlockenspiel/activate-linux
+git clone https://github.com/wenyinos/activate-linux
 cd activate-linux
 export backends=gdi
 make

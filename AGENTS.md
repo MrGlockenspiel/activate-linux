@@ -7,10 +7,12 @@ Generated protocol/event sources use `*.cgen` and `*.hgen` files under backend f
 
 ## Build, Test, and Development Commands
 - `make`: Default local build (Linux/macOS; backend set by `backends`, default `wayland x11`).
+- `gmake`: Build command for BSD systems (FreeBSD/OpenBSD).
 - `make clean && make`: Clean rebuild, matching CI behavior.
 - `make test`: Runs the built binary as a smoke test.
 - `make install` / `make uninstall`: Install or remove binary and man page.
 - `backends=gdi make`: Build Windows GDI backend (used in Windows CI).
+- `backends=x11 make` / `backends=wayland make`: Build a single Linux backend explicitly.
 - `xmake`: Alternative build path (experimental, see `xmake.lua`).
 
 ## Coding Style & Naming Conventions
@@ -26,6 +28,9 @@ This repository relies on build validation and runtime smoke checks. Before open
 1. `make clean && make`
 2. `CC=clang make clean && make`
 3. `make test` (on a supported display/session)
+4. Backend-specific checks when changing drag/input behavior:
+   - `./activate-linux -M` for X11 draggable flow
+   - `./activate-linux -Y` for Wayland draggable flow
 
 If you touch backend-specific code, test at least one affected backend explicitly (for example `backends=wayland make`).
 
@@ -40,3 +45,4 @@ PRs should include:
 
 ## Security & Configuration Tips
 Do not commit machine-specific configs or secrets. Use `example.cfg` as the baseline for optional `libconfig` setups, and keep local overrides untracked.
+Drag position persistence is saved to `~/.config/activate-linux.cfg` by default (or a path passed via `-C/--config-file`), so avoid committing generated local offset files.

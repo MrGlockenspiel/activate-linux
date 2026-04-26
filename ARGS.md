@@ -28,6 +28,9 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ./activate-linux -p "bsd"
 ./activate-linux --text-preset "bsd"
 ```
+Preset notes:
+- `linux` resolves to current distro name/version at runtime (for example `Fedora 43`).
+- `bsd` resolves to current BSD system/version at runtime (for example `FreeBSD 14.1`, `OpenBSD 7.6`).
 
 ## Appearance
 
@@ -58,7 +61,7 @@ Default color is `1-1-1-0.35` (dimmed white)
 
 ## Size and position
 
-Note that message always appears in the top left corner of the overlay.
+By default, the overlay is anchored in the bottom-right corner. Position can be moved interactively with draggable mode and persisted offsets.
 
 ### Custom overlay width
 ```console
@@ -137,6 +140,7 @@ Useful to kill running background daemon (started with `-d` option)
 ./activate-linux -Y
 ./activate-linux --wayland-draggable
 ```
+When this option is set, Wayland backend is tried first.
 On drag release, offsets are persisted to `~/.config/activate-linux.cfg` by default.
 Use `-C/--config-file` to override the save target.
 
@@ -151,6 +155,7 @@ Use `-C/--config-file` to override the save target.
 ./activate-linux -M
 ./activate-linux --x11-draggable
 ```
+When this option is set, X11 backend is tried first.
 On drag release, offsets are persisted to `~/.config/activate-linux.cfg` by default.
 Use `-C/--config-file` to override the save target.
 
