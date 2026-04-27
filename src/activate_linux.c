@@ -50,7 +50,7 @@ int main(int argc, char *const argv[]) {
       STARTUPINFOW si = {0};
       si.cb = sizeof(si);
       PROCESS_INFORMATION pi = {0};
-      bool daemon_started = !CreateProcessW(NULL, GetCommandLineW(), NULL, NULL,
+      bool daemon_started = CreateProcessW(NULL, GetCommandLineW(), NULL, NULL,
                             FALSE, DETACHED_PROCESS, NULL, NULL, &si, &pi);
       if (!daemon_started) {
         __error__("Cannot start daemon process, error 0x%08lX. Continuing as non-daemon\n", GetLastError());
