@@ -60,3 +60,4 @@ AppDir
 result
 .xmake
 build
+.direnv
