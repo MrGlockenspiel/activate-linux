@@ -145,40 +145,7 @@ bool match_lang_code(const char *lang_code, const char *lang) {
 }
 
 bool match_lang_two_letter_code(const char *lang_code, const char *lang) {
-  int i = 0;
-  while (lang_code[i]) {
-    int ii = 0;
-    bool failed = false;
-
-    while (lang_code[i] != 0) {
-      if (lang_code[i] == '_') {
-        i +=4;
-        break;
-      }
-      if (lang_code[i] == ',') {
-        i++;
-        break;
-      }
-      if (lang_code[i] == '.') {
-        break;
-      }
-      
-      if (failed) {
-        i++;
-        continue;
-      }
-
-      if (lang_code[i++] != lang[ii++]) {
-        failed = true;
-      }
-    }
-
-    if (!failed) {
-      return true;
-    }
-  }
-
-  return false;
+  return lang_code[0] == lang[0] && lang_code[1] == lang[1];
 }
 
 void i18n_set_lang_id(void) {
