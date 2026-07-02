@@ -88,6 +88,19 @@ Note that message always appears in the top left corner of the overlay.
 ./activate-linux --bypass-compositor
 ```
 
+### Run via SystemD
+```
+sudo cp activate-linux /usr/bin/.
+sudo cp activate-linux.service /etc/systemd/user/.
+sudo systemctl --user --now enable activate-linux.service
+```
+
+Add optional arguments to `~/.config/activate-linux.env` like this:
+
+```
+ARGS=-t "Main Text" --gamescope --text-font "Segoe UI"
+```
+
 ### Run as daemon
 ```console
 ./activate-linux -d

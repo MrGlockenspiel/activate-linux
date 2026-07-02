@@ -1,0 +1,13 @@
+[Unit]
+Description=The "Activate Windows" watermark ported to Linux
+After=graphical-session.target
+
+[Service]
+Type=simple
+EnvironmentFile=-%h/.config/activate-linux.env
+ExecStartPre=/bin/sleep 10
+ExecStart=/usr/bin/activate-linux ${ARGS}
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target
