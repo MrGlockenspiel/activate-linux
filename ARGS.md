@@ -29,6 +29,12 @@ Color is formatted in "r-g-b-a", with each number being a decimal from 0 to 1. D
 ./activate-linux --text-preset "bsd"
 ```
 
+### Use Distro name
+```console
+./activate-linux -o
+./activate-linux --os-release
+```
+
 ## Appearance
 
 ### Custom Font

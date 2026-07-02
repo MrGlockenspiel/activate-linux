@@ -42,6 +42,10 @@ Options options = {
 
   // kill running instance of activate-linux
   .kill_running = false,
+#ifdef __linux__
+  // read /etc/os-release for exact Distro
+  .osrelease = false,
+#endif
 #ifdef X11
       .force_xshape = false,
 #endif
@@ -74,6 +78,9 @@ void parse_options(int argc, char *const argv[]) {
     {"text-preset-list",    no_argument,       NULL, 'l'},
     {"quiet",               no_argument,       NULL, 'q'},
     {"gamescope",           no_argument,       NULL, 'G'},
+#ifdef __linux__
+    {"os-release",          no_argument,       NULL, 'o'},
+#endif
 #ifdef X11
     {"force-xshape",           no_argument,       NULL, 'S'},
 #endif
@@ -85,7 +92,11 @@ void parse_options(int argc, char *const argv[]) {
   };
 
   int opt;
+
   while ((opt = getopt_long(argc, argv, "t:m:p:f:bic:x:y:s:wdKvlqGh"
+#ifdef __linux__
+      "o"
+#endif
 #ifdef X11
       "S"
 #endif
@@ -113,6 +124,9 @@ void parse_options(int argc, char *const argv[]) {
       case 'v': inc_verbose(); break;
       case 'q': set_silent(); break;
       case 'G': options.gamescope_overlay = true; break;
+#ifdef __linux__
+      case 'o': options.osrelease = true; i18n_set_info("linux"); break;
+#endif
 #ifdef LIBCONFIG
       case 'C': load_config(optarg); break;
 #endif
@@ -172,6 +186,7 @@ void print_help(const char *const file_name) {
   HELP("-m, --text-message message\tSet message text (string)");
   HELP("-p, --text-preset preset\tSelect predefined preset (conflicts "
       "-t/-m)");
+  HELP("-o, --os-release\t\tUse Distro name from /etc/os-release");
   END();
 
   SECTION("Appearance", "");
