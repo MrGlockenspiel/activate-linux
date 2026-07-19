@@ -1,7 +1,7 @@
 # if $CC is not set, guess default `cc'. It has to be in system
 CC ?= cc
 # compile options
-CFLAGS ?= -Os -Wall -Wpedantic -Wextra
+CFLAGS ?= -Os -Wall -Wpedantic -Wextra -std=gnu17 -g
 # link options
 LDFLAGS ?= -s
 
