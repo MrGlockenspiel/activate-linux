@@ -1,6 +1,9 @@
 #include "i18n.h"
 #include "options.h"
 #include "log.h"
+#ifdef __linux__
+  #include "osrelease.h"
+#endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -266,10 +269,20 @@ void i18n_set_info(const char *const preset) {
     strcat(options.subtitle, langs[lang_id].diss.subtitle);
   } else {
     strcat(options.title, langs[lang_id].windows_like.pre_title);
+#ifdef __linux__
+    if (options.osrelease)
+      strcat(options.title, get_release_info());
+    else
+#endif
     strcat(options.title, presets[preset_id].text);
     strcat(options.title, langs[lang_id].windows_like.post_title);
 
     strcat(options.subtitle, langs[lang_id].windows_like.pre_subtitle);
+#ifdef __linux__
+    if (options.osrelease)
+      strcat(options.subtitle, get_release_info());
+    else
+#endif
     strcat(options.subtitle, presets[preset_id].text);
     strcat(options.subtitle, langs[lang_id].windows_like.post_subtitle);
   }
