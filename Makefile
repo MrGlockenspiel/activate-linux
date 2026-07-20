@@ -146,11 +146,11 @@ $(BINARY): $(<<objects>>)
 
 install: $(BINARY)
 	install -Dm0755 $(BINARY) $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
-	install -Dm0644 activate-linux.1 $(MANDIR)/man1/activate-linux.1
+	install -Dm0644 activate-linux.1 $(DESTDIR)$(MANDIR)/man1/activate-linux.1
 
 uninstall:
 	sudo $(RM) -f $(DESTDIR)$(PREFIX)/$(BINDIR)/$(BINARY)
-	sudo $(RM) -f $(MANDIR)/man1/activate-linux.1
+	sudo $(RM) -f $(DESTDIR)$(MANDIR)/man1/activate-linux.1
 	sudo mandb -q
 
 appimage: $(BINARY)
